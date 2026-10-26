@@ -103,7 +103,13 @@ class FragmentStarsProvider(Provider):
 
     async def resolve_recipient(self, username: str, quantity: int) -> Recipient:
         username = username.lstrip("@")
-        body = await self.client.call("searchStarsRecipient", query=username, quantity=quantity)
+        try:
+            body = await self.client.call("searchStarsRecipient", query=username, quantity=quantity)
+        except ProviderAuthError:
+            raise
+        except ProviderError as e:
+            # Fragment отвечает error-текстом, если юзернейм не найден / скрыт — это не сбой, а «нет получателя»
+            raise RecipientNotFound(_user_msg(e.message)) from e
         found = body.get("found")
         if not found or not found.get("recipient"):
             raise RecipientNotFound("Пользователь не найден. Проверь username — у получателя он должен быть установлен.")
@@ -148,7 +154,12 @@ class FragmentPremiumProvider(Provider):
 
     async def resolve_recipient(self, username: str, quantity: int) -> Recipient:
         username = username.lstrip("@")
-        body = await self.client.call("searchPremiumGiftRecipient", referer="/premium/gift", query=username, months=quantity)
+        try:
+            body = await self.client.call("searchPremiumGiftRecipient", referer="/premium/gift", query=username, months=quantity)
+        except ProviderAuthError:
+            raise
+        except ProviderError as e:
+            raise RecipientNotFound(_user_msg(e.message)) from e
         found = body.get("found")
         if not found or not found.get("recipient"):
             raise RecipientNotFound("Пользователь не найден или у него уже есть Premium.")
@@ -191,6 +202,16 @@ async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100) -> 
     except ProviderError as e:
         log.warning("fetch_star_price_ton failed: %s", e)
         return None
+
+
+def _user_msg(err: str) -> str:
+    """Текст ошибки Fragment -> понятное сообщение пользователю."""
+    e = err.replace("Fragment: ", "")
+    if "assigned to a user" in e or "not found" in e.lower():
+        return "Пользователь не найден. Проверь username — у получателя он должен быть установлен и открыт для поиска."
+    if "premium" in e.lower():
+        return "У этого пользователя уже есть Premium или его нельзя подарить."
+    return e
 
 
 def _strip_html(s: str) -> str:
