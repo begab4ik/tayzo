@@ -51,12 +51,19 @@ class FragmentClient:
     async def _ensure_hash(self) -> str:
         if self._hash:
             return self._hash
-        r = await self._client.get("/stars/buy", headers={"Referer": BASE})
-        m = re.search(r"api\?hash=([a-f0-9]+)", r.text)
-        if not m:
-            raise ProviderAuthError("Не удалось получить api hash Fragment — проверь cookies")
-        self._hash = m.group(1)
-        return self._hash
+        last = ""
+        for path in ("/stars/buy", "/", "/premium/gift"):
+            try:
+                r = await self._client.get(path, headers={"Referer": BASE, "Accept": "text/html"}, follow_redirects=True)
+            except httpx.HTTPError as e:
+                last = str(e)
+                continue
+            m = re.search(r"api\?hash=([A-Za-z0-9_\-]+)", r.text)
+            if m:
+                self._hash = m.group(1)
+                return self._hash
+            last = f"{path}: HTTP {r.status_code}, {len(r.text)} байт"
+        raise ProviderAuthError(f"Не удалось получить api hash Fragment — проверь cookies ({last})")
 
     async def call(self, method: str, referer: str = "/stars/buy", **data) -> dict:
         api_hash = await self._ensure_hash()
