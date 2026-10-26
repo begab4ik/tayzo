@@ -1,0 +1,10 @@
+.env
+tokens.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.log
+.idea/
+.vscode/
+backups/*.sql.gz

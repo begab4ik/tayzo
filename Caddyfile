@@ -1,0 +1,18 @@
+{$DOMAIN} {
+    # Только вебхуки и healthcheck наружу; всё остальное — 404
+    handle /webhooks/* {
+        reverse_proxy bot:8080
+    }
+    handle /health {
+        reverse_proxy bot:8080
+    }
+    handle {
+        respond "Tayzo" 404
+    }
+    log {
+        output file /data/access.log {
+            roll_size 10mb
+            roll_keep 3
+        }
+    }
+}
