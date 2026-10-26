@@ -34,6 +34,7 @@ class User(Base):
     username: Mapped[str | None] = mapped_column(String(64), index=True)
     first_name: Mapped[str | None] = mapped_column(String(128))
     language: Mapped[str] = mapped_column(String(5), default="ru")
+    lang_chosen: Mapped[bool] = mapped_column(Boolean, default=False)
     referrer_id: Mapped[int | None] = mapped_column(BigInteger, ForeignKey("users.id"), index=True)
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
     balance: Mapped[int] = mapped_column(BigInteger, default=0)  # UZS, целые сумы

@@ -51,6 +51,7 @@ async def set_commands() -> None:
             BotCommand(command="profile", description="Профиль и рефералка"),
             BotCommand(command="orders", description="Мои заказы"),
             BotCommand(command="promo", description="Активировать промокод"),
+            BotCommand(command="lang", description="Язык / Language / Til"),
             BotCommand(command="support", description="Поддержка"),
         ]
     )
@@ -61,6 +62,9 @@ async def set_commands() -> None:
                     BotCommand(command="start", description="Главное меню"),
                     BotCommand(command="admin", description="Админ-панель"),
                     BotCommand(command="stats", description="Статистика"),
+                    BotCommand(command="give", description="Начислить: /give @user 50000"),
+                    BotCommand(command="take", description="Списать: /take @user 50000"),
+                    BotCommand(command="lang", description="Язык"),
                     BotCommand(command="profile", description="Профиль"),
                     BotCommand(command="orders", description="Мои заказы"),
                 ],

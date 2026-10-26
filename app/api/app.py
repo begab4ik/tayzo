@@ -35,7 +35,7 @@ async def click_webhook(request: Request):
 
     if paid and user:
         try:
-            await bot.send_message(paid.user_id, topup_success(paid.amount, user.balance))
+            await bot.send_message(paid.user_id, topup_success(user.language, paid.amount, user.balance))
         except Exception as e:  # noqa: BLE001 — юзер мог заблокировать бота
             log.warning("notify user %s failed: %s", paid.user_id, e)
         from app.bot.notify import notify_admins

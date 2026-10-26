@@ -63,8 +63,11 @@ class SubscriptionMiddleware(BaseMiddleware):
         if user is None or data.get("is_admin"):
             return await handler(event, data)
 
-        # Кнопку «Проверить» всегда пропускаем — её обрабатывает handlers/subscription.py
-        if isinstance(event, CallbackQuery) and event.data == "check_sub":
+        # Кнопку «Проверить» и выбор языка всегда пропускаем
+        if isinstance(event, CallbackQuery) and (event.data == "check_sub" or (event.data or "").startswith("lang:")):
+            return await handler(event, data)
+        # до выбора языка — не требуем подписку (сначала язык, потом всё остальное)
+        if not user.lang_chosen:
             return await handler(event, data)
 
         channels = await get_channels(data["session"])
@@ -75,11 +78,11 @@ class SubscriptionMiddleware(BaseMiddleware):
         if not missing:
             return await handler(event, data)
 
-        markup = kb.subscribe_kb(missing)
+        markup = kb.subscribe_kb(user.language, missing)
         if isinstance(event, Message):
-            await event.answer(texts.subscribe_required(), reply_markup=markup)
+            await event.answer(texts.subscribe_required(user.language), reply_markup=markup)
         elif isinstance(event, CallbackQuery):
             await event.answer()
             if event.message:
-                await event.message.answer(texts.subscribe_required(), reply_markup=markup)
+                await event.message.answer(texts.subscribe_required(user.language), reply_markup=markup)
         return None

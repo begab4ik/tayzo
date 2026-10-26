@@ -6,6 +6,8 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot import keyboards as kb
+from app.bot.i18n import t
+from aiogram.filters import Command
 from app.bot.notify import notify_user
 from app.bot.states import Admin
 from app.core import wallet
@@ -88,7 +90,7 @@ async def adjust_input(message: Message, session: AsyncSession, state: FSMContex
     u = await session.get(User, data["uid"])
     await session.commit()
     sign = "+" if signed > 0 else "−"
-    await notify_user(u.id, f"🛠 Администратор изменил твой баланс: {sign}{fmt_uzs(abs(signed))}" + (f"\n💬 {comment}" if comment else "") + f"\n💰 Баланс: {fmt_uzs(u.balance)}")
+    await notify_user(u.id, t(u.language, "admin_balance_changed", sign=sign, amount=fmt_uzs(abs(signed)), comment=(f"\n💬 {comment}" if comment else ""), balance=fmt_uzs(u.balance)))
     await show_user(message, session, u)
 
 
@@ -104,3 +106,30 @@ async def toggle_ban(call: CallbackQuery, session: AsyncSession):
     await call.answer("Забанен" if u.is_banned else "Разбанен")
     cnt = (await session.execute(select(func.count()).where(Order.user_id == u.id))).scalar_one()
     await call.message.edit_text(user_card(u, cnt), reply_markup=kb.user_admin_kb(u.id, u.is_banned))
+
+
+@router.message(Command("give", "take"))
+async def quick_adjust(message: Message, session: AsyncSession):
+    """Быстрое начисление/списание: /give <id или @username> <сумма> [комментарий]  ·  /take ... """
+    parts = (message.text or "").split(maxsplit=3)
+    if len(parts) < 3 or not parts[2].isdigit():
+        await message.answer("Формат: <code>/give @username 50000 комментарий</code> или <code>/take 123456789 10000</code>")
+        return
+    u = await find_user(session, parts[1])
+    if not u:
+        await message.answer("Пользователь не найден (он должен был хотя бы раз написать боту).")
+        return
+    amount = int(parts[2])
+    comment = parts[3] if len(parts) > 3 else None
+    signed = amount if parts[0].startswith("/give") else -amount
+    try:
+        await wallet.apply(session, u.id, signed, LedgerType.ADMIN_ADJUST, ref_type="user", ref_id=message.from_user.id, comment=comment)
+    except InsufficientBalance as e:
+        await message.answer(f"У пользователя только {fmt_uzs(e.have)}")
+        return
+    session.add(AuditLog(admin_id=message.from_user.id, action="adjust_balance", details={"user_id": u.id, "amount": signed, "comment": comment}))
+    await session.commit()
+    await session.refresh(u)
+    sign = "+" if signed > 0 else "−"
+    await notify_user(u.id, t(u.language, "admin_balance_changed", sign=sign, amount=fmt_uzs(abs(signed)), comment=(f"\n💬 {comment}" if comment else ""), balance=fmt_uzs(u.balance)))
+    await show_user(message, session, u)

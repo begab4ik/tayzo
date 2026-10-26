@@ -27,7 +27,7 @@ async def panel_text(session: AsyncSession) -> str:
 
 
 @router.message(Command("admin"))
-@router.message(F.text == kb.BTN_ADMIN)
+@router.message(F.text.in_(kb.L("btn_admin")))
 async def admin_menu(message: Message, session: AsyncSession, state: FSMContext):
     await state.clear()
     await message.answer(await panel_text(session), reply_markup=kb.admin_menu_kb())

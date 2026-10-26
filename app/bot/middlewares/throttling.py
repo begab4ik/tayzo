@@ -24,7 +24,7 @@ class ThrottlingMiddleware(BaseMiddleware):
         key = f"tayzo:thr:{tg_user.id}"
         if not await redis.set(key, "1", px=int(self.interval * 1000), nx=True):
             if isinstance(event, CallbackQuery):
-                await event.answer("Не так быстро 🙂")
+                await event.answer("Не так быстро 🙂 / Not so fast 🙂")
             elif isinstance(event, Message):
                 pass
             return None

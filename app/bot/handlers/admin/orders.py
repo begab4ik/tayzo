@@ -9,7 +9,7 @@ from app.bot.notify import notify_user
 from app.core import orders as orders_svc
 from app.core.enums import OrderStatus
 from app.core.money import fmt_uzs
-from app.db.models import AuditLog, Order
+from app.db.models import AuditLog, Order, User
 
 router = Router(name="admin_orders")
 
@@ -48,17 +48,19 @@ async def order_action(call: CallbackQuery, session: AsyncSession):
         await call.message.edit_text(order_card(order))
         return
 
+    buyer = await session.get(User, order.user_id)
+    lang = buyer.language if buyer else "ru"
     if action == "retry":
         order.status = OrderStatus.PENDING
         order.attempts = 0
         msg = "🔁 Отправлен на повтор"
     elif action == "done":
         await orders_svc.mark_done_manually(session, order, call.from_user.id)
-        await notify_user(order.user_id, texts.order_delivered(order))
+        await notify_user(order.user_id, texts.order_delivered(lang, order))
         msg = "✅ Отмечен выполненным"
     elif action == "refund":
         await orders_svc.refund(session, order, comment=f"возврат админом {call.from_user.id}")
-        await notify_user(order.user_id, texts.order_refunded(order))
+        await notify_user(order.user_id, texts.order_refunded(lang, order))
         msg = "↩️ Деньги возвращены"
     else:
         await call.answer("Неизвестное действие", show_alert=True)

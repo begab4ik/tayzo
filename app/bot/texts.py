@@ -1,146 +1,101 @@
-"""Все тексты бота в одном месте. HTML-разметка."""
+"""Тексты для пользователя. Все строки — в i18n.py, здесь только сборка с параметрами."""
 from __future__ import annotations
 
+from app.bot.i18n import t
 from app.config import settings
 from app.core.money import fmt_uzs
 
 BOT_NAME = "Tayzo"
 
 
-def welcome(first_name: str | None) -> str:
-    return (
-        f"👋 Привет, <b>{first_name or 'друг'}</b>!\n\n"
-        f"Это <b>{BOT_NAME}</b> — быстрая покупка Telegram Stars и Premium за сумы.\n\n"
-        "⭐ Звёзды приходят автоматически за 1–3 минуты\n"
-        "💳 Оплата через Click\n"
-        "🎁 Реферальная программа и промокоды\n\n"
-        "Выбери, что нужно 👇"
+def welcome(lang: str, first_name: str | None) -> str:
+    return t(lang, "welcome", name=first_name or "👋")
+
+
+def subscribe_required(lang: str) -> str:
+    return t(lang, "subscribe_required")
+
+
+def menu_balance(lang: str, balance: int) -> str:
+    return t(lang, "balance", balance=fmt_uzs(balance))
+
+
+def profile(lang: str, user, orders_count: int, ref_count: int, ref_earned: int, ref_link: str, ref_percent: int) -> str:
+    return t(
+        lang, "profile",
+        id=user.id, balance=fmt_uzs(user.balance), topup=fmt_uzs(user.total_topup), spent=fmt_uzs(user.total_spent),
+        stars=user.total_stars, orders=orders_count, refs=ref_count, earned=fmt_uzs(ref_earned), percent=ref_percent, link=ref_link,
     )
 
 
-def subscribe_required() -> str:
-    return (
-        "🔒 Чтобы пользоваться ботом, подпишись на наш канал.\n\n"
-        "Там скидки, промокоды и новости проекта. После подписки нажми «Проверить»."
-    )
+def topup_prompt(lang: str, min_amount: int, max_amount: int) -> str:
+    return t(lang, "topup_prompt", min=fmt_uzs(min_amount), max=fmt_uzs(max_amount))
 
 
-def menu_balance(balance: int) -> str:
-    return f"💰 Твой баланс: <b>{fmt_uzs(balance)}</b>"
+def topup_link(lang: str, amount: int) -> str:
+    return t(lang, "topup_link", amount=fmt_uzs(amount))
 
 
-def profile(user, orders_count: int, ref_count: int, ref_earned: int, ref_link: str, ref_percent: int) -> str:
-    return (
-        f"👤 <b>Профиль</b>\n\n"
-        f"ID: <code>{user.id}</code>\n"
-        f"Баланс: <b>{fmt_uzs(user.balance)}</b>\n"
-        f"Пополнено всего: {fmt_uzs(user.total_topup)}\n"
-        f"Потрачено: {fmt_uzs(user.total_spent)}\n"
-        f"Куплено звёзд: ⭐ {user.total_stars}\n"
-        f"Заказов: {orders_count}\n\n"
-        f"👥 <b>Рефералы</b>: {ref_count} чел., заработано {fmt_uzs(ref_earned)}\n"
-        f"Получай <b>{ref_percent}%</b> с каждого пополнения друзей:\n"
-        f"<code>{ref_link}</code>"
-    )
+def topup_success(lang: str, amount: int, balance: int) -> str:
+    return t(lang, "topup_success", amount=fmt_uzs(amount), balance=fmt_uzs(balance))
 
 
-def topup_prompt(min_amount: int, max_amount: int) -> str:
-    return (
-        "💳 <b>Пополнение баланса</b>\n\n"
-        f"Выбери сумму или введи свою (от {fmt_uzs(min_amount)} до {fmt_uzs(max_amount)}):"
-    )
+def stars_intro(lang: str, price_each: int, min_stars: int, max_stars: int) -> str:
+    return t(lang, "stars_intro", price=fmt_uzs(price_each), min=min_stars, max=f"{max_stars:,}".replace(",", " "))
 
 
-def topup_link(amount: int) -> str:
-    return (
-        f"💳 К оплате: <b>{fmt_uzs(amount)}</b>\n\n"
-        "Нажми кнопку ниже и оплати через Click. Баланс пополнится автоматически в течение минуты."
-    )
+def ask_username(lang: str) -> str:
+    return t(lang, "ask_username")
 
 
-def topup_success(amount: int, balance: int) -> str:
-    return f"✅ Баланс пополнен на <b>{fmt_uzs(amount)}</b>\n💰 Текущий баланс: <b>{fmt_uzs(balance)}</b>"
+def ask_stars_qty(lang: str, recipient_name: str, username: str) -> str:
+    return t(lang, "ask_stars_qty", name=recipient_name, username=username)
 
 
-def stars_intro(price_each: int, min_stars: int, max_stars: int) -> str:
-    return (
-        "⭐ <b>Покупка Telegram Stars</b>\n\n"
-        f"Цена: <b>{fmt_uzs(price_each)}</b> за 1 звезду\n"
-        f"Минимум {min_stars}, максимум {max_stars:,} звёзд\n\n"
-        "Кому отправить?"
-    ).replace(",", " ")
-
-
-def ask_username() -> str:
-    return "Введи <b>@username</b> получателя (у него должен быть установлен юзернейм в Telegram):"
-
-
-def ask_stars_qty(recipient_name: str, username: str) -> str:
-    return f"Получатель: <b>{recipient_name}</b> (@{username})\n\nСколько звёзд отправить? Выбери или введи число:"
-
-
-def confirm_order(title: str, recipient_name: str, username: str, price: int, balance: int) -> str:
-    text = (
-        f"🧾 <b>Подтверждение заказа</b>\n\n"
-        f"Товар: <b>{title}</b>\n"
-        f"Получатель: <b>{recipient_name}</b> (@{username})\n"
-        f"К оплате: <b>{fmt_uzs(price)}</b>\n"
-        f"Баланс: {fmt_uzs(balance)}\n"
-    )
+def confirm_order(lang: str, title: str, recipient_name: str, username: str, price: int, balance: int) -> str:
+    text = t(lang, "confirm_order", title=title, name=recipient_name, username=username, price=fmt_uzs(price), balance=fmt_uzs(balance))
     if balance < price:
-        text += f"\n⚠️ Не хватает <b>{fmt_uzs(price - balance)}</b>. Пополни баланс и вернись к заказу."
+        text += t(lang, "confirm_missing", missing=fmt_uzs(price - balance))
     return text
 
 
-def order_created(order_id: int, title: str, manual: bool) -> str:
-    eta = "Доставка займёт до 30 минут — менеджер выполнит вручную." if manual else "Обычно доставка занимает 1–3 минуты."
-    return f"✅ Заказ <b>#{order_id}</b> принят: {title}\n{eta}\nЯ напишу, как только всё будет готово."
+def order_created(lang: str, order_id: int, title: str, manual: bool) -> str:
+    return t(lang, "order_created", id=order_id, title=title, eta=t(lang, "eta_manual" if manual else "eta_auto"))
 
 
-def order_delivered(order) -> str:
-    return f"🎉 Заказ <b>#{order.id}</b> выполнен!\n{order.title} → @{order.recipient_username}\n\nСпасибо, что выбираешь {BOT_NAME} 💛"
+def order_title(lang: str, order) -> str:
+    if order.product == "stars":
+        return f"⭐ {order.quantity} Stars"
+    return t(lang, "premium_title", m=order.quantity)
 
 
-def order_refunded(order) -> str:
-    return (
-        f"↩️ Заказ <b>#{order.id}</b> ({order.title}) не удалось выполнить.\n"
-        f"Деньги <b>{fmt_uzs(order.price)}</b> вернулись на баланс. Если вопрос — @{settings.support_username}"
-    )
+def order_delivered(lang: str, order) -> str:
+    return t(lang, "order_delivered", id=order.id, title=order_title(lang, order), username=order.recipient_username)
 
 
-def premium_intro() -> str:
-    return "💎 <b>Telegram Premium</b>\n\nВыбери срок подписки:"
+def order_refunded(lang: str, order) -> str:
+    return t(lang, "order_refunded", id=order.id, title=order_title(lang, order), price=fmt_uzs(order.price), support=settings.support_username)
 
 
-def insufficient(need: int, have: int) -> str:
-    return f"❌ Недостаточно средств. Нужно {fmt_uzs(need)}, на балансе {fmt_uzs(have)}."
+def premium_intro(lang: str) -> str:
+    return t(lang, "premium_intro")
 
 
-def support() -> str:
-    return (
-        f"🆘 <b>Поддержка</b>\n\n"
-        f"По любым вопросам пиши: @{settings.support_username}\n"
-        "Укажи номер заказа, если вопрос по нему."
-    )
+def insufficient(lang: str, need: int, have: int) -> str:
+    return t(lang, "insufficient", need=fmt_uzs(need), have=fmt_uzs(have))
 
 
-def faq() -> str:
-    return (
-        "ℹ️ <b>Как это работает</b>\n\n"
-        "1️⃣ Пополни баланс через Click\n"
-        "2️⃣ Выбери товар и укажи получателя (себя или друга)\n"
-        "3️⃣ Подтверди — и звёзды придут автоматически\n\n"
-        "<b>Почему дешевле, чем в Telegram?</b>\n"
-        "Мы покупаем напрямую через Fragment без комиссий App Store / Google Play.\n\n"
-        "<b>Безопасно ли это?</b>\n"
-        "Да. Мы не просим пароль или код — только @username получателя.\n\n"
-        f"<b>Нужен юзернейм?</b> Настройки Telegram → Имя пользователя."
-    )
+def support(lang: str) -> str:
+    return t(lang, "support", support=settings.support_username)
 
 
-def maintenance() -> str:
-    return "🛠 Бот на техническом обслуживании. Попробуй через несколько минут."
+def faq(lang: str) -> str:
+    return t(lang, "faq")
 
 
-def banned() -> str:
-    return f"🚫 Доступ ограничен. Связь: @{settings.support_username}"
+def maintenance(lang: str) -> str:
+    return t(lang, "maintenance")
+
+
+def banned(lang: str) -> str:
+    return t(lang, "banned", support=settings.support_username)

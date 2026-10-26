@@ -36,7 +36,7 @@ class UserMiddleware(BaseMiddleware):
                 id=tg_user.id,
                 username=tg_user.username,
                 first_name=tg_user.first_name,
-                language=(tg_user.language_code or "ru")[:5],
+                language=(tg_user.language_code or "ru")[:2] if (tg_user.language_code or "ru")[:2] in ("ru", "en", "uz") else "ru",
                 referrer_id=referrer_id,
             )
             session.add(user)
@@ -50,10 +50,10 @@ class UserMiddleware(BaseMiddleware):
         data["is_admin"] = settings.is_admin(user.id)
 
         if user.is_banned and not data["is_admin"]:
-            await _reply(event, texts.banned())
+            await _reply(event, texts.banned(user.language))
             return None
         if not data["is_admin"] and await cfg.get_bool(session, "maintenance"):
-            await _reply(event, texts.maintenance())
+            await _reply(event, texts.maintenance(user.language))
             return None
 
         return await handler(event, data)

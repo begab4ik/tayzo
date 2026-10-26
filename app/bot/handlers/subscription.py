@@ -3,6 +3,7 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.bot import keyboards as kb
+from app.bot.i18n import t
 from app.bot.middlewares.subscription import get_channels, is_subscribed
 from app.db.models import User
 
@@ -14,11 +15,11 @@ async def check_sub(call: CallbackQuery, bot: Bot, session: AsyncSession, user: 
     channels = await get_channels(session)
     missing = await is_subscribed(bot, user.id, channels, force=True)
     if missing:
-        await call.answer("Подписка не найдена. Подпишись и нажми ещё раз.", show_alert=True)
+        await call.answer(t(user.language, "sub_not_found"), show_alert=True)
         return
-    await call.answer("Спасибо за подписку! 💛")
+    await call.answer(t(user.language, "sub_thanks"))
     try:
-        await call.message.edit_text("✅ Подписка подтверждена, доступ открыт.")
+        await call.message.edit_text(t(user.language, "sub_ok"))
     except Exception:  # noqa: BLE001
         pass
-    await call.message.answer("Выбирай, что нужно 👇", reply_markup=kb.main_menu(is_admin))
+    await call.message.answer(t(user.language, "menu_hint"), reply_markup=kb.main_menu(user.language, is_admin))

@@ -14,6 +14,7 @@ from app.core import orders as orders_svc
 from app.core.enums import OrderStatus
 from app.core.money import fmt_uzs
 from app.db.base import get_session
+from app.db.models import User
 from app.providers.registry import is_manual_mode
 
 log = logging.getLogger(__name__)
@@ -49,10 +50,12 @@ async def _tick() -> bool:
     async with get_session() as session:
         order = await session.get(orders_svc.Order, order.id)
         order = await orders_svc.process(session, order)
+        buyer = await session.get(User, order.user_id)
+        lang = buyer.language if buyer else "ru"
         await session.commit()
 
     if order.status == OrderStatus.DELIVERED:
-        await notify_user(order.user_id, texts.order_delivered(order))
+        await notify_user(order.user_id, texts.order_delivered(lang, order))
         log.info("order %s delivered", order.id)
     elif order.status == OrderStatus.MANUAL:
         await notify_admins(
