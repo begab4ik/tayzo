@@ -69,25 +69,40 @@ class TonWallet:
             raise ProviderError(f"TON API недоступен: {type(e).__name__}: {e}") from e
         return Decimal(info.balance) / NANO
 
+    def build_messages(self, messages: list[dict]) -> list:
+        """Собрать TONTransferBuilder'ы из сообщений Fragment (ничего не отправляет)."""
+        self._ensure()
+        from ton_core import Cell
+        from tonutils.contracts import TONTransferBuilder
+
+        out = []
+        for m in messages:
+            body = None
+            if m.get("payload"):
+                body = Cell.one_from_boc(_b64decode(m["payload"]))
+            out.append(TONTransferBuilder(destination=m["address"], amount=int(m["amount"]), body=body))
+        return out
+
     async def send(self, messages: list[dict]) -> str:
         """messages: [{address, amount (нанотоны, str), payload (base64 BOC)}] из ответа Fragment.
         Возвращает hash внешнего сообщения."""
         await self._conn()
-        from ton_core import Cell
-        from tonutils.contracts import TONTransferBuilder
-
-        def build(m: dict) -> TONTransferBuilder:
-            body = Cell.one_from_boc(base64.b64decode(m["payload"])) if m.get("payload") else None
-            return TONTransferBuilder(destination=m["address"], amount=int(m["amount"]), body=body)
-
+        builders = self.build_messages(messages)
         async with self._lock:
-            if len(messages) == 1:
-                ext = await self._wallet.transfer_message(build(messages[0]))
+            if len(builders) == 1:
+                ext = await self._wallet.transfer_message(builders[0])
             else:
-                ext = await self._wallet.batch_transfer_message([build(m) for m in messages])
+                ext = await self._wallet.batch_transfer_message(builders)
             tx_hash = ext.normalized_hash.hex() if hasattr(ext.normalized_hash, "hex") else str(ext.normalized_hash)
             log.info("TON tx sent: %s", tx_hash)
             return tx_hash
+
+
+def _b64decode(s: str) -> bytes:
+    """Fragment отдаёт payload в base64 без '=' и иногда в url-safe варианте — выравниваем и декодируем."""
+    s = s.strip().replace("-", "+").replace("_", "/")
+    s += "=" * (-len(s) % 4)
+    return base64.b64decode(s)
 
 
 ton_wallet = TonWallet()

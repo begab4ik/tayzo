@@ -55,6 +55,10 @@ async def main() -> None:
         msgs = (r.get("transaction") or {}).get("messages") or []
         if msgs:
             print(f"OK: транзакция готова, {len(msgs)} сообщ., сумма {sum(int(m['amount']) for m in msgs)/1e9:.4f} TON -> {msgs[0]['address']}")
+            p = msgs[0].get("payload") or ""
+            print(f"[payload] len={len(p)} head={p[:24]!r} tail={p[-8:]!r}")
+            builders = ton_wallet.build_messages(msgs)
+            print(f"[build] OK: {len(builders)} сообщений собрано, payload декодирован")
             print("(TON НЕ отправлен — это только проверка)")
     except Exception as e:  # noqa: BLE001
         print("ERROR:", type(e).__name__, e)
