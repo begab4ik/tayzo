@@ -52,9 +52,13 @@ class TonWallet:
         }
 
     async def balance(self) -> Decimal:
+        """Баланс в TON. Запрашиваем напрямую у клиента: wallet.refresh() глотает ошибки и отдаёт 0."""
         self._ensure()
-        await self._wallet.refresh()
-        return Decimal(self._wallet.balance) / NANO
+        try:
+            info = await self._wallet.client.get_info(self._wallet.address)
+        except Exception as e:  # noqa: BLE001
+            raise ProviderError(f"TON API недоступен: {type(e).__name__}: {e}") from e
+        return Decimal(info.balance) / NANO
 
     async def send(self, messages: list[dict]) -> str:
         """messages: [{address, amount (нанотоны, str), payload (base64 BOC)}] из ответа Fragment.
