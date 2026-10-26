@@ -22,6 +22,9 @@ DEFAULTS: dict[str, str] = {
     "premium_6_ton": "5.2",
     "premium_12_ton": "9.4",
     "star_price_uzs_override": "0",    # если >0 — фиксированная цена звезды в UZS, игнорирует курс
+    "premium_3_uzs_override": "0",     # если >0 — фиксированная цена Premium в UZS
+    "premium_6_uzs_override": "0",
+    "premium_12_uzs_override": "0",
     "min_stars": "50",
     "max_stars": "100000",
     "min_topup": "5000",
@@ -34,22 +37,45 @@ DEFAULTS: dict[str, str] = {
 }
 
 DESCRIPTIONS: dict[str, str] = {
+    "star_price_uzs_override": "Цена 1 ⭐, сум (0 = авто по курсу)",
     "markup_percent": "Наценка, %",
-    "ton_rate_uzs": "Курс TON → UZS",
-    "star_price_ton": "Себестоимость 1 ⭐ в TON",
-    "premium_3_ton": "Себестоимость Premium 3 мес (TON)",
-    "premium_6_ton": "Себестоимость Premium 6 мес (TON)",
-    "premium_12_ton": "Себестоимость Premium 12 мес (TON)",
-    "star_price_uzs_override": "Фикс. цена 1 ⭐ в UZS (0 = авто)",
+    "ton_rate_uzs": "Курс TON → сум",
+    "star_price_ton": "Себестоимость 1 ⭐, TON",
+    "premium_3_uzs_override": "Premium 3 мес, сум (0 = авто)",
+    "premium_6_uzs_override": "Premium 6 мес, сум (0 = авто)",
+    "premium_12_uzs_override": "Premium 12 мес, сум (0 = авто)",
+    "premium_3_ton": "Себестоимость Premium 3 мес, TON",
+    "premium_6_ton": "Себестоимость Premium 6 мес, TON",
+    "premium_12_ton": "Себестоимость Premium 12 мес, TON",
     "min_stars": "Мин. звёзд в заказе",
     "max_stars": "Макс. звёзд в заказе",
-    "min_topup": "Мин. пополнение, UZS",
-    "max_topup": "Макс. пополнение, UZS",
+    "min_topup": "Мин. пополнение, сум",
+    "max_topup": "Макс. пополнение, сум",
     "referral_percent": "Реферальный бонус, %",
-    "maintenance": "Техработы (1/0)",
-    "low_ton_alert": "Алерт при балансе TON ниже",
-    "stars_enabled": "Продажа Stars (1/0)",
-    "premium_enabled": "Продажа Premium (1/0)",
+    "low_ton_alert": "Алерт, если TON меньше",
+    "maintenance": "Техработы",
+    "stars_enabled": "Продажа Stars",
+    "premium_enabled": "Продажа Premium",
+}
+
+# Разделы меню настроек в админке: (код, заголовок, ключи)
+SECTIONS: list[tuple[str, str, list[str]]] = [
+    ("prices", "💰 Цены", ["star_price_uzs_override", "markup_percent", "premium_3_uzs_override", "premium_6_uzs_override", "premium_12_uzs_override"]),
+    ("cost", "📉 Курс и себестоимость", ["ton_rate_uzs", "star_price_ton", "premium_3_ton", "premium_6_ton", "premium_12_ton", "low_ton_alert"]),
+    ("limits", "📏 Лимиты", ["min_stars", "max_stars", "min_topup", "max_topup"]),
+    ("refs", "👥 Рефералы", ["referral_percent"]),
+    ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "maintenance"]),
+]
+BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled"}
+
+# Подсказки при вводе значения
+HINTS: dict[str, str] = {
+    "star_price_uzs_override": "Введи цену одной звезды в сумах, например <code>450</code>.\n<code>0</code> — считать автоматически: себестоимость × курс × наценка.",
+    "markup_percent": "Процент сверх себестоимости, например <code>15</code>. Применяется, когда цена считается автоматически.",
+    "ton_rate_uzs": "Курс 1 TON в сумах. Обновляется сам каждые 10 минут — ручное значение перезапишется.",
+    "star_price_ton": "Сколько TON стоит 1 звезда на Fragment. Обновляется сам раз в час.",
+    "min_topup": "Минимальная сумма пополнения через Click, сум.",
+    "referral_percent": "Сколько % от каждого пополнения реферала начислять пригласившему.",
 }
 
 

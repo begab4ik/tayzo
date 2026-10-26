@@ -49,7 +49,11 @@ async def quote_premium(session: AsyncSession, months: int) -> Quote:
     markup = await cfg.get_dec(session, "markup_percent")
     cost_ton = await cfg.get_dec(session, f"premium_{months}_ton")
     cost_uzs = int(cost_ton * rate)
-    price = round_up_100(Decimal(cost_uzs) * (1 + markup / 100))
+    override = await cfg.get_dec(session, f"premium_{months}_uzs_override")
+    if override > 0:
+        price = round_up_100(override)
+    else:
+        price = round_up_100(Decimal(cost_uzs) * (1 + markup / 100))
     return Quote(ProductType.PREMIUM, months, price, cost_ton, cost_uzs, rate)
 
 

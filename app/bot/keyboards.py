@@ -60,7 +60,7 @@ def topup_amounts_kb() -> InlineKeyboardMarkup:
     for a in TOPUP_PRESETS:
         b.button(text=fmt_uzs(a), callback_data=f"topup:{a}")
     b.button(text="✏️ Своя сумма", callback_data="topup:custom")
-    b.button(text="◀️ Назад", callback_data="menu")
+    b.button(text="◀️ Назад", callback_data="balance")
     b.adjust(2, 2, 2, 1, 1)
     return b.as_markup()
 
@@ -132,13 +132,14 @@ def admin_menu_kb() -> InlineKeyboardMarkup:
     b = InlineKeyboardBuilder()
     b.button(text="📊 Статистика", callback_data="adm:stats:today")
     b.button(text="📦 Очередь заказов", callback_data="adm:queue")
+    b.button(text="💰 Цены и наценка", callback_data="adm:sec:prices")
+    b.button(text="⚙️ Все настройки", callback_data="adm:settings")
     b.button(text="👥 Пользователь", callback_data="adm:user")
     b.button(text="🎟 Промокоды", callback_data="adm:promo")
-    b.button(text="⚙️ Настройки", callback_data="adm:settings")
     b.button(text="📢 Каналы", callback_data="adm:channels")
     b.button(text="📣 Рассылка", callback_data="adm:broadcast")
     b.button(text="💎 TON кошелёк", callback_data="adm:ton")
-    b.adjust(2)
+    b.adjust(2, 2, 2, 2, 1)
     return b.as_markup()
 
 
@@ -170,17 +171,6 @@ def user_admin_kb(user_id: int, banned: bool) -> InlineKeyboardMarkup:
     b.button(text="✅ Разбанить" if banned else "🚫 Забанить", callback_data=f"adm:uban:{user_id}")
     b.button(text="◀️ Админка", callback_data="adm:menu")
     b.adjust(2, 1, 1)
-    return b.as_markup()
-
-
-def settings_kb(data: dict[str, str]) -> InlineKeyboardMarkup:
-    from app.core.settings_store import DESCRIPTIONS
-
-    b = InlineKeyboardBuilder()
-    for key, desc in DESCRIPTIONS.items():
-        b.button(text=f"{desc}: {data.get(key, '')}", callback_data=f"adm:set:{key}")
-    b.button(text="◀️ Админка", callback_data="adm:menu")
-    b.adjust(1)
     return b.as_markup()
 
 

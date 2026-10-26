@@ -31,6 +31,15 @@ async def balance(message: Message, user: User):
     await message.answer(texts.menu_balance(user.balance), reply_markup=kb.balance_kb())
 
 
+@router.callback_query(F.data == "balance")
+async def balance_cb(call: CallbackQuery, session: AsyncSession, user: User, state: FSMContext):
+    """«Назад» на экран баланса — редактируем на месте."""
+    await state.clear()
+    await session.refresh(user)
+    await call.answer()
+    await call.message.edit_text(texts.menu_balance(user.balance), reply_markup=kb.balance_kb())
+
+
 @router.callback_query(F.data == "ledger")
 async def ledger(call: CallbackQuery, session: AsyncSession, user: User):
     rows = await wallet.history(session, user.id, limit=15)
@@ -42,7 +51,7 @@ async def ledger(call: CallbackQuery, session: AsyncSession, user: User):
         sign = "+" if r.amount > 0 else "−"
         lines.append(f"{LEDGER_ICONS.get(r.type, '•')} {sign}{fmt_uzs(abs(r.amount))} — {r.created_at:%d.%m %H:%M}")
     await call.answer()
-    await call.message.edit_text("\n".join(lines), reply_markup=kb.back_kb())
+    await call.message.edit_text("\n".join(lines), reply_markup=kb.back_kb("balance"))
 
 
 @router.callback_query(F.data == "topup")

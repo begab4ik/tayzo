@@ -18,7 +18,7 @@ async def check_sub(call: CallbackQuery, bot: Bot, session: AsyncSession, user: 
         return
     await call.answer("Спасибо за подписку! 💛")
     try:
-        await call.message.delete()
+        await call.message.edit_text("✅ Подписка подтверждена, доступ открыт.")
     except Exception:  # noqa: BLE001
         pass
-    await call.message.answer("✅ Доступ открыт. Выбирай 👇", reply_markup=kb.main_menu(is_admin))
+    await call.message.answer("Выбирай, что нужно 👇", reply_markup=kb.main_menu(is_admin))

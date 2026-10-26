@@ -9,7 +9,7 @@ from app.redis_client import redis
 class ThrottlingMiddleware(BaseMiddleware):
     """Не больше одного действия в `interval` сек от юзера — защита от спама кнопками."""
 
-    def __init__(self, interval: float = 0.7):
+    def __init__(self, interval: float = 0.4):
         self.interval = interval
 
     async def __call__(

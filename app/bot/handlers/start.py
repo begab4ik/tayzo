@@ -25,13 +25,13 @@ async def cmd_menu(message: Message, is_admin: bool, state: FSMContext):
 
 @router.callback_query(F.data == "menu")
 async def cb_menu(call: CallbackQuery, is_admin: bool, state: FSMContext):
+    """«Отмена» / «Назад» из любого inline-экрана: закрываем экран на месте, меню снизу уже есть."""
     await state.clear()
     await call.answer()
     try:
-        await call.message.delete()
-    except Exception:  # noqa: BLE001
-        pass
-    await call.message.answer("Главное меню 👇", reply_markup=kb.main_menu(is_admin))
+        await call.message.edit_text("↩️ Отменено. Выбери действие в меню ниже 👇")
+    except Exception:  # noqa: BLE001 — сообщение без текста (фото) или уже изменено
+        await call.message.answer("Выбери действие в меню ниже 👇", reply_markup=kb.main_menu(is_admin))
 
 
 @router.message(F.text == kb.BTN_FAQ)
