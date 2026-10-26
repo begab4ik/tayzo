@@ -35,8 +35,14 @@ DEVICE = {
     "maxProtocolVersion": 2,
     "features": ["SendTransaction", {"name": "SendTransaction", "maxMessages": 4}],
 }
+# Заголовки «как браузер» — для загрузки HTML (иначе Fragment отдаёт урезанную страницу без api hash)
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    "Accept-Language": "en-US,en;q=0.9,ru;q=0.8",
+}
+# Заголовки AJAX — только для вызовов /api
+API_HEADERS = {
     "X-Requested-With": "XMLHttpRequest",
     "Origin": BASE,
     "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -46,7 +52,7 @@ HEADERS = {
 class FragmentClient:
     def __init__(self) -> None:
         self._hash = settings.fragment_api_hash
-        self._client = httpx.AsyncClient(base_url=BASE, headers=HEADERS, cookies=settings.fragment_cookies, timeout=30)
+        self._client = httpx.AsyncClient(base_url=BASE, headers=HEADERS, cookies=settings.fragment_cookies, timeout=30, follow_redirects=True)
 
     async def _ensure_hash(self) -> str:
         if self._hash:
@@ -54,7 +60,7 @@ class FragmentClient:
         last = ""
         for path in ("/stars/buy", "/", "/premium/gift"):
             try:
-                r = await self._client.get(path, headers={"Referer": BASE, "Accept": "text/html"}, follow_redirects=True)
+                r = await self._client.get(path, headers={"Referer": BASE})
             except httpx.HTTPError as e:
                 last = str(e)
                 continue
@@ -69,7 +75,7 @@ class FragmentClient:
         api_hash = await self._ensure_hash()
         payload = {"method": method, **{k: v for k, v in data.items() if v is not None}}
         try:
-            r = await self._client.post(f"/api?hash={api_hash}", data=payload, headers={"Referer": BASE + referer})
+            r = await self._client.post(f"/api?hash={api_hash}", data=payload, headers={**API_HEADERS, "Referer": BASE + referer})
         except httpx.HTTPError as e:
             raise ProviderError(f"Fragment недоступен: {e}") from e
         if r.status_code in (401, 403):
