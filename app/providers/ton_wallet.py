@@ -34,6 +34,15 @@ class TonWallet:
         wallet, public_key, _priv, _mn = cls.from_mnemonic(client, settings.ton_mnemonic.split())
         self._wallet = wallet
         self._public_key = public_key
+        self._connected = False
+
+    async def _conn(self):
+        """tonutils 2.x: клиент нужно открыть перед первым запросом (иначе тихие нули/ошибки)."""
+        self._ensure()
+        if not self._connected:
+            await self._wallet.client.connect()
+            self._connected = True
+        return self._wallet.client
 
     @property
     def address(self) -> str:
@@ -53,9 +62,9 @@ class TonWallet:
 
     async def balance(self) -> Decimal:
         """Баланс в TON. Запрашиваем напрямую у клиента: wallet.refresh() глотает ошибки и отдаёт 0."""
-        self._ensure()
+        client = await self._conn()
         try:
-            info = await self._wallet.client.get_info(self._wallet.address)
+            info = await client.get_info(self._wallet.address)
         except Exception as e:  # noqa: BLE001
             raise ProviderError(f"TON API недоступен: {type(e).__name__}: {e}") from e
         return Decimal(info.balance) / NANO
@@ -63,7 +72,7 @@ class TonWallet:
     async def send(self, messages: list[dict]) -> str:
         """messages: [{address, amount (нанотоны, str), payload (base64 BOC)}] из ответа Fragment.
         Возвращает hash внешнего сообщения."""
-        self._ensure()
+        await self._conn()
         from ton_core import Cell
         from tonutils.contracts import TONTransferBuilder
 

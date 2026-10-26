@@ -22,6 +22,7 @@ async def wallets() -> None:
     from tonutils.contracts import WalletV4R2, WalletV5R1
 
     client = ToncenterClient(NetworkGlobalID.MAINNET, api_key=settings.toncenter_api_key or None, timeout=20)
+    await client.connect()
     for name, cls in (("v4r2", WalletV4R2), ("v5r1", WalletV5R1)):
         try:
             w, *_ = cls.from_mnemonic(client, settings.ton_mnemonic.split())
