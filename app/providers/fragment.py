@@ -28,6 +28,7 @@ from app.providers.ton_wallet import ton_wallet
 log = logging.getLogger(__name__)
 
 BASE = "https://fragment.com"
+PAYMENT_METHOD = "ton"  # поле формы fragment.com: оплата с TON-кошелька (TonConnect)
 DEVICE = {
     "platform": "web",
     "appName": "Tonkeeper",
@@ -116,7 +117,7 @@ class FragmentStarsProvider(Provider):
         return Recipient(username=username, name=_strip_html(found.get("name") or username), token=found["recipient"])
 
     async def fulfill(self, recipient: Recipient, quantity: int) -> FulfillResult:
-        init = await self.client.call("initBuyStarsRequest", recipient=recipient.token, quantity=quantity)
+        init = await self.client.call("initBuyStarsRequest", recipient=recipient.token, quantity=quantity, payment_method=PAYMENT_METHOD)
         req_id = init.get("req_id")
         if not req_id:
             raise ProviderError(f"Fragment: нет req_id в ответе {init}")
@@ -166,7 +167,7 @@ class FragmentPremiumProvider(Provider):
         return Recipient(username=username, name=_strip_html(found.get("name") or username), token=found["recipient"])
 
     async def fulfill(self, recipient: Recipient, quantity: int) -> FulfillResult:
-        init = await self.client.call("initGiftPremiumRequest", referer="/premium/gift", recipient=recipient.token, months=quantity)
+        init = await self.client.call("initGiftPremiumRequest", referer="/premium/gift", recipient=recipient.token, months=quantity, payment_method=PAYMENT_METHOD)
         req_id = init.get("req_id")
         if not req_id:
             raise ProviderError(f"Fragment: нет req_id в ответе {init}")
@@ -196,7 +197,7 @@ async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100) -> 
         token = (found.get("found") or {}).get("recipient")
         if not token:
             return None
-        init = await client.call("initBuyStarsRequest", recipient=token, quantity=probe_qty)
+        init = await client.call("initBuyStarsRequest", recipient=token, quantity=probe_qty, payment_method=PAYMENT_METHOD)
         amount = init.get("amount")
         return Decimal(str(amount)) / probe_qty if amount else None
     except ProviderError as e:

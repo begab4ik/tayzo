@@ -26,13 +26,23 @@ async def main() -> None:
     try:
         h = await c._ensure_hash()
         print("[hash]", h)
+        # что за поле payment_method в форме и залогинены ли мы
+        page = await c._client.get("/stars/buy", headers={"Referer": "https://fragment.com/"})
+        import re as _re
+        html = page.text
+        print("[page]", page.status_code, len(html), "байт; login-кнопка:", 'tm-header-login' in html, "; logout:", "logout" in html.lower())
+        for m in _re.finditer(r'<[^>]*name="payment_method"[^>]*>', html):
+            print("[payment_method]", m.group(0)[:200])
+        for m in _re.finditer(r'(?:data-method|data-payment-method|payment_method)=\"([^\"]+)\"', html):
+            print("[pm-value]", m.group(1))
+        pm = sys.argv[3] if len(sys.argv) > 3 else "ton"
         r = await c.call("searchStarsRecipient", query=username, quantity=qty)
         show("search", r)
         token = (r.get("found") or {}).get("recipient")
         if not token:
             print("STOP: получатель не найден")
             return
-        r = await c.call("initBuyStarsRequest", recipient=token, quantity=qty)
+        r = await c.call("initBuyStarsRequest", recipient=token, quantity=qty, payment_method=pm)
         show("init", r)
         req_id = r.get("req_id")
         if not req_id:
