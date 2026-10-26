@@ -28,6 +28,14 @@ async def run_forever(stop: asyncio.Event) -> None:
         log.warning("Fulfillment worker: MANUAL mode — заказы выполняются админом вручную")
         return
     log.info("Fulfillment worker started")
+    try:
+        async with get_session() as session:
+            n = await orders_svc.recover_stuck(session)
+            await session.commit()
+        if n:
+            await notify_admins(f"⚠️ После перезапуска {n} заказ(ов) были в статусе «в работе» — перевёл в ручную очередь, проверь их.")
+    except Exception:  # noqa: BLE001
+        log.exception("recover_stuck failed")
     while not stop.is_set():
         try:
             processed = await _tick()
@@ -52,7 +60,17 @@ async def _tick() -> bool:
         order = await orders_svc.process(session, order)
         buyer = await session.get(User, order.user_id)
         lang = buyer.language if buyer else "ru"
-        await session.commit()
+        try:
+            await session.commit()
+        except Exception as e:  # noqa: BLE001
+            # Fragment уже выполнил заказ, а статус не сохранился — это критично: сообщаем админу сразу
+            log.exception("order %s: commit failed after status=%s", order.id, order.status)
+            await notify_admins(
+                f"🚨 Заказ <b>#{order.id}</b>: провайдер отработал (статус {order.status}), "
+                f"но сохранить в БД не удалось: <code>{str(e)[:200]}</code>\nПроверь заказ вручную.",
+                reply_markup=kb.order_admin_kb(order.id),
+            )
+            return True
 
     if order.status == OrderStatus.DELIVERED:
         await notify_user(order.user_id, texts.order_delivered(lang, order))

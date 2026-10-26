@@ -38,3 +38,5 @@ async def init_db() -> None:
         from sqlalchemy import text
 
         await conn.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS lang_chosen BOOLEAN NOT NULL DEFAULT FALSE"))
+        await conn.execute(text("ALTER TABLE orders ALTER COLUMN fragment_req_id TYPE VARCHAR(128)"))
+        await conn.execute(text("ALTER TABLE orders ALTER COLUMN tx_hash TYPE VARCHAR(256)"))

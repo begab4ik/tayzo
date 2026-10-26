@@ -97,10 +97,24 @@ async def process(session: AsyncSession, order: Order) -> Order:
 
     order.status = OrderStatus.DELIVERED
     order.delivered_at = datetime.now(timezone.utc)
-    order.fragment_req_id = result.external_id
+    # external_id = "<req_id>:<tx_hash>" — раскладываем по своим колонкам
+    req_id, _, tx_hash = (result.external_id or "").partition(":")
+    order.fragment_req_id = req_id[:128] or None
+    order.tx_hash = tx_hash[:256] or None
     if result.cost_ton is not None:
         order.cost_ton = result.cost_ton
     return order
+
+
+async def recover_stuck(session: AsyncSession) -> int:
+    """При старте: заказы, зависшие в PROCESSING (бот упал посреди выполнения), отдаём админу.
+    Не ретраим автоматически — TON мог уже уйти, повторная отправка = двойная оплата."""
+    q = select(Order).where(Order.status == OrderStatus.PROCESSING)
+    stuck = list((await session.execute(q)).scalars())
+    for o in stuck:
+        o.status = OrderStatus.MANUAL
+        o.last_error = "бот перезапустился во время выполнения — проверь на Fragment, дошёл ли заказ, и нажми «Выполнено» или «Повторить»"
+    return len(stuck)
 
 
 async def refund(session: AsyncSession, order: Order, comment: str | None = None) -> Order:

@@ -98,8 +98,8 @@ class Order(Base):
     status: Mapped[OrderStatus] = mapped_column(String(16), default=OrderStatus.PENDING, index=True)
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     last_error: Mapped[str | None] = mapped_column(Text)
-    fragment_req_id: Mapped[str | None] = mapped_column(String(64))
-    tx_hash: Mapped[str | None] = mapped_column(String(128))
+    fragment_req_id: Mapped[str | None] = mapped_column(String(128))
+    tx_hash: Mapped[str | None] = mapped_column(String(256))
     created_at: Mapped[datetime] = now_col(index=True)
     delivered_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
