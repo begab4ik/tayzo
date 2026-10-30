@@ -1,5 +1,7 @@
+import re
+
 from aiogram import F, Router
-from aiogram.filters import Command, CommandStart
+from aiogram.filters import Command, CommandObject, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,13 +14,43 @@ from app.db.models import User
 router = Router(name="start")
 
 
+DEEP_RE = re.compile(r"^(stars|premium|site)(?:_(\w+?))?(?:_(ru|uz|en))?$")
+
+
+def parse_deep_link(arg: str | None) -> tuple[str | None, str | None, str | None]:
+    """Параметр start с сайта: stars_250_ru / premium_6_uz / site_hero_en → (раздел, значение, язык)."""
+    m = DEEP_RE.match((arg or "").strip().lower())
+    if not m:
+        return None, None, None
+    section, value, lang = m.groups()
+    if section == "stars" and value and not value.isdigit():
+        value = None
+    if section == "premium" and value and not value.isdigit():
+        value = None
+    return section, value, lang
+
+
 @router.message(CommandStart())
-async def cmd_start(message: Message, user: User, is_admin: bool, state: FSMContext):
+async def cmd_start(message: Message, command: CommandObject, session: AsyncSession, user: User, is_admin: bool, state: FSMContext):
     await state.clear()
+    section, value, lang = parse_deep_link(command.args)
+    if lang and not user.lang_chosen:
+        # пришёл с сайта — язык уже выбран там, не спрашиваем второй раз
+        user.language = lang
+        user.lang_chosen = True
+        await session.commit()
     if not user.lang_chosen:
         await message.answer(t(user.language, "choose_lang"), reply_markup=kb.lang_kb())
         return
     await message.answer(texts.welcome(user.language, user.first_name), reply_markup=kb.main_menu(user.language, is_admin))
+    if section == "stars":
+        from app.bot.handlers.stars import stars_start
+
+        await stars_start(message, session, user, state, preset_qty=int(value) if value else None)
+    elif section == "premium":
+        from app.bot.handlers.premium import premium_start
+
+        await premium_start(message, session, user, state)
 
 
 @router.message(F.text.in_(kb.L("btn_lang")))

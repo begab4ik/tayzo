@@ -36,7 +36,7 @@ async def notify_new_order(order, user: User) -> None:
 
 
 @router.message(F.text.in_(kb.L("btn_stars")))
-async def stars_start(message: Message, session: AsyncSession, user: User, state: FSMContext):
+async def stars_start(message: Message, session: AsyncSession, user: User, state: FSMContext, preset_qty: int | None = None):
     await state.clear()
     lang = user.language
     if not await cfg.get_bool(session, "stars_enabled"):
@@ -45,6 +45,8 @@ async def stars_start(message: Message, session: AsyncSession, user: User, state
     price_each = await pricing.star_price_each(session)
     mn, mx = await cfg.get_int(session, "min_stars"), await cfg.get_int(session, "max_stars")
     await state.set_state(BuyStars.recipient)
+    if preset_qty and mn <= preset_qty <= mx:
+        await state.update_data(preset_qty=preset_qty)  # количество уже выбрано на сайте
     await message.answer(texts.stars_intro(lang, price_each, mn, mx), reply_markup=kb.recipient_kb(lang, bool(user.username)))
 
 
@@ -83,6 +85,10 @@ async def _resolve_and_ask_qty(message: Message, session: AsyncSession, user: Us
         await notify_admins(f"⚠️ Fragment resolve error: {e.message}")
         return
     await state.update_data(rcp_username=rcp.username, rcp_name=rcp.name, rcp_token=rcp.token)
+    preset = (await state.get_data()).get("preset_qty")
+    if preset:
+        await _show_confirm(message, session, user, state, int(preset), edit=edit)
+        return
     await state.set_state(BuyStars.quantity)
     price_each = await pricing.star_price_each(session)
     await send(texts.ask_stars_qty(lang, rcp.name, rcp.username), reply_markup=kb.stars_qty_kb(lang, price_each))
