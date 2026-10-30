@@ -18,9 +18,10 @@ DEFAULTS: dict[str, str] = {
     "markup_percent": "15",            # наценка над себестоимостью
     "ton_rate_uzs": "70000",           # курс TON → UZS (обновляется воркером)
     "star_price_ton": "0.0055",        # себестоимость 1 звезды в TON (обновляется воркером)
-    "premium_3_ton": "3.9",            # себестоимость Premium в TON
-    "premium_6_ton": "5.2",
-    "premium_12_ton": "9.4",
+    "premium_3_ton": "10.21",          # себестоимость Premium в TON (обновляется воркером по Fragment)
+    "premium_6_ton": "13.61",
+    "premium_12_ton": "24.60",
+    "premium_probe_username": "b3gabb",  # username БЕЗ Premium, по которому воркер узнаёт цену на Fragment
     "star_price_uzs_override": "0",    # если >0 — фиксированная цена звезды в UZS, игнорирует курс
     "premium_3_uzs_override": "0",     # если >0 — фиксированная цена Premium в UZS
     "premium_6_uzs_override": "0",
@@ -37,6 +38,7 @@ DEFAULTS: dict[str, str] = {
 }
 
 DESCRIPTIONS: dict[str, str] = {
+    "premium_probe_username": "Username для проверки цены Premium",
     "star_price_uzs_override": "Цена 1 ⭐, сум (0 = авто по курсу)",
     "markup_percent": "Наценка, %",
     "ton_rate_uzs": "Курс TON → сум",
@@ -61,7 +63,7 @@ DESCRIPTIONS: dict[str, str] = {
 # Разделы меню настроек в админке: (код, заголовок, ключи)
 SECTIONS: list[tuple[str, str, list[str]]] = [
     ("prices", "💰 Цены", ["star_price_uzs_override", "markup_percent", "premium_3_uzs_override", "premium_6_uzs_override", "premium_12_uzs_override"]),
-    ("cost", "📉 Курс и себестоимость", ["ton_rate_uzs", "star_price_ton", "premium_3_ton", "premium_6_ton", "premium_12_ton", "low_ton_alert"]),
+    ("cost", "📉 Курс и себестоимость", ["ton_rate_uzs", "star_price_ton", "premium_3_ton", "premium_6_ton", "premium_12_ton", "premium_probe_username", "low_ton_alert"]),
     ("limits", "📏 Лимиты", ["min_stars", "max_stars", "min_topup", "max_topup"]),
     ("refs", "👥 Рефералы", ["referral_percent"]),
     ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "maintenance"]),
@@ -70,6 +72,7 @@ BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled"}
 
 # Подсказки при вводе значения
 HINTS: dict[str, str] = {
+    "premium_probe_username": "Любой username <b>без</b> Premium (например, запасной аккаунт). По нему бот раз в час узнаёт у Fragment себестоимость Premium. Пусто — не обновлять.",
     "star_price_uzs_override": "Введи цену одной звезды в сумах, например <code>450</code>.\n<code>0</code> — считать автоматически: себестоимость × курс × наценка.",
     "markup_percent": "Процент сверх себестоимости, например <code>15</code>. Применяется, когда цена считается автоматически.",
     "ton_rate_uzs": "Курс 1 TON в сумах. Обновляется сам каждые 10 минут — ручное значение перезапишется.",

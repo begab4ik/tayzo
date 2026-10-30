@@ -205,6 +205,26 @@ async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100) -> 
         return None
 
 
+async def fetch_premium_prices_ton(client: FragmentClient, probe_username: str) -> dict[int, Decimal]:
+    """Актуальная себестоимость Premium (3/6/12 мес) в TON: создаём заявки на probe_username, ничего не платим.
+    probe_username — любой аккаунт без Premium (Fragment не даёт подарить Premium тому, у кого он уже есть)."""
+    out: dict[int, Decimal] = {}
+    if not probe_username:
+        return out
+    for months in (3, 6, 12):
+        try:
+            found = await client.call("searchPremiumGiftRecipient", referer="/premium/gift", query=probe_username.lstrip("@"), months=months)
+            token = (found.get("found") or {}).get("recipient")
+            if not token:
+                continue
+            init = await client.call("initGiftPremiumRequest", referer="/premium/gift", recipient=token, months=months, payment_method=PAYMENT_METHOD)
+            if init.get("amount"):
+                out[months] = Decimal(str(init["amount"]))
+        except ProviderError as e:
+            log.warning("fetch_premium_prices_ton(%s) failed: %s", months, e)
+    return out
+
+
 def _user_msg(err: str) -> str:
     """Текст ошибки Fragment -> понятное сообщение пользователю."""
     e = err.replace("Fragment: ", "")

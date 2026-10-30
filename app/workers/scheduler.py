@@ -48,6 +48,31 @@ async def update_star_cost() -> None:
         log.info("star cost updated: %s TON", price)
 
 
+async def update_premium_cost() -> None:
+    """Себестоимость Premium с Fragment + проверка, что фиксированные цены не ниже себестоимости."""
+    if is_manual_mode():
+        return
+    from app.providers.fragment import fetch_premium_prices_ton
+
+    async with get_session() as session:
+        probe = await cfg.get(session, "premium_probe_username")
+    prices = await fetch_premium_prices_ton(fragment_client, probe)
+    if not prices:
+        return
+    warn = []
+    async with get_session() as session:
+        rate = await cfg.get_dec(session, "ton_rate_uzs")
+        for m, ton in prices.items():
+            await cfg.set_value(session, f"premium_{m}_ton", str(ton))
+            override = await cfg.get_int(session, f"premium_{m}_uzs_override")
+            cost_uzs = int(ton * rate)
+            if override and override < cost_uzs * Decimal("1.05"):
+                warn.append(f"Premium {m} мес: цена {override:,} сум, себестоимость ≈{cost_uzs:,} сум".replace(",", " "))
+    log.info("premium cost updated: %s", prices)
+    if warn:
+        await notify_admins("⚠️ Фиксированная цена Premium почти или ниже себестоимости (курс TON вырос?):\n" + "\n".join(warn) + "\nПоправь в «💰 Цены и наценка».")
+
+
 async def check_ton_balance() -> None:
     if is_manual_mode():
         return
@@ -80,6 +105,7 @@ def build_scheduler() -> AsyncIOScheduler:
     sch = AsyncIOScheduler(timezone=settings.timezone)
     sch.add_job(update_ton_rate, IntervalTrigger(minutes=10), next_run_time=None, id="ton_rate")
     sch.add_job(update_star_cost, IntervalTrigger(hours=1), id="star_cost")
+    sch.add_job(update_premium_cost, IntervalTrigger(hours=1), id="premium_cost")
     sch.add_job(check_ton_balance, IntervalTrigger(minutes=30), id="ton_balance")
     sch.add_job(daily_report, CronTrigger(hour=9, minute=0), id="daily_report")
     return sch
