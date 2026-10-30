@@ -1,5 +1,5 @@
+# Бот: вебхуки и healthcheck
 {$DOMAIN} {
-    # Только вебхуки и healthcheck наружу; всё остальное — 404
     handle /webhooks/* {
         reverse_proxy bot:8080
     }
@@ -11,6 +11,32 @@
     }
     log {
         output file /data/access.log {
+            roll_size 10mb
+            roll_keep 3
+        }
+    }
+}
+
+# Сайт tayzo.uz (статика из ./site)
+{$SITE_DOMAIN:tayzo.uz}, www.{$SITE_DOMAIN:tayzo.uz} {
+    @www host www.{$SITE_DOMAIN:tayzo.uz}
+    redir @www https://{$SITE_DOMAIN:tayzo.uz}{uri} permanent
+
+    root * /srv/site
+    encode gzip zstd
+    file_server
+    header {
+        Cache-Control "public, max-age=3600"
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+    header /brand/* Cache-Control "public, max-age=604800"
+    # если бот ещё и под сайтом — вебхуки Click тоже принимаем
+    handle /webhooks/* {
+        reverse_proxy bot:8080
+    }
+    log {
+        output file /data/site-access.log {
             roll_size 10mb
             roll_keep 3
         }
