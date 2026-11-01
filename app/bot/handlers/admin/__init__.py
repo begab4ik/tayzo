@@ -10,11 +10,11 @@ class IsAdmin(BaseFilter):
         return bool(event_from_user and settings.is_admin(event_from_user.id))
 
 
-from app.bot.handlers.admin import broadcast, channels, gifts_acc, orders, panel, promo, settings_h, stats, users  # noqa: E402
+from app.bot.handlers.admin import broadcast, channels, gifts_acc, orders, panel, promo, settings_h, stats, usernames, users  # noqa: E402
 
 router = Router(name="admin")
 router.message.filter(IsAdmin())
 router.callback_query.filter(IsAdmin())
 router.include_routers(
-    panel.router, stats.router, orders.router, users.router, settings_h.router, promo.router, channels.router, broadcast.router, gifts_acc.router
+    panel.router, stats.router, orders.router, users.router, settings_h.router, promo.router, channels.router, broadcast.router, gifts_acc.router, usernames.router
 )

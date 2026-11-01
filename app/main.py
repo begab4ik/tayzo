@@ -70,6 +70,7 @@ async def set_commands() -> None:
                     BotCommand(command="stats", description="Статистика"),
                     BotCommand(command="give", description="Начислить: /give @user 50000"),
                     BotCommand(command="take", description="Списать: /take @user 50000"),
+                    BotCommand(command="usernames", description="Свободные юзернеймы: /usernames [слова|+uz]"),
                     BotCommand(command="lang", description="Язык"),
                     BotCommand(command="profile", description="Профиль"),
                     BotCommand(command="orders", description="Мои заказы"),
