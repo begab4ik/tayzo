@@ -30,9 +30,21 @@ a{color:var(--gold2);text-decoration:none}
 .hidden{display:none!important}
 
 #app{min-height:100%;display:flex;flex-direction:column}
-.screen{display:none;flex:1;padding:16px 16px calc(96px + var(--safe-b));animation:in .18s ease}
-.screen.active{display:block}
-@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.screen{display:none;flex:1;padding:16px 16px calc(170px + var(--safe-b))}
+.screen.active{display:block;animation:in .22s cubic-bezier(.2,.7,.2,1)}
+@keyframes in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+.screen.active.backward{animation-name:inb}
+@keyframes inb{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+/* панель действия над таббаром — своя, чтобы экран не прыгал при появлении нативной кнопки */
+.cta{position:fixed;left:12px;right:12px;bottom:calc(76px + var(--safe-b));z-index:11;transform:translateY(130%);opacity:0;transition:transform .28s cubic-bezier(.2,.7,.2,1),opacity .2s;pointer-events:none}
+.cta.show{transform:none;opacity:1;pointer-events:auto}
+.cta button{width:100%;padding:17px 18px;border-radius:16px;font-weight:800;font-size:16px;background:var(--gold);color:#141518;box-shadow:0 14px 34px -12px rgba(245,179,1,.7);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .12s,background .2s,color .2s}
+.cta button:active{transform:scale(.98)}
+.cta button.alt{background:#fff;color:#141518;box-shadow:0 14px 34px -14px rgba(255,255,255,.5)}
+.cta button[disabled]{background:var(--bg3);color:var(--ink3);box-shadow:none}
+.cta .sp{width:18px;height:18px;border:2.5px solid rgba(20,21,24,.3);border-top-color:#141518;border-radius:50%;animation:rot .7s linear infinite;display:none}
+.cta.busy .sp{display:block}
+.cta.busy button{pointer-events:none;opacity:.85}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 /* top bar */
@@ -293,6 +305,8 @@ h1.title{font-size:24px;margin:4px 0 14px}
 
 </div>
 
+<div class="cta" id="cta"><button id="cta-btn"><span class="sp"></span><span id="cta-text"></span></button></div>
+
 <nav class="tabbar" id="tabbar">
   <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span data-t="tab_home">Главная</span></button>
   <button data-go="stars"><svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span data-t="stars">Звёзды</span></button>
@@ -348,11 +362,13 @@ function applyLang(){document.documentElement.lang=L;$$('[data-t]').forEach(e=>{
 const tg=window.Telegram&&window.Telegram.WebApp;
 if(tg){tg.ready();tg.expand();try{tg.setHeaderColor('#141518');tg.setBackgroundColor('#141518');tg.enableClosingConfirmation&&0;}catch(e){}}
 const hap=(k='light')=>{try{k==='ok'?tg.HapticFeedback.notificationOccurred('success'):k==='bad'?tg.HapticFeedback.notificationOccurred('error'):tg.HapticFeedback.impactOccurred(k)}catch(e){}};
-const MB=tg&&tg.MainButton, BB=tg&&tg.BackButton;
-let mbHandler=null;
-function mainBtn(text,fn,opts={}){if(!MB)return;if(mbHandler)MB.offClick(mbHandler);mbHandler=fn;MB.setParams({text,color:opts.color||'#f5b301',text_color:'#141518',is_active:!opts.disabled,is_visible:true});MB.onClick(fn);}
-function hideMain(){if(MB){MB.hide();if(mbHandler){MB.offClick(mbHandler);mbHandler=null}}}
-function mbLoading(on){if(!MB)return;on?MB.showProgress():MB.hideProgress();}
+const BB=tg&&tg.BackButton;
+if(tg){try{tg.MainButton.hide();tg.disableVerticalSwipes&&tg.disableVerticalSwipes();}catch(e){}}
+let ctaFn=null;
+function mainBtn(text,fn,opts={}){const c=$('#cta'),b=$('#cta-btn');ctaFn=fn;$('#cta-text').textContent=text;b.disabled=!!opts.disabled;b.classList.toggle('alt',opts.color==='#ffffff');c.classList.add('show');}
+function hideMain(){$('#cta').classList.remove('show');ctaFn=null;}
+function mbLoading(on){$('#cta').classList.toggle('busy',!!on);}
+$('#cta-btn').addEventListener('click',()=>{if(ctaFn){hap('medium');ctaFn();}});
 
 /* ---------- api ---------- */
 const API='/api';
@@ -372,18 +388,19 @@ const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,
 
 /* ---------- navigation ---------- */
 let cur='home', stack=[];
-function go(name,push=true){
+function go(name,push=true,backward=false){
   if(push&&cur!==name)stack.push(cur);
   cur=name;
-  $$('.screen').forEach(s=>s.classList.toggle('active',s.id==='s-'+name));
+  $$('.screen').forEach(s=>{const on=s.id==='s-'+name;s.classList.toggle('active',on);s.classList.toggle('backward',on&&backward);});
   $$('#tabbar button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===name?'page':'false'));
   $('#tabbar').classList.toggle('hidden',name==='gate'||name==='result');
+  $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
   window.scrollTo(0,0);
   hideMain();
   if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
   ({home:renderHome,stars:renderStars,premium:renderPrem,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
 }
-function back(){const p=stack.pop()||'home';go(p,false);}
+function back(){const p=stack.pop()||'home';go(p,false,true);}
 if(BB)BB.onClick(back);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){hap();go(b.dataset.go);}});
 
