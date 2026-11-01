@@ -35,6 +35,7 @@ from app.db.models import Order, User
 from app.payments import click
 from app.providers.base import Recipient
 from app.providers.registry import get_provider, is_manual_mode
+from app.providers.telegram_account import tg_account
 
 log = logging.getLogger(__name__)
 router = APIRouter(prefix="/api")
@@ -126,6 +127,8 @@ def _order_json(o: Order) -> dict:
         "quantity": o.quantity,
         "recipient": o.recipient_username,
         "recipient_name": o.recipient_name,
+        "gift_id": str(o.gift_id) if o.gift_id else None,
+        "gift_title": o.gift_title,
         "price": o.price,
         "status": o.status,
         "created_at": o.created_at.isoformat(),
@@ -160,6 +163,7 @@ async def me(c: C):
         "flags": {
             "stars": await cfg.get_bool(s, "stars_enabled"),
             "premium": await cfg.get_bool(s, "premium_enabled"),
+            "gifts": await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
             "click": settings.click_configured,
             "manual": is_manual_mode(),
         },
@@ -203,6 +207,24 @@ async def stars_quote(c: C, body: QuoteIn):
     return {"qty": body.qty, "price": q.price_uzs, "balance": c.user.balance}
 
 
+@router.get("/gifts")
+async def gifts(c: C):
+    s = c.session
+    enabled = await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session"))
+    if not enabled:
+        return {"enabled": False, "gifts": []}
+    try:
+        items = await tg_account.gifts()
+    except Exception as e:  # noqa: BLE001
+        log.warning("gifts catalog unavailable: %s", e)
+        return {"enabled": True, "gifts": [], "error": "catalog"}
+    out = []
+    for g in items:
+        q = await pricing.quote_gift(s, g["stars"])
+        out.append({**g, "price": q.price_uzs})
+    return {"enabled": True, "gifts": out}
+
+
 class RecipientIn(BaseModel):
     product: str = "stars"
     username: str = Field(min_length=1, max_length=64)
@@ -214,8 +236,8 @@ async def resolve_recipient(c: C, body: RecipientIn):
     username = body.username.strip().lstrip("@")
     if not username or not all(ch.isalnum() or ch == "_" for ch in username) or len(username) < 4:
         _err(400, "bad_username", t(c.lang, "bad_username"))
-    product = ProductType.PREMIUM if body.product == "premium" else ProductType.STARS
-    qty = body.qty if product == ProductType.STARS else (body.qty if body.qty in pricing.PREMIUM_MONTHS else 3)
+    product = {"premium": ProductType.PREMIUM, "gift": ProductType.GIFT}.get(body.product, ProductType.STARS)
+    qty = body.qty if product != ProductType.PREMIUM else (body.qty if body.qty in pricing.PREMIUM_MONTHS else 3)
     try:
         rcp = await get_provider(product).resolve_recipient(username, qty)
     except RecipientNotFound as e:
@@ -228,7 +250,8 @@ async def resolve_recipient(c: C, body: RecipientIn):
 
 class OrderIn(BaseModel):
     product: str
-    qty: int
+    qty: int = 0
+    gift_id: str | None = None
     recipient_username: str
     recipient_name: str = ""
     recipient_token: str = ""
@@ -240,6 +263,7 @@ async def create_order(c: C, body: OrderIn):
     channels = await get_channels(s)
     if channels and await is_subscribed(bot, u.id, channels):
         _err(403, "subscribe", "subscribe required")
+    gift = None
     if body.product == "stars":
         if not await cfg.get_bool(s, "stars_enabled"):
             _err(400, "disabled", t(c.lang, "stars_disabled"))
@@ -253,6 +277,16 @@ async def create_order(c: C, body: OrderIn):
         if body.qty not in pricing.PREMIUM_MONTHS:
             _err(400, "bad_months", "months must be 3, 6 or 12")
         quote = await pricing.quote_premium(s, body.qty)
+    elif body.product == "gift":
+        if not (await cfg.get_bool(s, "gifts_enabled") and tg_account.configured):
+            _err(400, "disabled", "gifts disabled")
+        gift = await tg_account.gift_by_id(body.gift_id or "")
+        if not gift:
+            _err(404, "gift_not_found", "gift not found")
+        if gift.get("remains") == 0:
+            _err(400, "sold_out", "sold out")
+        quote = await pricing.quote_gift(s, gift["stars"])
+        body.qty = gift["stars"]
     else:
         _err(400, "bad_product", "unknown product")
     rcp = Recipient(username=body.recipient_username.lstrip("@"), name=body.recipient_name or body.recipient_username, token=body.recipient_token)
@@ -265,7 +299,7 @@ async def create_order(c: C, body: OrderIn):
         except ProviderError:
             _err(502, "provider", t(c.lang, "recipient_check_fail"))
     try:
-        order = await orders_svc.create(s, u, quote, rcp)
+        order = await orders_svc.create(s, u, quote, rcp, gift=gift)
     except InsufficientBalance as e:
         _err(402, "insufficient", t(c.lang, "insufficient", need=fmt_uzs(e.need), have=fmt_uzs(e.have)), need=e.need, have=e.have)
     await s.commit()

@@ -152,7 +152,8 @@ def admin_menu_kb() -> InlineKeyboardMarkup:
     b.button(text="📢 Каналы", callback_data="adm:channels")
     b.button(text="📣 Рассылка", callback_data="adm:broadcast")
     b.button(text="💎 TON кошелёк", callback_data="adm:ton")
-    b.adjust(2, 2, 2, 2, 1)
+    b.button(text="🎁 Подарки / аккаунт", callback_data="adm:gifts")
+    b.adjust(2, 2, 2, 2, 2)
     return b.as_markup()
 
 

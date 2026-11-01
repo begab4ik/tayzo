@@ -8,3 +8,5 @@ venv/
 .idea/
 .vscode/
 backups/*.sql.gz
+site/gifts/*
+!site/gifts/.gitkeep

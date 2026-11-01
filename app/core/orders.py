@@ -26,7 +26,7 @@ log = logging.getLogger(__name__)
 MAX_ATTEMPTS = 3
 
 
-async def create(session: AsyncSession, user: User, quote: Quote, recipient: Recipient) -> Order:
+async def create(session: AsyncSession, user: User, quote: Quote, recipient: Recipient, gift: dict | None = None) -> Order:
     # Сначала лочим пользователя — это сериализует параллельные покупки одного юзера и исключает deadlock
     user = await wallet.lock_user(session, user.id)
     if user.balance < quote.price_uzs:
@@ -42,6 +42,8 @@ async def create(session: AsyncSession, user: User, quote: Quote, recipient: Rec
         cost_ton=quote.cost_ton,
         cost_uzs=quote.cost_uzs,
         status=OrderStatus.MANUAL if is_manual_mode() else OrderStatus.PENDING,
+        gift_id=int(gift["id"]) if gift else None,
+        gift_title=(gift.get("title") or None) if gift else None,
     )
     session.add(order)
     await session.flush()
@@ -78,7 +80,10 @@ async def process(session: AsyncSession, order: Order) -> Order:
             recipient = await provider.resolve_recipient(recipient.username, order.quantity)
             order.recipient_token = recipient.token
             order.recipient_name = recipient.name
-        result = await provider.fulfill(recipient, order.quantity)
+        if order.product == ProductType.GIFT:
+            result = await provider.fulfill(recipient, order.quantity, gift_id=order.gift_id)
+        else:
+            result = await provider.fulfill(recipient, order.quantity)
     except ProviderAuthError as e:
         order.status = OrderStatus.MANUAL
         order.last_error = str(e)

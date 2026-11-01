@@ -31,6 +31,8 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://tayzo:tayzo@postgres:5432/tayzo
       REDIS_URL: redis://redis:6379/0
+    volumes:
+      - ./site/gifts:/app/site/gifts   # кэш стикеров подарков (отдаёт Caddy)
     expose:
       - "8080"
     depends_on:

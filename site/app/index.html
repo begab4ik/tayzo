@@ -10,6 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 <style>
 :root{
   --bg:#141518; --bg2:#1c1e23; --bg3:#25282f; --line:#2f333b;
@@ -143,6 +145,23 @@ h1.title{font-size:24px;margin:4px 0 14px}
 .opt .p{font:700 17px Unbounded,sans-serif;white-space:nowrap}
 .opt .tag{font-size:10px;font-weight:800;background:var(--gold);color:#141518;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
 
+/* gifts */
+.ggrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.gift{background:var(--bg2);border-radius:16px;padding:10px 6px 8px;text-align:center;border:1.5px solid transparent;transition:border-color .15s,transform .12s;position:relative;display:flex;flex-direction:column;align-items:center;gap:4px}
+.gift:active{transform:scale(.97)}
+.gift[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim)}
+.gift .img{width:72px;height:72px;display:flex;align-items:center;justify-content:center}
+.gift .img svg,.gift .img img,.gift .img video{width:72px;height:72px;object-fit:contain}
+.gift b{font-size:13px;white-space:nowrap}
+.gift span{font-size:11px;color:var(--ink2);font-weight:700}
+.gift .lim{position:absolute;top:6px;right:6px;font-size:9px;font-weight:800;background:var(--bg3);color:var(--gold2);padding:2px 6px;border-radius:999px}
+.gift.so{opacity:.4;pointer-events:none}
+.gsel{display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.gsel .img{width:64px;height:64px;flex:none}
+.gsel .img svg{width:64px;height:64px}
+.gsel b{display:block;font-size:15px}
+.gsel span{font-size:12px;color:var(--ink2);font-weight:700}
+
 /* result */
 .result{text-align:center;padding:40px 10px 20px}
 .result .big{width:96px;height:96px;border-radius:50%;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:44px}
@@ -207,6 +226,7 @@ h1.title{font-size:24px;margin:4px 0 14px}
   <div class="tiles">
     <button class="tile" id="tile-stars" data-go="stars"><span class="ic">⭐</span><b data-t="stars">Звёзды</b><span id="tile-stars-p">220 сум / ⭐</span></button>
     <button class="tile" id="tile-prem" data-go="premium"><span class="ic">💎</span><b>Premium</b><span id="tile-prem-p">от 159 990 сум</span></button>
+    <button class="tile" id="tile-gifts" data-go="gifts" style="grid-column:1/-1;min-height:84px;flex-direction:row;align-items:center;gap:12px"><span class="ic">🎁</span><div><b data-t="gifts_tile">Подарки Telegram</b><br><span data-t="gifts_tile_p">Анонимно, оплата в сумах</span></div></button>
   </div>
   <div class="sec"><h3 data-t="recent">Последние заказы</h3><button data-go="history" data-t="all">Все</button></div>
   <div class="list" id="home-orders"><div class="empty" data-t="no_orders">Заказов пока нет — самое время купить первые звёзды</div></div>
@@ -244,6 +264,21 @@ h1.title{font-size:24px;margin:4px 0 14px}
   </div>
 </section>
 
+<!-- GIFTS -->
+<section class="screen" id="s-gifts">
+  <h1 class="title">🎁 <span data-t="gifts">Подарки</span></h1>
+  <p class="sub" data-t="gifts_sub">Выбери подарок — отправим анонимно, получатель увидит его в профиле</p>
+  <div id="gifts-off" class="card hidden"><p class="hint" data-t="gifts_soon">Подарки скоро появятся — заглядывай.</p></div>
+  <div class="ggrid" id="ggrid"></div>
+  <div class="card" id="gift-rcp-card">
+    <div class="lbl" data-t="to_whom">Кому</div>
+    <div class="seg" id="gift-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
+    <div class="field" id="gift-field"><span>@</span><input id="gift-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="gift-state"></div></div>
+    <div class="hint" id="gift-hint"></div>
+    <div class="sum"><span data-t="total">К оплате</span><b><span id="gift-total">0</span><small data-t="uzs">сум</small></b></div>
+  </div>
+</section>
+
 <!-- TOPUP -->
 <section class="screen" id="s-topup">
   <h1 class="title">💳 <span data-t="topup_title">Пополнение</span></h1>
@@ -278,7 +313,7 @@ h1.title{font-size:24px;margin:4px 0 14px}
   </div>
   <div class="card"><div class="lbl" data-t="language">Язык</div><div class="lang" id="lang"><button data-l="ru">Русский</button><button data-l="uz">O'zbek</button><button data-l="en">English</button></div></div>
   <div class="card"><div class="lbl"><span data-t="ref_title">Приглашай друзей</span> · <span id="ref-pct">5</span>%</div><p class="hint" style="margin:0 0 10px" data-t="ref_p">Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.</p><div class="ref"><code id="ref-link">—</code><button id="ref-copy" data-t="copy">Копировать</button><button id="ref-share" data-t="share">Отправить</button></div></div>
-  <button class="btn ghost block" id="support-btn" data-t="write_support">Написать в поддержку</button>
+  <div style="display:flex;gap:8px"><button class="btn ghost block" data-go="history" data-t="history">История</button><button class="btn ghost block" id="support-btn" data-t="write_support">Написать в поддержку</button></div>
   <p class="hint" style="text-align:center;margin-top:14px">Tayzo · tayzo.uz</p>
 </section>
 
@@ -311,7 +346,7 @@ h1.title{font-size:24px;margin:4px 0 14px}
   <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span data-t="tab_home">Главная</span></button>
   <button data-go="stars"><svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span data-t="stars">Звёзды</span></button>
   <button data-go="premium"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 18M15 3l-3 18"/></svg><span>Premium</span></button>
-  <button data-go="history"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-t="history">История</span></button>
+  <button data-go="gifts"><svg viewBox="0 0 24 24"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7s-2-4-5-4-3 4 0 4h5zm0 0s2-4 5-4 3 4 0 4h-5z"/></svg><span data-t="gifts">Подарки</span></button>
   <button data-go="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span data-t="profile">Профиль</span></button>
 </nav>
 
@@ -328,6 +363,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  no_username:"У тебя нет username — укажи получателя вручную",order_ok:"Заказ принят",order_ok_p:"{t} для @{u}. Обычно доставка занимает меньше минуты — можно закрыть, бот пришлёт уведомление.",
  st_pending:"В обработке",st_processing:"Выполняется",st_delivered:"Доставлено",st_failed:"Повтор",st_manual:"Проверяем",st_refunded:"Возврат",
  lt_topup:"Пополнение",lt_purchase:"Покупка",lt_refund:"Возврат",lt_referral_bonus:"Реферальный бонус",lt_promo_bonus:"Промокод",lt_admin_adjust:"Корректировка",
+ gifts:"Подарки",gifts_tile:"Подарки Telegram",gifts_tile_p:"Анонимно, оплата в сумах",gifts_sub:"Выбери подарок — отправим анонимно, получатель увидит его в профиле",gifts_soon:"Подарки скоро появятся — заглядывай.",gift_for:"Подарить за {p} сум",pick_gift:"Выбери подарок",left:"осталось {n}",gift_title:"🎁 {t}",gift_ok_p:"Подарок для @{u} отправится через минуту — анонимно. Бот пришлёт уведомление.",
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды Telegram по 220 сум — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} ⭐",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
  buy_stars:"Yulduz sotib olish",how_many:"Nechta yulduz",to_whom:"Kimga",to_me:"O'zimga",to_other:"Boshqaga",total:"To'lov",prem_sub:"O'zingizga yoki sovg'a — to'lovdan so'ng darhol faollashadi",
@@ -339,6 +375,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  no_username:"Sizda username yo'q — qabul qiluvchini qo'lda kiriting",order_ok:"Buyurtma qabul qilindi",order_ok_p:"@{u} uchun {t}. Odatda yetkazish bir daqiqadan kam — yopishingiz mumkin, bot xabar yuboradi.",
  st_pending:"Navbatda",st_processing:"Bajarilmoqda",st_delivered:"Yetkazildi",st_failed:"Qayta urinish",st_manual:"Tekshiruvda",st_refunded:"Qaytarildi",
  lt_topup:"To'ldirish",lt_purchase:"Xarid",lt_refund:"Qaytarish",lt_referral_bonus:"Referal bonus",lt_promo_bonus:"Promokod",lt_admin_adjust:"Tuzatish",
+ gifts:"Sovg'alar",gifts_tile:"Telegram sovg'alari",gifts_tile_p:"Anonim, so'mda to'lov",gifts_sub:"Sovg'ani tanlang — anonim yuboramiz, qabul qiluvchi uni profilida ko'radi",gifts_soon:"Sovg'alar tez orada — kuzatib boring.",gift_for:"{p} so'mga sovg'a qilish",pick_gift:"Sovg'ani tanlang",left:"{n} ta qoldi",gift_title:"🎁 {t}",gift_ok_p:"@{u} uchun sovg'a bir daqiqada anonim yuboriladi. Bot xabar beradi.",
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari 220 so'mdan — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} ⭐",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
  buy_stars:"Buy Stars",how_many:"How many stars",to_whom:"Recipient",to_me:"Me",to_other:"Someone else",total:"Total",prem_sub:"For yourself or as a gift — activates right after payment",
@@ -350,6 +387,7 @@ en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",r
  no_username:"You have no username — enter the recipient manually",order_ok:"Order accepted",order_ok_p:"{t} for @{u}. Delivery usually takes under a minute — you can close this, the bot will notify you.",
  st_pending:"Queued",st_processing:"Processing",st_delivered:"Delivered",st_failed:"Retrying",st_manual:"Under review",st_refunded:"Refunded",
  lt_topup:"Top-up",lt_purchase:"Purchase",lt_refund:"Refund",lt_referral_bonus:"Referral bonus",lt_promo_bonus:"Promo code",lt_admin_adjust:"Adjustment",
+ gifts:"Gifts",gifts_tile:"Telegram Gifts",gifts_tile_p:"Anonymous, paid in soums",gifts_sub:"Pick a gift — we send it anonymously, the recipient sees it on their profile",gifts_soon:"Gifts are coming soon — check back.",gift_for:"Gift for {p} UZS",pick_gift:"Pick a gift",left:"{n} left",gift_title:"🎁 {t}",gift_ok_p:"The gift for @{u} will be sent anonymously within a minute. The bot will notify you.",
  copied:"Copied",lang_saved:"Language saved",err:"Something went wrong, try again",min_topup:"Minimum {p} UZS",share_text:"Telegram Stars for 220 UZS — Tayzo",prem_title:"Premium {m} mo",stars_title:"{n} ⭐",nothing:"Nothing here yet"}
 };
 let L='ru';
@@ -383,7 +421,7 @@ let toastT;function toast(msg,bad){const e=$('#toast');e.textContent=strip(msg);
 
 /* ---------- state ---------- */
 let S={me:null};
-let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, topupAmt=20000;
+let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:'me',rcp:null,user:'',list:null}, topupAmt=20000;
 const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,100000,200000,500000];
 
 /* ---------- navigation ---------- */
@@ -398,7 +436,7 @@ function go(name,push=true,backward=false){
   window.scrollTo(0,0);
   hideMain();
   if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
-  ({home:renderHome,stars:renderStars,premium:renderPrem,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
+  ({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
 }
 function back(){const p=stack.pop()||'home';go(p,false,true);}
 if(BB)BB.onClick(back);
@@ -414,13 +452,14 @@ function renderHome(){
   $('#tile-prem-p').textContent=`${t('from')} ${fmt(Math.min(...Object.values(P().premium)))} ${t('uzs')}`;
   $('#tile-stars').classList.toggle('off',!S.me.flags.stars);
   $('#tile-prem').classList.toggle('off',!S.me.flags.premium);
+  $('#tile-gifts').classList.toggle('hidden',!S.me.flags.gifts);
   const list=$('#home-orders');
   if(!S.me.recent_orders.length){list.innerHTML=`<div class="empty">${t('no_orders')}</div>`;return;}
   list.innerHTML=S.me.recent_orders.slice(0,3).map(orderRow).join('');
 }
 const stCls=s=>s==='delivered'?'ok':(s==='refunded'||s==='failed')?'bad':'wait';
-function orderTitle(o){return o.product==='stars'?t('stars_title',{n:fmt(o.quantity)}):t('prem_title',{m:o.quantity});}
-function orderRow(o){const d=new Date(o.created_at);return `<div class="item"><div class="ic">${o.product==='stars'?'⭐':'💎'}</div><div class="mid"><b>${orderTitle(o)} → @${o.recipient}</b><span>#${o.id} · ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="end"><b>${fmt(o.price)}</b><span class="st ${stCls(o.status)}">${t('st_'+o.status)}</span></div></div>`;}
+function orderTitle(o){return o.product==='stars'?t('stars_title',{n:fmt(o.quantity)}):o.product==='gift'?t('gift_title',{t:(o.gift_title||'')+' '+fmt(o.quantity)+'⭐'}):t('prem_title',{m:o.quantity});}
+function orderRow(o){const d=new Date(o.created_at);return `<div class="item"><div class="ic">${o.product==='stars'?'⭐':o.product==='gift'?'🎁':'💎'}</div><div class="mid"><b>${orderTitle(o)} → @${o.recipient}</b><span>#${o.id} · ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="end"><b>${fmt(o.price)}</b><span class="st ${stCls(o.status)}">${t('st_'+o.status)}</span></div></div>`;}
 
 /* ---------- recipient widget ---------- */
 function setupRecipient(prefix,state,product,getQty,onChange){
@@ -516,14 +555,60 @@ async function buyPrem(){
   finally{mbLoading(false);}
 }
 
+/* ---------- gifts ---------- */
+let giftSync, lotties={};
+async function loadTgs(url){const buf=await (await fetch(url)).arrayBuffer();return JSON.parse(pako.inflate(new Uint8Array(buf),{to:'string'}));}
+function mountSticker(el,g,autoplay){
+  if(g.kind==='tgs'){
+    loadTgs(g.image).then(data=>{if(!el.isConnected)return;const a=lottie.loadAnimation({container:el,renderer:'svg',loop:true,autoplay:!!autoplay,animationData:data,rendererSettings:{progressiveLoad:true}});el.__anim=a;}).catch(()=>{el.textContent='🎁';el.style.fontSize='40px'});
+  } else if(g.kind==='webm'){el.innerHTML=`<video src="${g.image}" autoplay muted loop playsinline></video>`;}
+  else {el.innerHTML=`<img src="${g.image}" alt="">`;}
+}
+function updateGift(){
+  const price=gift.item?gift.item.price:0, bal=S.me.user.balance;
+  $('#gift-total').textContent=fmt(price);
+  $$('#ggrid .gift').forEach(x=>{const on=x.dataset.id===gift.id;x.setAttribute('aria-pressed',on);const a=x.querySelector('.img').__anim;if(a){on?a.play():(a.stop(),a.goToAndStop(0,true));}});
+  $('#gift-rcp-card').classList.toggle('hidden',!gift.item);
+  if(!gift.item){mainBtn(t('pick_gift'),()=>{},{disabled:true});return;}
+  const ready=!!gift.rcp;
+  if(bal>=price) mainBtn(t('gift_for',{p:fmt(price)}),buyGift,{disabled:!ready});
+  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);go('topup');},{color:'#ffffff'});
+}
+async function renderGifts(){
+  if(!giftSync){
+    giftSync=setupRecipient('gift',gift,'gift',()=>1,updateGift);
+    $('#ggrid').addEventListener('click',e=>{const c=e.target.closest('.gift');if(!c)return;hap();gift.id=c.dataset.id;gift.item=gift.list.find(g=>g.id===gift.id);updateGift();$('#gift-rcp-card').scrollIntoView({behavior:'smooth',block:'nearest'});});
+  }
+  const grid=$('#ggrid');
+  if(!S.me.flags.gifts){$('#gifts-off').classList.remove('hidden');grid.innerHTML='';$('#gift-rcp-card').classList.add('hidden');hideMain();return;}
+  if(!gift.list){
+    grid.innerHTML='<div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div>';
+    try{const r=await api('/gifts');gift.list=r.gifts;}catch(e){grid.innerHTML=`<div class="empty">${strip(e.message)}</div>`;return;}
+    if(!gift.list.length){$('#gifts-off').classList.remove('hidden');grid.innerHTML='';hideMain();return;}
+    grid.innerHTML=gift.list.map(g=>`<button class="gift${g.remains===0?' so':''}" data-id="${g.id}">${g.limited&&g.remains!=null?`<span class="lim">${t('left',{n:fmt(g.remains)})}</span>`:''}<div class="img"></div><b>${fmt(g.price)} ${t('uzs')}</b><span>${g.stars} ⭐</span></button>`).join('');
+    const cards=$$('#ggrid .gift');
+    const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const el=en.target.querySelector('.img');if(!el.__mounted){el.__mounted=1;mountSticker(el,gift.list.find(g=>g.id===en.target.dataset.id),false);}}})},{rootMargin:'200px'});
+    cards.forEach(c=>io.observe(c));
+  }
+  giftSync();updateGift();
+}
+async function buyGift(){
+  if(!gift.rcp||!gift.item)return;mbLoading(true);
+  try{
+    const r=await api('/orders',{product:'gift',gift_id:gift.item.id,recipient_username:gift.rcp.username,recipient_name:gift.rcp.name,recipient_token:gift.rcp.token||''});
+    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');gift.item=null;gift.id=null;showResult(r.order);
+  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateGift();}toast(e.message,true);}
+  finally{mbLoading(false);}
+}
+
 /* ---------- result ---------- */
 let pollT=null;
 function showResult(o){
   clearInterval(pollT);
   go('result');
-  $('#res-ic').textContent=o.product==='stars'?'⭐':'💎';
+  $('#res-ic').textContent=o.product==='stars'?'⭐':o.product==='gift'?'🎁':'💎';
   $('#res-h').textContent=t('order_ok');
-  $('#res-p').textContent=t('order_ok_p',{t:orderTitle(o),u:o.recipient});
+  $('#res-p').textContent=o.product==='gift'?t('gift_ok_p',{u:o.recipient}):t('order_ok_p',{t:orderTitle(o),u:o.recipient});
   const st=$('#res-st');const paint=s=>{st.className='st '+stCls(s);st.textContent=t('st_'+s);};paint(o.status);
   mainBtn('OK',()=>{clearInterval(pollT);stack=[];go('home',false);},{color:'#ffffff'});
   pollT=setInterval(async()=>{try{const r=await api('/orders/'+o.id);paint(r.order.status);S.me.user.balance=r.balance;const i=S.me.recent_orders.findIndex(x=>x.id===o.id);if(i>-1)S.me.recent_orders[i]=r.order;if(['delivered','refunded','manual'].includes(r.order.status)){clearInterval(pollT);if(r.order.status==='delivered')hap('ok');}}catch(e){}},3000);
@@ -605,6 +690,7 @@ async function refreshMe(){S.me=await api('/me');L=S.me.user.lang in I?S.me.user
     if(m&&m[1]==='stars'){if(m[2])stars.qty=Number(m[2]);go('stars',false);}
     else if(m&&m[1]==='premium'){if(m[2]&&[3,6,12].includes(Number(m[2])))prem.months=Number(m[2]);go('premium',false);}
     else if(sp==='topup')go('topup',false);
+    else if(sp==='gifts'||new URLSearchParams(location.search).get('screen')==='gifts')go('gifts',false);
     else go('home',false);
   }catch(e){$('#loader').innerHTML=`<div class="gate"><h2>😕</h2><p>${strip(e.message)}</p><button class="btn gold" onclick="location.reload()">Retry</button></div>`;}
 })();

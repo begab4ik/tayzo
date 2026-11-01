@@ -20,6 +20,7 @@ class PaymentStatus(StrEnum):
 class ProductType(StrEnum):
     STARS = "stars"
     PREMIUM = "premium"
+    GIFT = "gift"  # подарок Telegram за звёзды (отправляется с аккаунта владельца)
 
 
 class OrderStatus(StrEnum):

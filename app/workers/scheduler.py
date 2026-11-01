@@ -73,6 +73,22 @@ async def update_premium_cost() -> None:
         await notify_admins("⚠️ Фиксированная цена Premium почти или ниже себестоимости (курс TON вырос?):\n" + "\n".join(warn) + "\nПоправь в «💰 Цены и наценка».")
 
 
+async def update_gifts_catalog() -> None:
+    """Каталог подарков Telegram + стикеры (если аккаунт подключён)."""
+    from app.providers.telegram_account import tg_account
+
+    if not tg_account.configured:
+        return
+    async with get_session() as session:
+        if not await cfg.get(session, "tg_session"):
+            return
+    try:
+        gifts = await tg_account.fetch_gifts()
+        log.info("gifts catalog updated: %s items", len(gifts))
+    except Exception as e:  # noqa: BLE001
+        log.warning("update_gifts_catalog failed: %s", e)
+
+
 async def check_ton_balance() -> None:
     if is_manual_mode():
         return
@@ -106,6 +122,7 @@ def build_scheduler() -> AsyncIOScheduler:
     sch.add_job(update_ton_rate, IntervalTrigger(minutes=10), next_run_time=None, id="ton_rate")
     sch.add_job(update_star_cost, IntervalTrigger(hours=1), id="star_cost")
     sch.add_job(update_premium_cost, IntervalTrigger(hours=1), id="premium_cost")
+    sch.add_job(update_gifts_catalog, IntervalTrigger(minutes=30), id="gifts_catalog")
     sch.add_job(check_ton_balance, IntervalTrigger(minutes=30), id="ton_balance")
     sch.add_job(daily_report, CronTrigger(hour=9, minute=0), id="daily_report")
     return sch

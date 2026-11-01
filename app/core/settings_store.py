@@ -35,9 +35,17 @@ DEFAULTS: dict[str, str] = {
     "low_ton_alert": "2",              # алерт админу, если на кошельке меньше TON
     "stars_enabled": "1",
     "premium_enabled": "1",
+    "gifts_enabled": "1",
+    "gift_markup_percent": "0",      # наценка на подарки сверх цены звёзд
+    "gift_stars_buffer": "0",        # докупать звёзд с запасом (шт.)
+    "tg_session": "",                # сессия Telegram-аккаунта (ставится через вход в админке)
+    "tg_account_username": "",
 }
 
 DESCRIPTIONS: dict[str, str] = {
+    "gifts_enabled": "Подарки включены",
+    "gift_markup_percent": "Наценка на подарки, %",
+    "gift_stars_buffer": "Запас звёзд при докупке, шт.",
     "premium_probe_username": "Username для проверки цены Premium",
     "star_price_uzs_override": "Цена 1 ⭐, сум (0 = авто по курсу)",
     "markup_percent": "Наценка, %",
@@ -66,12 +74,15 @@ SECTIONS: list[tuple[str, str, list[str]]] = [
     ("cost", "📉 Курс и себестоимость", ["ton_rate_uzs", "star_price_ton", "premium_3_ton", "premium_6_ton", "premium_12_ton", "premium_probe_username", "low_ton_alert"]),
     ("limits", "📏 Лимиты", ["min_stars", "max_stars", "min_topup", "max_topup"]),
     ("refs", "👥 Рефералы", ["referral_percent"]),
-    ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "maintenance"]),
+    ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "gifts_enabled", "maintenance"]),
+    ("gifts", "🎁 Подарки", ["gift_markup_percent", "gift_stars_buffer"]),
 ]
-BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled"}
+BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled", "gifts_enabled"}
 
 # Подсказки при вводе значения
 HINTS: dict[str, str] = {
+    "gift_markup_percent": "Процент сверх цены звёзд. <code>0</code> — подарок стоит ровно столько, сколько его звёзды по твоей цене.",
+    "gift_stars_buffer": "Сколько лишних звёзд докупать на аккаунт, когда их не хватает на подарок (чтобы не докупать каждый раз). Например <code>100</code>.",
     "premium_probe_username": "Любой username <b>без</b> Premium (например, запасной аккаунт). По нему бот раз в час узнаёт у Fragment себестоимость Premium. Пусто — не обновлять.",
     "star_price_uzs_override": "Введи цену одной звезды в сумах, например <code>450</code>.\n<code>0</code> — считать автоматически: себестоимость × курс × наценка.",
     "markup_percent": "Процент сверх себестоимости, например <code>15</code>. Применяется, когда цена считается автоматически.",

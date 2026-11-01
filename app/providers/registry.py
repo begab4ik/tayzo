@@ -34,6 +34,10 @@ def get_provider(product: ProductType) -> Provider:
         else:
             _providers[ProductType.STARS] = FragmentStarsProvider(fragment_client)
             _providers[ProductType.PREMIUM] = FragmentPremiumProvider(fragment_client)
+        from app.providers.gifts import TelegramGiftProvider
+
+        stars = _providers[ProductType.STARS]
+        _providers[ProductType.GIFT] = TelegramGiftProvider(stars if not isinstance(stars, ManualProvider) else None)
     return _providers[product]
 
 

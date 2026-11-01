@@ -57,6 +57,18 @@ async def quote_premium(session: AsyncSession, months: int) -> Quote:
     return Quote(ProductType.PREMIUM, months, price, cost_ton, cost_uzs, rate)
 
 
+async def quote_gift(session: AsyncSession, stars: int) -> Quote:
+    """Подарок: цена = звёзды × цена звезды (+ gift_markup_percent), себестоимость = звёзды × star_price_ton."""
+    rate = await cfg.get_dec(session, "ton_rate_uzs")
+    star_ton = await cfg.get_dec(session, "star_price_ton")
+    cost_ton = star_ton * stars
+    cost_uzs = int(cost_ton * rate)
+    each = await star_price_each(session)
+    markup = await cfg.get_dec(session, "gift_markup_percent")
+    price = round_up_100(Decimal(each * stars) * (1 + markup / 100))
+    return Quote(ProductType.GIFT, stars, price, cost_ton, cost_uzs, rate)
+
+
 async def star_price_each(session: AsyncSession) -> int:
     """Цена одной звезды для витрины (считаем по 100 и делим — так округление честнее)."""
     q = await quote_stars(session, 100)

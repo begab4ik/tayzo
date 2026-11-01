@@ -27,3 +27,6 @@ class Admin(StatesGroup):
     promo_create = State()
     broadcast = State()
     add_channel = State()
+    tg_phone = State()
+    tg_code = State()
+    tg_password = State()

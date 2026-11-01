@@ -98,6 +98,8 @@ class Order(Base):
     status: Mapped[OrderStatus] = mapped_column(String(16), default=OrderStatus.PENDING, index=True)
     attempts: Mapped[int] = mapped_column(Integer, default=0)
     last_error: Mapped[str | None] = mapped_column(Text)
+    gift_id: Mapped[int | None] = mapped_column(BigInteger)  # id подарка Telegram (product=gift)
+    gift_title: Mapped[str | None] = mapped_column(String(128))
     fragment_req_id: Mapped[str | None] = mapped_column(String(128))
     tx_hash: Mapped[str | None] = mapped_column(String(256))
     created_at: Mapped[datetime] = now_col(index=True)
@@ -109,6 +111,8 @@ class Order(Base):
     def title(self) -> str:
         if self.product == ProductType.STARS:
             return f"⭐ {self.quantity} Stars"
+        if self.product == ProductType.GIFT:
+            return f"🎁 {self.gift_title or 'Подарок'} ({self.quantity}⭐)"
         return f"💎 Premium {self.quantity} мес."
 
 
