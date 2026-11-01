@@ -15,6 +15,8 @@ T: dict[str, dict[str, str]] = {
     "btn_faq": {"ru": "ℹ️ Как это работает", "en": "ℹ️ How it works", "uz": "ℹ️ Bu qanday ishlaydi"},
     "btn_support": {"ru": "🆘 Поддержка", "en": "🆘 Support", "uz": "🆘 Yordam"},
     "btn_lang": {"ru": "🌐 Язык", "en": "🌐 Language", "uz": "🌐 Til"},
+    "btn_app": {"ru": "🚀 Открыть приложение", "en": "🚀 Open the app", "uz": "🚀 Ilovani ochish"},
+    "app_hint": {"ru": "Удобнее всего покупать в приложении — баланс, звёзды, Premium и история в одном экране:", "en": "The app is the easiest way to buy — balance, Stars, Premium and history on one screen:", "uz": "Ilovada xarid qilish eng qulay — balans, yulduzlar, Premium va tarix bir ekranda:"},
     "btn_admin": {"ru": "🛠 Админка", "en": "🛠 Admin", "uz": "🛠 Admin"},
     # --- inline-кнопки ---
     "ib_check_sub": {"ru": "✅ Проверить подписку", "en": "✅ Check subscription", "uz": "✅ Obunani tekshirish"},

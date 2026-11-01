@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     required_channel_url: str | None = None
     admin_notify_chat_id: int | None = None
     support_username: str = "support"
+    webapp_url: str = "https://tayzo.uz/app/"  # Mini App (пусто — кнопки приложения не показываем)
 
     # Infra
     database_url: str = "postgresql+asyncpg://tayzo:tayzo@localhost:5432/tayzo"

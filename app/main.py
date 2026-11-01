@@ -8,7 +8,7 @@ import asyncio
 import logging
 
 import uvicorn
-from aiogram.types import BotCommand, BotCommandScopeChat
+from aiogram.types import BotCommand, BotCommandScopeChat, MenuButtonWebApp, WebAppInfo
 from sqlalchemy import select
 
 from app.api.app import api
@@ -45,9 +45,15 @@ async def seed_channel() -> None:
 
 
 async def set_commands() -> None:
+    if settings.webapp_url:
+        try:
+            await bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Tayzo", web_app=WebAppInfo(url=settings.webapp_url)))
+        except Exception as e:  # noqa: BLE001
+            log.warning("set_chat_menu_button failed: %s", e)
     await bot.set_my_commands(
         [
             BotCommand(command="start", description="Главное меню"),
+            BotCommand(command="app", description="Открыть приложение"),
             BotCommand(command="profile", description="Профиль и рефералка"),
             BotCommand(command="orders", description="Мои заказы"),
             BotCommand(command="promo", description="Активировать промокод"),

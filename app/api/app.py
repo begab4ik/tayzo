@@ -17,6 +17,10 @@ log = logging.getLogger(__name__)
 
 api = FastAPI(title="Tayzo API", docs_url=None, redoc_url=None)
 
+from app.api.miniapp import router as miniapp_router  # noqa: E402
+
+api.include_router(miniapp_router)
+
 
 @api.get("/health")
 async def health():

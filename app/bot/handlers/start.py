@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.bot import keyboards as kb
 from app.bot import texts
 from app.bot.i18n import LANGS, t
+from app.config import settings
 from app.db.models import User
 
 router = Router(name="start")
@@ -77,6 +78,13 @@ async def set_lang(call: CallbackQuery, session: AsyncSession, user: User, is_ad
         pass
     text = texts.welcome(code, user.first_name) if first_time else t(code, "menu_hint")
     await call.message.answer(text, reply_markup=kb.main_menu(code, is_admin))
+
+
+@router.message(Command("app"))
+async def cmd_app(message: Message, user: User):
+    if not settings.webapp_url:
+        return
+    await message.answer(t(user.language, "app_hint"), reply_markup=kb.open_app_kb(user.language))
 
 
 @router.message(Command("menu", "cancel"))

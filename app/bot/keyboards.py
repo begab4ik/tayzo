@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, ReplyKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 
 from app.bot.i18n import LANGS, labels, t
+from app.config import settings
 from app.core.money import fmt_uzs
 from app.db.models import RequiredChannel
 
@@ -18,12 +19,24 @@ def L(key: str) -> set[str]:
 
 def main_menu(lang: str, is_admin: bool = False) -> ReplyKeyboardMarkup:
     b = ReplyKeyboardBuilder()
+    sizes: list[int] = []
+    if settings.webapp_url:
+        b.button(text=t(lang, "btn_app"), web_app=WebAppInfo(url=settings.webapp_url))
+        sizes.append(1)
     for key in MENU_KEYS:
         b.button(text=t(lang, key))
+    sizes += [2, 2, 2, 2, 1]
     if is_admin:
         b.button(text=t(lang, "btn_admin"))
-    b.adjust(2, 2, 2, 2, 1, 1)
+        sizes.append(1)
+    b.adjust(*sizes)
     return b.as_markup(resize_keyboard=True)
+
+
+def open_app_kb(lang: str) -> InlineKeyboardMarkup:
+    b = InlineKeyboardBuilder()
+    b.button(text=t(lang, "btn_app"), web_app=WebAppInfo(url=settings.webapp_url))
+    return b.as_markup()
 
 
 def lang_kb(back: bool = False) -> InlineKeyboardMarkup:

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Tayzo</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#141518">
+<link rel="icon" href="/brand/icon-512.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{
+  --bg:#141518; --bg2:#1c1e23; --bg3:#25282f; --line:#2f333b;
+  --ink:#f5f6f8; --ink2:#9aa0ad; --ink3:#6b7180;
+  --gold:#f5b301; --gold2:#ffd54a; --gold-dim:rgba(245,179,1,.14);
+  --ok:#35c46a; --bad:#ff5c5c; --warn:#ffb020; --tg:#2aabee;
+  --r:20px; --r2:14px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:Manrope,system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;-webkit-font-smoothing:antialiased;overscroll-behavior:none;user-select:none}
+h1,h2,h3,.num{font-family:Unbounded,Manrope,sans-serif;font-weight:700;letter-spacing:-.01em}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+input{font:inherit;color:inherit}
+input::placeholder{color:var(--ink3)}
+a{color:var(--gold2);text-decoration:none}
+.hidden{display:none!important}
+
+#app{min-height:100%;display:flex;flex-direction:column}
+.screen{display:none;flex:1;padding:16px 16px calc(96px + var(--safe-b));animation:in .18s ease}
+.screen.active{display:block}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* top bar */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:9px;font-family:Unbounded,sans-serif;font-weight:700;font-size:18px}
+.star-i{display:inline-block;width:20px;height:20px;background:var(--gold);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);flex:none}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border-radius:999px;padding:8px 12px;font-weight:700;font-size:13px}
+.pill b{color:var(--gold2)}
+h1.title{font-size:24px;margin:4px 0 14px}
+.sub{color:var(--ink2);font-size:14px;margin:-8px 0 16px}
+
+/* balance card */
+.bal{position:relative;overflow:hidden;background:linear-gradient(135deg,#f6b800 0%,#f5b301 45%,#e39f00 100%);color:#141518;border-radius:24px;padding:22px 20px 18px;box-shadow:0 20px 50px -24px rgba(245,179,1,.7)}
+.bal .lbl{font-size:13px;font-weight:700;opacity:.75}
+.bal .num{font-size:34px;line-height:1.1;margin:6px 0 14px;word-break:break-all}
+.bal .num small{font-size:.5em;font-family:Manrope,sans-serif;font-weight:700;margin-left:4px}
+.bal .deco{position:absolute;right:-30px;top:-34px;width:150px;height:150px;background:rgba(255,255,255,.22);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.bal .row{display:flex;gap:8px;position:relative}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:15px;padding:14px 18px;border-radius:14px;transition:transform .12s,opacity .12s;white-space:nowrap}
+.btn:active{transform:scale(.97)}
+.btn.dark{background:#141518;color:#fff}
+.btn.light{background:rgba(255,255,255,.55);color:#141518}
+.btn.gold{background:var(--gold);color:#141518}
+.btn.ghost{background:var(--bg2);color:var(--ink)}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+/* product tiles */
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.tile{background:var(--bg2);border-radius:var(--r);padding:16px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:118px;border:1.5px solid transparent;transition:border-color .15s,transform .12s}
+.tile:active{transform:scale(.98);border-color:var(--gold)}
+.tile .ic{font-size:26px;line-height:1}
+.tile b{font-size:16px;margin-top:auto}
+.tile span{color:var(--ink2);font-size:13px;font-weight:600}
+.tile.off{opacity:.5}
+
+/* section */
+.sec{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}
+.sec h3{font-size:15px}
+.sec button{color:var(--ink2);font-weight:700;font-size:13px}
+
+/* list */
+.list{display:flex;flex-direction:column;gap:8px}
+.item{display:flex;align-items:center;gap:12px;background:var(--bg2);border-radius:var(--r2);padding:12px 14px;text-align:left;width:100%}
+.item .ic{width:40px;height:40px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.item .mid{flex:1;min-width:0}
+.item .mid b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .mid span{color:var(--ink2);font-size:12px;font-weight:600}
+.item .end{text-align:right;flex:none}
+.item .end b{display:block;font-size:14px}
+.item .end .st{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;display:inline-block;margin-top:3px}
+.st.ok{background:rgba(53,196,106,.15);color:var(--ok)}
+.st.wait{background:rgba(255,176,32,.15);color:var(--warn)}
+.st.bad{background:rgba(255,92,92,.15);color:var(--bad)}
+.empty{color:var(--ink3);font-size:14px;text-align:center;padding:26px 0}
+
+/* qty control */
+.card{background:var(--bg2);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card .lbl{font-size:13px;color:var(--ink2);font-weight:700;margin-bottom:10px}
+.qty{display:flex;align-items:center;gap:8px;background:var(--bg3);border-radius:16px;padding:6px}
+.qty button{width:50px;height:50px;border-radius:12px;background:var(--bg2);font-size:26px;font-weight:500;flex:none}
+.qty button:active{background:#30343d}
+.qty input{flex:1;min-width:0;background:transparent;border:0;outline:0;text-align:center;font:700 28px/1 Unbounded,sans-serif;-moz-appearance:textfield}
+.qty input::-webkit-inner-spin-button,.qty input::-webkit-outer-spin-button{-webkit-appearance:none}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:12px -16px 0;padding:0 16px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:9px 14px;border-radius:999px;background:var(--bg3);font-weight:700;font-size:14px;border:1.5px solid transparent}
+.chip[aria-pressed="true"]{background:var(--gold);color:#141518;border-color:var(--gold)}
+
+/* segmented */
+.seg{display:flex;background:var(--bg3);border-radius:14px;padding:4px;margin-bottom:12px}
+.seg button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:14px;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--bg2);color:var(--ink)}
+.field{display:flex;align-items:center;gap:10px;background:var(--bg3);border-radius:14px;padding:4px 4px 4px 14px}
+.field span{color:var(--ink3);font-weight:700}
+.field input{flex:1;min-width:0;background:transparent;border:0;outline:0;padding:12px 0;font-weight:600;font-size:16px}
+.field .state{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.state.ok{background:rgba(53,196,106,.15);color:var(--ok)}
+.state.bad{background:rgba(255,92,92,.15);color:var(--bad)}
+.hint{font-size:13px;color:var(--ink2);margin-top:10px;line-height:1.4}
+.hint.bad{color:var(--bad)}
+.hint.ok{color:var(--ok)}
+
+/* summary */
+.sum{display:flex;justify-content:space-between;align-items:baseline;padding:14px 2px 0;border-top:1px solid var(--line);margin-top:14px}
+.sum span{color:var(--ink2);font-weight:700;font-size:13px}
+.sum b{font:700 22px Unbounded,sans-serif;color:var(--gold2)}
+.sum b small{font-size:.55em;color:var(--ink);font-family:Manrope,sans-serif;margin-left:4px}
+
+/* premium options */
+.opts{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg2);border-radius:var(--r2);padding:16px;border:1.5px solid transparent;text-align:left}
+.opt[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim)}
+.opt b{font-size:16px;display:block}
+.opt span{font-size:12px;color:var(--ink2);font-weight:600}
+.opt .p{font:700 17px Unbounded,sans-serif;white-space:nowrap}
+.opt .tag{font-size:10px;font-weight:800;background:var(--gold);color:#141518;padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+
+/* result */
+.result{text-align:center;padding:40px 10px 20px}
+.result .big{width:96px;height:96px;border-radius:50%;background:var(--gold-dim);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:44px}
+.result h2{font-size:22px;margin-bottom:8px}
+.result p{color:var(--ink2);font-size:15px;max-width:30ch;margin:0 auto 20px}
+.result .st{font-size:13px;padding:6px 12px}
+
+/* profile */
+.stat{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.stat div{background:var(--bg2);border-radius:var(--r2);padding:12px 10px;text-align:center}
+.stat b{display:block;font:700 16px Unbounded,sans-serif}
+.stat span{font-size:11px;color:var(--ink2);font-weight:700}
+.lang{display:flex;gap:8px}
+.lang button{flex:1;padding:12px;border-radius:12px;background:var(--bg3);font-weight:700}
+.lang button[aria-pressed="true"]{background:var(--gold);color:#141518}
+.ref{display:flex;gap:8px;align-items:center;background:var(--bg3);border-radius:12px;padding:10px 10px 10px 14px;font-size:13px;font-weight:600;color:var(--ink2);overflow:hidden}
+.ref code{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:inherit;color:var(--ink)}
+.ref button{background:var(--gold);color:#141518;border-radius:9px;padding:8px 10px;font-weight:800;font-size:12px;flex:none}
+
+/* tabbar */
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(20,21,24,.9);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;padding:8px 8px calc(8px + var(--safe-b));z-index:10}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;font-size:11px;font-weight:700;color:var(--ink3);border-radius:12px}
+.tabbar button svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current="page"]{color:var(--gold2)}
+
+/* toast + loader */
+.toast{position:fixed;left:16px;right:16px;bottom:calc(92px + var(--safe-b));background:#fff;color:#141518;padding:12px 16px;border-radius:14px;font-weight:700;font-size:14px;z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.4);opacity:0;transform:translateY(10px);transition:.2s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.toast.bad{background:var(--bad);color:#fff}
+.loader{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg);z-index:40;flex-direction:column;gap:18px}
+.spin{width:44px;height:44px;background:var(--gold);clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);animation:rot 1.4s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.gate{padding:40px 24px;text-align:center}
+.gate h2{font-size:20px;margin:16px 0 8px}
+.gate p{color:var(--ink2);margin-bottom:20px}
+.gate .btn{margin-bottom:8px}
+.skel{background:linear-gradient(90deg,var(--bg2) 25%,var(--bg3) 50%,var(--bg2) 75%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:12px;height:16px}
+@keyframes sk{to{background-position:-200% 0}}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="spin"></div><div class="skel" style="width:140px"></div></div>
+<div class="toast" id="toast"></div>
+
+<div id="app">
+
+<!-- HOME -->
+<section class="screen" id="s-home">
+  <div class="top">
+    <div class="brand"><i class="star-i"></i>Tayzo</div>
+    <div class="pill" id="home-stars">⭐ <b>0</b></div>
+  </div>
+  <div class="bal">
+    <div class="deco"></div>
+    <div class="lbl" data-t="balance">Баланс</div>
+    <div class="num"><span id="bal">0</span><small data-t="uzs">сум</small></div>
+    <div class="row">
+      <button class="btn dark" data-go="topup" data-t="topup">Пополнить</button>
+      <button class="btn light" data-go="history" data-t="history">История</button>
+    </div>
+  </div>
+  <div class="tiles">
+    <button class="tile" id="tile-stars" data-go="stars"><span class="ic">⭐</span><b data-t="stars">Звёзды</b><span id="tile-stars-p">220 сум / ⭐</span></button>
+    <button class="tile" id="tile-prem" data-go="premium"><span class="ic">💎</span><b>Premium</b><span id="tile-prem-p">от 159 990 сум</span></button>
+  </div>
+  <div class="sec"><h3 data-t="recent">Последние заказы</h3><button data-go="history" data-t="all">Все</button></div>
+  <div class="list" id="home-orders"><div class="empty" data-t="no_orders">Заказов пока нет — самое время купить первые звёзды</div></div>
+</section>
+
+<!-- STARS -->
+<section class="screen" id="s-stars">
+  <h1 class="title">⭐ <span data-t="buy_stars">Купить звёзды</span></h1>
+  <p class="sub" id="stars-sub">220 сум за звезду · от 50</p>
+  <div class="card">
+    <div class="lbl" data-t="how_many">Сколько звёзд</div>
+    <div class="qty"><button id="q-minus" aria-label="−">−</button><input id="q" type="number" inputmode="numeric" value="100"><button id="q-plus" aria-label="+">+</button></div>
+    <div class="chips" id="q-chips"></div>
+  </div>
+  <div class="card">
+    <div class="lbl" data-t="to_whom">Кому</div>
+    <div class="seg" id="stars-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
+    <div class="field" id="stars-field"><span>@</span><input id="stars-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="stars-state"></div></div>
+    <div class="hint" id="stars-hint"></div>
+    <div class="sum"><span data-t="total">К оплате</span><b><span id="stars-total">22 000</span><small data-t="uzs">сум</small></b></div>
+  </div>
+</section>
+
+<!-- PREMIUM -->
+<section class="screen" id="s-premium">
+  <h1 class="title">💎 Telegram Premium</h1>
+  <p class="sub" data-t="prem_sub">Себе или в подарок — активируется сразу после оплаты</p>
+  <div class="opts" id="prem-opts"></div>
+  <div class="card">
+    <div class="lbl" data-t="to_whom">Кому</div>
+    <div class="seg" id="prem-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
+    <div class="field" id="prem-field"><span>@</span><input id="prem-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="prem-state"></div></div>
+    <div class="hint" id="prem-hint"></div>
+    <div class="sum"><span data-t="total">К оплате</span><b><span id="prem-total">0</span><small data-t="uzs">сум</small></b></div>
+  </div>
+</section>
+
+<!-- TOPUP -->
+<section class="screen" id="s-topup">
+  <h1 class="title">💳 <span data-t="topup_title">Пополнение</span></h1>
+  <p class="sub" id="topup-sub">Click · Payme · Uzcard · Humo · Visa</p>
+  <div class="card">
+    <div class="lbl" data-t="amount">Сумма</div>
+    <div class="qty"><button id="t-minus" aria-label="−">−</button><input id="t" type="number" inputmode="numeric" value="20000"><button id="t-plus" aria-label="+">+</button></div>
+    <div class="chips" id="t-chips"></div>
+    <div class="hint" id="topup-hint"></div>
+  </div>
+  <div class="card hidden" id="topup-off">
+    <div class="lbl">⏳ <span data-t="topup_soon">Онлайн-оплата подключается</span></div>
+    <p class="hint" data-t="topup_soon_p">Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.</p>
+    <button class="btn ghost block" style="margin-top:12px" id="topup-support" data-t="write_support">Написать в поддержку</button>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section class="screen" id="s-history">
+  <h1 class="title" data-t="history">История</h1>
+  <div class="seg" id="hist-seg"><button data-h="orders" aria-pressed="true" data-t="orders">Заказы</button><button data-h="ledger" aria-pressed="false" data-t="payments">Платежи</button></div>
+  <div class="list" id="hist-list"></div>
+</section>
+
+<!-- PROFILE -->
+<section class="screen" id="s-profile">
+  <div class="top"><div class="brand"><i class="star-i"></i><span id="prof-name">Профиль</span></div><div class="pill" id="prof-id">id</div></div>
+  <div class="stat">
+    <div><b id="st-stars">0</b><span data-t="stars_bought">звёзд куплено</span></div>
+    <div><b id="st-spent">0</b><span data-t="spent">потрачено</span></div>
+    <div><b id="st-bal">0</b><span data-t="balance">баланс</span></div>
+  </div>
+  <div class="card"><div class="lbl" data-t="language">Язык</div><div class="lang" id="lang"><button data-l="ru">Русский</button><button data-l="uz">O'zbek</button><button data-l="en">English</button></div></div>
+  <div class="card"><div class="lbl"><span data-t="ref_title">Приглашай друзей</span> · <span id="ref-pct">5</span>%</div><p class="hint" style="margin:0 0 10px" data-t="ref_p">Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.</p><div class="ref"><code id="ref-link">—</code><button id="ref-copy" data-t="copy">Копировать</button><button id="ref-share" data-t="share">Отправить</button></div></div>
+  <button class="btn ghost block" id="support-btn" data-t="write_support">Написать в поддержку</button>
+  <p class="hint" style="text-align:center;margin-top:14px">Tayzo · tayzo.uz</p>
+</section>
+
+<!-- RESULT -->
+<section class="screen" id="s-result">
+  <div class="result">
+    <div class="big" id="res-ic">⭐</div>
+    <h2 id="res-h">Заказ принят</h2>
+    <p id="res-p"></p>
+    <span class="st wait" id="res-st">⏳</span>
+  </div>
+</section>
+
+<!-- GATE (subscription) -->
+<section class="screen" id="s-gate">
+  <div class="gate">
+    <div class="star-i" style="width:56px;height:56px;margin:0 auto"></div>
+    <h2 data-t="gate_h">Подпишись на канал</h2>
+    <p data-t="gate_p">Чтобы пользоваться Tayzo, подпишись на наш канал — там акции и скидки.</p>
+    <div id="gate-list"></div>
+    <button class="btn ghost block" id="gate-check" data-t="gate_check">Я подписался</button>
+  </div>
+</section>
+
+</div>
+
+<nav class="tabbar" id="tabbar">
+  <button data-go="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10a1 1 0 0 1-1 1h-5v-7h-6v7H4a1 1 0 0 1-1-1z"/></svg><span data-t="tab_home">Главная</span></button>
+  <button data-go="stars"><svg viewBox="0 0 24 24"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/></svg><span data-t="stars">Звёзды</span></button>
+  <button data-go="premium"><svg viewBox="0 0 24 24"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 18M15 3l-3 18"/></svg><span>Premium</span></button>
+  <button data-go="history"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span data-t="history">История</span></button>
+  <button data-go="profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span data-t="profile">Профиль</span></button>
+</nav>
+
+<script>
+/* ---------- i18n ---------- */
+const I = {
+ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"История",stars:"Звёзды",recent:"Последние заказы",all:"Все",no_orders:"Заказов пока нет — самое время купить первые звёзды",
+ buy_stars:"Купить звёзды",how_many:"Сколько звёзд",to_whom:"Кому",to_me:"Себе",to_other:"Другому",total:"К оплате",prem_sub:"Себе или в подарок — активируется сразу после оплаты",
+ topup_title:"Пополнение",amount:"Сумма",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
+ orders:"Заказы",payments:"Платежи",stars_bought:"звёзд куплено",spent:"потрачено",language:"Язык",ref_title:"Приглашай друзей",ref_p:"Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.",copy:"Копировать",share:"Отправить",
+ tab_home:"Главная",profile:"Профиль",gate_h:"Подпишись на канал",gate_p:"Чтобы пользоваться Tayzo, подпишись на наш канал — там акции и скидки.",gate_check:"Я подписался",
+ per_star:"{p} сум за звезду · от {min}",from:"от",months:"мес",m3:"3 месяца",m6:"6 месяцев",m12:"12 месяцев",best:"Выгодно",
+ buy_for:"Купить за {p} сум",topup_for:"Пополнить на {p} сум",not_enough:"Не хватает {p} сум",pay_click:"Оплатить {p} сум",checking:"Проверяем…",found:"Получатель: {n}",need_username:"Введи username получателя",
+ no_username:"У тебя нет username — укажи получателя вручную",order_ok:"Заказ принят",order_ok_p:"{t} для @{u}. Обычно доставка занимает меньше минуты — можно закрыть, бот пришлёт уведомление.",
+ st_pending:"В обработке",st_processing:"Выполняется",st_delivered:"Доставлено",st_failed:"Повтор",st_manual:"Проверяем",st_refunded:"Возврат",
+ lt_topup:"Пополнение",lt_purchase:"Покупка",lt_refund:"Возврат",lt_referral_bonus:"Реферальный бонус",lt_promo_bonus:"Промокод",lt_admin_adjust:"Корректировка",
+ copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды Telegram по 220 сум — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} ⭐",nothing:"Пока пусто"},
+uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
+ buy_stars:"Yulduz sotib olish",how_many:"Nechta yulduz",to_whom:"Kimga",to_me:"O'zimga",to_other:"Boshqaga",total:"To'lov",prem_sub:"O'zingizga yoki sovg'a — to'lovdan so'ng darhol faollashadi",
+ topup_title:"To'ldirish",amount:"Summa",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
+ orders:"Buyurtmalar",payments:"To'lovlar",stars_bought:"yulduz olingan",spent:"sarflangan",language:"Til",ref_title:"Do'stlarni taklif qiling",ref_p:"Do'stingizning har bir to'ldirishidan foiz oling — bonus balansga avtomatik tushadi.",copy:"Nusxalash",share:"Yuborish",
+ tab_home:"Asosiy",profile:"Profil",gate_h:"Kanalga obuna bo'ling",gate_p:"Tayzo'dan foydalanish uchun kanalimizga obuna bo'ling — u yerda aksiyalar va chegirmalar.",gate_check:"Obuna bo'ldim",
+ per_star:"1 yulduz — {p} so'm · kamida {min}",from:"dan",months:"oy",m3:"3 oy",m6:"6 oy",m12:"12 oy",best:"Foydali",
+ buy_for:"{p} so'mga sotib olish",topup_for:"{p} so'mga to'ldirish",not_enough:"{p} so'm yetmayapti",pay_click:"{p} so'm to'lash",checking:"Tekshirilmoqda…",found:"Qabul qiluvchi: {n}",need_username:"Qabul qiluvchi username'ini kiriting",
+ no_username:"Sizda username yo'q — qabul qiluvchini qo'lda kiriting",order_ok:"Buyurtma qabul qilindi",order_ok_p:"@{u} uchun {t}. Odatda yetkazish bir daqiqadan kam — yopishingiz mumkin, bot xabar yuboradi.",
+ st_pending:"Navbatda",st_processing:"Bajarilmoqda",st_delivered:"Yetkazildi",st_failed:"Qayta urinish",st_manual:"Tekshiruvda",st_refunded:"Qaytarildi",
+ lt_topup:"To'ldirish",lt_purchase:"Xarid",lt_refund:"Qaytarish",lt_referral_bonus:"Referal bonus",lt_promo_bonus:"Promokod",lt_admin_adjust:"Tuzatish",
+ copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari 220 so'mdan — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} ⭐",nothing:"Hozircha bo'sh"},
+en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
+ buy_stars:"Buy Stars",how_many:"How many stars",to_whom:"Recipient",to_me:"Me",to_other:"Someone else",total:"Total",prem_sub:"For yourself or as a gift — activates right after payment",
+ topup_title:"Top up",amount:"Amount",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
+ orders:"Orders",payments:"Payments",stars_bought:"stars bought",spent:"spent",language:"Language",ref_title:"Invite friends",ref_p:"Earn a percentage of every friend's top-up — the bonus lands on your balance automatically.",copy:"Copy",share:"Share",
+ tab_home:"Home",profile:"Profile",gate_h:"Subscribe to the channel",gate_p:"To use Tayzo, subscribe to our channel — deals and discounts live there.",gate_check:"I subscribed",
+ per_star:"{p} UZS per star · min {min}",from:"from",months:"mo",m3:"3 months",m6:"6 months",m12:"12 months",best:"Best value",
+ buy_for:"Buy for {p} UZS",topup_for:"Top up {p} UZS",not_enough:"{p} UZS short",pay_click:"Pay {p} UZS",checking:"Checking…",found:"Recipient: {n}",need_username:"Enter the recipient's username",
+ no_username:"You have no username — enter the recipient manually",order_ok:"Order accepted",order_ok_p:"{t} for @{u}. Delivery usually takes under a minute — you can close this, the bot will notify you.",
+ st_pending:"Queued",st_processing:"Processing",st_delivered:"Delivered",st_failed:"Retrying",st_manual:"Under review",st_refunded:"Refunded",
+ lt_topup:"Top-up",lt_purchase:"Purchase",lt_refund:"Refund",lt_referral_bonus:"Referral bonus",lt_promo_bonus:"Promo code",lt_admin_adjust:"Adjustment",
+ copied:"Copied",lang_saved:"Language saved",err:"Something went wrong, try again",min_topup:"Minimum {p} UZS",share_text:"Telegram Stars for 220 UZS — Tayzo",prem_title:"Premium {m} mo",stars_title:"{n} ⭐",nothing:"Nothing here yet"}
+};
+let L='ru';
+const t=(k,v={})=>((I[L]&&I[L][k])||I.ru[k]||k).replace(/\{(\w+)\}/g,(_,n)=>v[n]??'');
+const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ');
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+function applyLang(){document.documentElement.lang=L;$$('[data-t]').forEach(e=>{e.textContent=t(e.dataset.t)});$$('#lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));}
+
+/* ---------- telegram ---------- */
+const tg=window.Telegram&&window.Telegram.WebApp;
+if(tg){tg.ready();tg.expand();try{tg.setHeaderColor('#141518');tg.setBackgroundColor('#141518');tg.enableClosingConfirmation&&0;}catch(e){}}
+const hap=(k='light')=>{try{k==='ok'?tg.HapticFeedback.notificationOccurred('success'):k==='bad'?tg.HapticFeedback.notificationOccurred('error'):tg.HapticFeedback.impactOccurred(k)}catch(e){}};
+const MB=tg&&tg.MainButton, BB=tg&&tg.BackButton;
+let mbHandler=null;
+function mainBtn(text,fn,opts={}){if(!MB)return;if(mbHandler)MB.offClick(mbHandler);mbHandler=fn;MB.setParams({text,color:opts.color||'#f5b301',text_color:'#141518',is_active:!opts.disabled,is_visible:true});MB.onClick(fn);}
+function hideMain(){if(MB){MB.hide();if(mbHandler){MB.offClick(mbHandler);mbHandler=null}}}
+function mbLoading(on){if(!MB)return;on?MB.showProgress():MB.hideProgress();}
+
+/* ---------- api ---------- */
+const API='/api';
+async function api(path,body){
+  const r=await fetch(API+path,{method:body?'POST':'GET',headers:{'Content-Type':'application/json','Authorization':'tma '+(tg?tg.initData:'')},body:body?JSON.stringify(body):undefined});
+  let j=null;try{j=await r.json()}catch(e){}
+  if(!r.ok){const d=(j&&j.detail)||{};const err=new Error((typeof d==='object'&&d.message)||(typeof d==='string'?d:t('err')));err.code=(typeof d==='object'&&d.code)||r.status;err.data=d;throw err;}
+  return j;
+}
+const strip=s=>String(s||'').replace(/<[^>]+>/g,'');
+let toastT;function toast(msg,bad){const e=$('#toast');e.textContent=strip(msg);e.className='toast show'+(bad?' bad':'');clearTimeout(toastT);toastT=setTimeout(()=>e.className='toast',2200);}
+
+/* ---------- state ---------- */
+let S={me:null};
+let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, topupAmt=20000;
+const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,100000,200000,500000];
+
+/* ---------- navigation ---------- */
+let cur='home', stack=[];
+function go(name,push=true){
+  if(push&&cur!==name)stack.push(cur);
+  cur=name;
+  $$('.screen').forEach(s=>s.classList.toggle('active',s.id==='s-'+name));
+  $$('#tabbar button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===name?'page':'false'));
+  $('#tabbar').classList.toggle('hidden',name==='gate'||name==='result');
+  window.scrollTo(0,0);
+  hideMain();
+  if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
+  ({home:renderHome,stars:renderStars,premium:renderPrem,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
+}
+function back(){const p=stack.pop()||'home';go(p,false);}
+if(BB)BB.onClick(back);
+document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){hap();go(b.dataset.go);}});
+
+/* ---------- home ---------- */
+const P=()=>S.me.prices;
+function renderHome(){
+  const u=S.me.user;
+  $('#bal').textContent=fmt(u.balance);
+  $('#home-stars b').textContent=fmt(u.total_stars);
+  $('#tile-stars-p').textContent=`${fmt(P().star)} ${t('uzs')} / ⭐`;
+  $('#tile-prem-p').textContent=`${t('from')} ${fmt(Math.min(...Object.values(P().premium)))} ${t('uzs')}`;
+  $('#tile-stars').classList.toggle('off',!S.me.flags.stars);
+  $('#tile-prem').classList.toggle('off',!S.me.flags.premium);
+  const list=$('#home-orders');
+  if(!S.me.recent_orders.length){list.innerHTML=`<div class="empty">${t('no_orders')}</div>`;return;}
+  list.innerHTML=S.me.recent_orders.slice(0,3).map(orderRow).join('');
+}
+const stCls=s=>s==='delivered'?'ok':(s==='refunded'||s==='failed')?'bad':'wait';
+function orderTitle(o){return o.product==='stars'?t('stars_title',{n:fmt(o.quantity)}):t('prem_title',{m:o.quantity});}
+function orderRow(o){const d=new Date(o.created_at);return `<div class="item"><div class="ic">${o.product==='stars'?'⭐':'💎'}</div><div class="mid"><b>${orderTitle(o)} → @${o.recipient}</b><span>#${o.id} · ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="end"><b>${fmt(o.price)}</b><span class="st ${stCls(o.status)}">${t('st_'+o.status)}</span></div></div>`;}
+
+/* ---------- recipient widget ---------- */
+function setupRecipient(prefix,state,product,getQty,onChange){
+  const seg=$(`#${prefix}-who`), field=$(`#${prefix}-field`), input=$(`#${prefix}-user`), st=$(`#${prefix}-state`), hint=$(`#${prefix}-hint`);
+  let timer=null, reqId=0;
+  function sync(){
+    const me=S.me.user;
+    field.classList.toggle('hidden',state.who==='me');
+    $$(`#${prefix}-who button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.who===state.who));
+    if(state.who==='me'){
+      if(!me.username){hint.textContent=t('no_username');hint.className='hint bad';state.rcp=null;state.who='other';field.classList.remove('hidden');$$(`#${prefix}-who button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.who==='other'));}
+      else{state.rcp={username:me.username,name:me.name||me.username,token:''};hint.textContent='';hint.className='hint';}
+    } else { if(!state.rcp){hint.textContent=t('need_username');hint.className='hint';} }
+    onChange();
+  }
+  seg.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hap();state.who=b.dataset.who;state.rcp=null;st.className='state';st.textContent='';if(state.who==='other'){sync();input.focus();}else sync();});
+  input.addEventListener('input',()=>{
+    const v=input.value.trim().replace(/^@/,'');state.user=v;state.rcp=null;st.className='state';st.textContent='';onChange();
+    clearTimeout(timer);
+    if(v.length<4){hint.textContent=t('need_username');hint.className='hint';return;}
+    hint.textContent=t('checking');hint.className='hint';
+    timer=setTimeout(async()=>{
+      const id=++reqId;
+      try{const r=await api('/recipient',{product,username:v,qty:getQty()});if(id!==reqId)return;state.rcp=r;st.className='state ok';st.textContent='✓';hint.textContent=t('found',{n:r.name});hint.className='hint ok';hap('ok');}
+      catch(e){if(id!==reqId)return;st.className='state bad';st.textContent='✕';hint.textContent=strip(e.message);hint.className='hint bad';}
+      onChange();
+    },500);
+  });
+  return sync;
+}
+
+/* ---------- stars ---------- */
+let starsSync;
+function clampQ(n){const p=P();n=Math.round(Number(n)||p.min_stars);return Math.min(p.max_stars,Math.max(p.min_stars,n));}
+function starsPrice(){return stars.qty*P().star;}
+function updateStars(){
+  const price=starsPrice(), bal=S.me.user.balance;
+  $('#stars-total').textContent=fmt(price);
+  $$('#q-chips .chip').forEach(c=>c.setAttribute('aria-pressed',Number(c.dataset.q)===stars.qty));
+  const ready=!!stars.rcp&&S.me.flags.stars;
+  if(bal>=price) mainBtn(t('buy_for',{p:fmt(price)}),buyStars,{disabled:!ready});
+  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);go('topup');},{color:'#ffffff'});
+}
+function renderStars(){
+  if(!starsSync){
+    $('#q-chips').innerHTML=STAR_PRESETS.map(q=>`<button class="chip" data-q="${q}">${fmt(q)}</button>`).join('');
+    $('#q-chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();stars.qty=Number(c.dataset.q);$('#q').value=stars.qty;updateStars();});
+    $('#q').addEventListener('input',()=>{stars.qty=clampQ($('#q').value);updateStars();});
+    $('#q').addEventListener('change',()=>{$('#q').value=stars.qty;});
+    $('#q-minus').addEventListener('click',()=>{hap();stars.qty=clampQ(stars.qty-50);$('#q').value=stars.qty;updateStars();});
+    $('#q-plus').addEventListener('click',()=>{hap();stars.qty=clampQ(stars.qty+50);$('#q').value=stars.qty;updateStars();});
+    starsSync=setupRecipient('stars',stars,'stars',()=>stars.qty,updateStars);
+  }
+  $('#stars-sub').textContent=t('per_star',{p:fmt(P().star),min:P().min_stars});
+  $('#q').value=stars.qty=clampQ(stars.qty);
+  starsSync();
+}
+async function buyStars(){
+  if(!stars.rcp)return;mbLoading(true);
+  try{
+    const r=await api('/orders',{product:'stars',qty:stars.qty,recipient_username:stars.rcp.username,recipient_name:stars.rcp.name,recipient_token:stars.rcp.token||''});
+    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');showResult(r.order);
+  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateStars();}else if(e.code==='subscribe'){await refreshMe();}toast(e.message,true);}
+  finally{mbLoading(false);}
+}
+
+/* ---------- premium ---------- */
+let premSync;
+function premPrice(){return P().premium[prem.months];}
+function updatePrem(){
+  const price=premPrice(), bal=S.me.user.balance;
+  $('#prem-total').textContent=fmt(price);
+  $$('#prem-opts .opt').forEach(o=>o.setAttribute('aria-pressed',Number(o.dataset.m)===prem.months));
+  const ready=!!prem.rcp&&S.me.flags.premium;
+  if(bal>=price) mainBtn(t('buy_for',{p:fmt(price)}),buyPrem,{disabled:!ready});
+  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);go('topup');},{color:'#ffffff'});
+}
+function renderPrem(){
+  const pr=P().premium;
+  $('#prem-opts').innerHTML=[3,6,12].map(m=>`<button class="opt" data-m="${m}"><div><b>${t('m'+m)}${m===12?`<span class="tag">${t('best')}</span>`:''}</b><span>${fmt(Math.round(pr[m]/m))} ${t('uzs')} / ${t('months')}</span></div><div class="p">${fmt(pr[m])}</div></button>`).join('');
+  if(!premSync){
+    $('#prem-opts').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o)return;hap();prem.months=Number(o.dataset.m);updatePrem();});
+    premSync=setupRecipient('prem',prem,'premium',()=>prem.months,updatePrem);
+  }
+  premSync();
+}
+async function buyPrem(){
+  if(!prem.rcp)return;mbLoading(true);
+  try{
+    const r=await api('/orders',{product:'premium',qty:prem.months,recipient_username:prem.rcp.username,recipient_name:prem.rcp.name,recipient_token:prem.rcp.token||''});
+    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');showResult(r.order);
+  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updatePrem();}toast(e.message,true);}
+  finally{mbLoading(false);}
+}
+
+/* ---------- result ---------- */
+let pollT=null;
+function showResult(o){
+  clearInterval(pollT);
+  go('result');
+  $('#res-ic').textContent=o.product==='stars'?'⭐':'💎';
+  $('#res-h').textContent=t('order_ok');
+  $('#res-p').textContent=t('order_ok_p',{t:orderTitle(o),u:o.recipient});
+  const st=$('#res-st');const paint=s=>{st.className='st '+stCls(s);st.textContent=t('st_'+s);};paint(o.status);
+  mainBtn('OK',()=>{clearInterval(pollT);stack=[];go('home',false);},{color:'#ffffff'});
+  pollT=setInterval(async()=>{try{const r=await api('/orders/'+o.id);paint(r.order.status);S.me.user.balance=r.balance;const i=S.me.recent_orders.findIndex(x=>x.id===o.id);if(i>-1)S.me.recent_orders[i]=r.order;if(['delivered','refunded','manual'].includes(r.order.status)){clearInterval(pollT);if(r.order.status==='delivered')hap('ok');}}catch(e){}},3000);
+}
+
+/* ---------- topup ---------- */
+let topupInit=false;
+function clampT(n){const p=P();n=Math.round(Number(n)||p.min_topup);return Math.min(p.max_topup,Math.max(p.min_topup,n));}
+function updateTopup(){
+  $$('#t-chips .chip').forEach(c=>c.setAttribute('aria-pressed',Number(c.dataset.a)===topupAmt));
+  if(!S.me.flags.click){hideMain();return;}
+  mainBtn(t('pay_click',{p:fmt(topupAmt)}),doTopup);
+}
+function renderTopup(){
+  if(!topupInit){topupInit=true;
+    $('#t-chips').innerHTML=TOPUP_PRESETS.map(a=>`<button class="chip" data-a="${a}">${fmt(a)}</button>`).join('');
+    $('#t-chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();topupAmt=Number(c.dataset.a);$('#t').value=topupAmt;updateTopup();});
+    $('#t').addEventListener('input',()=>{topupAmt=clampT($('#t').value);updateTopup();});
+    $('#t').addEventListener('change',()=>{$('#t').value=topupAmt;});
+    $('#t-minus').addEventListener('click',()=>{hap();topupAmt=clampT(topupAmt-10000);$('#t').value=topupAmt;updateTopup();});
+    $('#t-plus').addEventListener('click',()=>{hap();topupAmt=clampT(topupAmt+10000);$('#t').value=topupAmt;updateTopup();});
+    $('#topup-support').addEventListener('click',()=>openSupport());
+  }
+  $('#t').value=topupAmt=clampT(topupAmt);
+  $('#topup-hint').textContent=t('min_topup',{p:fmt(P().min_topup)});
+  $('#topup-off').classList.toggle('hidden',S.me.flags.click);
+  updateTopup();
+}
+async function doTopup(){
+  mbLoading(true);
+  try{const r=await api('/topup',{amount:topupAmt});hap('ok');tg?tg.openLink(r.url):window.open(r.url);}
+  catch(e){hap('bad');toast(e.message,true);}
+  finally{mbLoading(false);}
+}
+function openSupport(){const u='https://t.me/'+S.me.support;tg?tg.openTelegramLink(u):window.open(u);}
+
+/* ---------- history ---------- */
+let histMode='orders';
+function renderHistory(){
+  $$('#hist-seg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.h===histMode));
+  const list=$('#hist-list');list.innerHTML='<div class="skel"></div><div class="skel" style="margin-top:8px"></div>';
+  (histMode==='orders'?api('/orders'):api('/ledger')).then(r=>{
+    if(histMode==='orders'){list.innerHTML=r.orders.length?r.orders.map(orderRow).join(''):`<div class="empty">${t('no_orders')}</div>`;}
+    else{list.innerHTML=r.items.length?r.items.map(x=>{const d=new Date(x.created_at);return `<div class="item"><div class="ic">${x.amount>0?'➕':'➖'}</div><div class="mid"><b>${t('lt_'+x.type)}</b><span>${strip(x.comment||'')||d.toLocaleDateString('ru-RU')+' '+d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="end"><b style="color:${x.amount>0?'var(--ok)':'var(--ink)'}">${x.amount>0?'+':''}${fmt(x.amount)}</b><span style="font-size:11px;color:var(--ink2);font-weight:700">= ${fmt(x.balance_after)}</span></div></div>`}).join(''):`<div class="empty">${t('nothing')}</div>`;}
+  }).catch(e=>{list.innerHTML=`<div class="empty">${strip(e.message)}</div>`});
+}
+$('#hist-seg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hap();histMode=b.dataset.h;renderHistory();});
+
+/* ---------- profile ---------- */
+function renderProfile(){
+  const u=S.me.user;
+  $('#prof-name').textContent=u.name||u.username||'Профиль';$('#prof-id').textContent='id '+u.id;
+  $('#st-stars').textContent=fmt(u.total_stars);$('#st-spent').textContent=fmt(u.total_spent);$('#st-bal').textContent=fmt(u.balance);
+  $('#ref-pct').textContent=u.referral_percent;$('#ref-link').textContent=u.referral_link;
+}
+$('#lang').addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;hap();L=b.dataset.l;applyLang();renderProfile();try{await api('/lang',{lang:L});toast(t('lang_saved'));}catch(err){}});
+$('#ref-copy').addEventListener('click',async()=>{hap();try{await navigator.clipboard.writeText(S.me.user.referral_link);toast(t('copied'));}catch(e){toast(S.me.user.referral_link);}});
+$('#ref-share').addEventListener('click',()=>{hap();const u='https://t.me/share/url?url='+encodeURIComponent(S.me.user.referral_link)+'&text='+encodeURIComponent(t('share_text'));tg?tg.openTelegramLink(u):window.open(u);});
+$('#support-btn').addEventListener('click',openSupport);
+
+/* ---------- gate ---------- */
+function renderGate(list){
+  $('#gate-list').innerHTML=list.map(c=>`<a class="btn gold block" style="margin-bottom:8px" href="${c.url}" target="_blank">${c.title}</a>`).join('');
+  go('gate',false);
+}
+$('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api('/subscribe/check');if(r.need_subscribe.length){toast(t('gate_h'),true);renderGate(r.need_subscribe);}else{S.me.need_subscribe=[];stack=[];go('home',false);}}catch(e){toast(e.message,true)}});
+$('#gate-list').addEventListener('click',e=>{const a=e.target.closest('a');if(a&&tg){e.preventDefault();tg.openTelegramLink(a.href);}});
+
+/* ---------- boot ---------- */
+async function refreshMe(){S.me=await api('/me');L=S.me.user.lang in I?S.me.user.lang:'ru';applyLang();if(S.me.need_subscribe.length){renderGate(S.me.need_subscribe);return false;}return true;}
+(async()=>{
+  try{
+    if(!tg||!tg.initData){$('#loader').innerHTML='<div class="gate"><div class="star-i" style="width:56px;height:56px;margin:0 auto 16px"></div><h2>Tayzo</h2><p>Открой приложение из Telegram: <a href="https://t.me/tayzoapp">@tayzoapp</a></p></div>';return;}
+    const ok=await refreshMe();
+    $('#loader').remove();
+    if(!ok)return;
+    const sp=(tg.initDataUnsafe&&tg.initDataUnsafe.start_param)||'';
+    const m=/^(stars|premium)(?:_(\d+))?/.exec(sp);
+    if(m&&m[1]==='stars'){if(m[2])stars.qty=Number(m[2]);go('stars',false);}
+    else if(m&&m[1]==='premium'){if(m[2]&&[3,6,12].includes(Number(m[2])))prem.months=Number(m[2]);go('premium',false);}
+    else if(sp==='topup')go('topup',false);
+    else go('home',false);
+  }catch(e){$('#loader').innerHTML=`<div class="gate"><h2>😕</h2><p>${strip(e.message)}</p><button class="btn gold" onclick="location.reload()">Retry</button></div>`;}
+})();
+document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'&&S.me){try{const m=await api('/me');S.me=m;if(cur==='home')renderHome();if(cur==='stars')updateStars();if(cur==='premium')updatePrem();}catch(e){}}});
+</script>
+</body>
+</html>
