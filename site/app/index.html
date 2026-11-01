@@ -135,6 +135,7 @@ h1.title{font-size:24px;margin:2px 0 14px;display:flex;align-items:center;gap:12
 .seg{position:relative;display:flex;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:12px}
 .seg::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:11px;background:var(--glass3);transition:transform .2s var(--ease)}
 .seg[data-pos="1"]::before{transform:translateX(100%)}
+.seg[data-pos="none"]::before{opacity:0}
 .seg button{flex:1;padding:10px;border-radius:11px;font-weight:700;font-size:14px;color:var(--ink2);position:relative;transition:color .2s}
 .seg button[aria-pressed="true"]{color:var(--ink)}
 .field{display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:14px;padding:4px 4px 4px 14px;transition:border-color .2s}
@@ -173,6 +174,13 @@ h1.title{font-size:24px;margin:2px 0 14px;display:flex;align-items:center;gap:12
 .gift .gs{display:inline-flex;align-items:center;gap:3px}.gift .gs svg{width:12px;height:12px}
 .gift .lim{position:absolute;top:6px;right:6px;font-size:9px;font-weight:800;background:rgba(0,0,0,.4);color:var(--gold2);padding:2px 6px;border-radius:999px}
 .gift.so{opacity:.4;pointer-events:none}
+
+/* gift preview */
+.gsel{display:flex;align-items:center;gap:14px;background:var(--glass);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.gsel .img{width:64px;height:64px;flex:none;display:flex;align-items:center;justify-content:center}
+.gsel .img svg,.gsel .img img,.gsel .img video{width:64px;height:64px}
+.gsel b{display:block;font-size:15px}
+.gsel span{font-size:12px;color:var(--ink2);font-weight:700}
 
 /* result */
 .result{text-align:center;padding:40px 10px 20px}
@@ -316,9 +324,15 @@ h1.title{font-size:24px;margin:2px 0 14px;display:flex;align-items:center;gap:12
   <p class="sub" data-t="gifts_sub">Выбери подарок — отправим анонимно, получатель увидит его в профиле</p>
   <div id="gifts-off" class="card hidden"><p class="hint" data-t="gifts_soon">Подарки скоро появятся — заглядывай.</p></div>
   <div class="ggrid" id="ggrid"></div>
+</section>
+
+<!-- GIFT CONFIG (шаг 2) -->
+<section class="screen" id="s-giftcfg">
+  <h1 class="title"><span class="ic g-gift ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-gift"/></svg></span><span data-t="gift_step2">Кому подарить</span></h1>
+  <div class="gsel" id="gift-preview"><div class="img"></div><div><b id="gp-title">—</b><span id="gp-price">—</span></div></div>
   <div class="card" id="gift-rcp-card">
     <div class="lbl" data-t="to_whom">Кому</div>
-    <div class="seg" id="gift-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
+    <div class="seg" id="gift-who"><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button><button data-who="me" aria-pressed="false" data-t="to_me">Себе</button></div>
     <div class="field" id="gift-field"><span>@</span><input id="gift-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="gift-state"></div></div>
     <div class="hint" id="gift-hint"></div>
   </div>
@@ -418,6 +432,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  st_pending:"В обработке",st_processing:"Выполняется",st_delivered:"Доставлено",st_failed:"Повтор",st_manual:"Проверяем",st_refunded:"Возврат",
  lt_topup:"Пополнение",lt_purchase:"Покупка",lt_refund:"Возврат",lt_referral_bonus:"Реферальный бонус",lt_promo_bonus:"Промокод",lt_admin_adjust:"Корректировка",
  buy_prem:"Купить Premium",per_star_short:"{p} сум за звезду",
+ gift_step2:"Кому подарить",next:"Далее",pick_who:"Выбери, кому отправить подарок",
  gift_count:"Количество",gift_msg:"Подпись к подарку",gift_msg_hint:"Необязательно. Получатель увидит текст вместе с подарком, отправитель останется скрыт.",gift_msg_ph:"Например: с днём рождения!",gift_max:"максимум {n} шт.",gift_for_n:"Подарить {n} шт. за {p} сум",gifts_ok_p:"{n} подарков для @{u} отправятся в течение пары минут — анонимно. Бот пришлёт уведомления.",
  gifts:"Подарки",gifts_tile:"Подарки Telegram",gifts_tile_p:"Анонимно, оплата в сумах",gifts_sub:"Выбери подарок — отправим анонимно, получатель увидит его в профиле",gifts_soon:"Подарки скоро появятся — заглядывай.",gift_for:"Подарить за {p} сум",pick_gift:"Выбери подарок",left:"осталось {n}",gift_title:"{t}",gift_ok_p:"Подарок для @{u} отправится через минуту — анонимно. Бот пришлёт уведомление.",
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды Telegram по 220 сум — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
@@ -432,6 +447,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  st_pending:"Navbatda",st_processing:"Bajarilmoqda",st_delivered:"Yetkazildi",st_failed:"Qayta urinish",st_manual:"Tekshiruvda",st_refunded:"Qaytarildi",
  lt_topup:"To'ldirish",lt_purchase:"Xarid",lt_refund:"Qaytarish",lt_referral_bonus:"Referal bonus",lt_promo_bonus:"Promokod",lt_admin_adjust:"Tuzatish",
  buy_prem:"Premium sotib olish",per_star_short:"1 yulduz — {p} so'm",
+ gift_step2:"Kimga sovg'a qilamiz",next:"Davom etish",pick_who:"Sovg'ani kimga yuborishni tanlang",
  gift_count:"Soni",gift_msg:"Sovg'aga yozuv",gift_msg_hint:"Ixtiyoriy. Qabul qiluvchi matnni sovg'a bilan ko'radi, yuboruvchi yashirin qoladi.",gift_msg_ph:"Masalan: tug'ilgan kuning bilan!",gift_max:"ko'pi bilan {n} ta",gift_for_n:"{n} ta — {p} so'mga sovg'a qilish",gifts_ok_p:"@{u} uchun {n} ta sovg'a bir necha daqiqada anonim yuboriladi. Bot xabar beradi.",
  gifts:"Sovg'alar",gifts_tile:"Telegram sovg'alari",gifts_tile_p:"Anonim, so'mda to'lov",gifts_sub:"Sovg'ani tanlang — anonim yuboramiz, qabul qiluvchi uni profilida ko'radi",gifts_soon:"Sovg'alar tez orada — kuzatib boring.",gift_for:"{p} so'mga sovg'a qilish",pick_gift:"Sovg'ani tanlang",left:"{n} ta qoldi",gift_title:"{t}",gift_ok_p:"@{u} uchun sovg'a bir daqiqada anonim yuboriladi. Bot xabar beradi.",
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari 220 so'mdan — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
@@ -446,6 +462,7 @@ en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",r
  st_pending:"Queued",st_processing:"Processing",st_delivered:"Delivered",st_failed:"Retrying",st_manual:"Under review",st_refunded:"Refunded",
  lt_topup:"Top-up",lt_purchase:"Purchase",lt_refund:"Refund",lt_referral_bonus:"Referral bonus",lt_promo_bonus:"Promo code",lt_admin_adjust:"Adjustment",
  buy_prem:"Buy Premium",per_star_short:"{p} UZS per star",
+ gift_step2:"Who is it for",next:"Continue",pick_who:"Choose who receives the gift",
  gift_count:"Quantity",gift_msg:"Gift message",gift_msg_hint:"Optional. The recipient sees the text with the gift; the sender stays hidden.",gift_msg_ph:"e.g. Happy birthday!",gift_max:"max {n}",gift_for_n:"Gift {n}× for {p} UZS",gifts_ok_p:"{n} gifts for @{u} will be sent anonymously within a couple of minutes. The bot will notify you.",
  gifts:"Gifts",gifts_tile:"Telegram Gifts",gifts_tile_p:"Anonymous, paid in soums",gifts_sub:"Pick a gift — we send it anonymously, the recipient sees it on their profile",gifts_soon:"Gifts are coming soon — check back.",gift_for:"Gift for {p} UZS",pick_gift:"Pick a gift",left:"{n} left",gift_title:"{t}",gift_ok_p:"The gift for @{u} will be sent anonymously within a minute. The bot will notify you.",
  copied:"Copied",lang_saved:"Language saved",err:"Something went wrong, try again",min_topup:"Minimum {p} UZS",share_text:"Telegram Stars for 220 UZS — Tayzo",prem_title:"Premium {m} mo",stars_title:"{n} Stars",nothing:"Nothing here yet"}
@@ -483,14 +500,14 @@ let toastT;function toast(msg,bad){const e=$('#toast');e.textContent=strip(msg);
 
 /* ---------- state ---------- */
 let S={me:null};
-let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:'me',rcp:null,user:'',list:null,count:1,msg:''}, topupAmt=20000;
+let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:null,rcp:null,user:'',list:null,count:1,msg:''}, topupAmt=20000;
 const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,100000,200000,500000];
 
 /* ---------- navigation ---------- */
 let cur='home', stack=[];
 const TAB_ORDER=['home','stars','premium','gifts','profile'];
 function go(name,push=true,backward=false){
-  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
+  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
   if(TAB_ORDER.includes(name)&&TAB_ORDER.includes(cur))backward=TAB_ORDER.indexOf(name)<TAB_ORDER.indexOf(cur);
   if(push&&cur!==name)stack.push(cur);
   const prev=$('#s-'+cur), next=$('#s-'+name);
@@ -510,7 +527,7 @@ function go(name,push=true,backward=false){
   $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
   ctaWanted=false;
   if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
-  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
+  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
   Promise.resolve(r).then(()=>{if(!ctaWanted)hideMain();});
 }
 function back(){const p=stack.pop()||'home';go(p,false,true);}
@@ -550,12 +567,14 @@ function orderRow(o){const d=new Date(o.created_at);return `<div class="item"><d
 function setupRecipient(prefix,state,product,getQty,onChange){
   const seg=$(`#${prefix}-who`), field=$(`#${prefix}-field`), input=$(`#${prefix}-user`), st=$(`#${prefix}-state`), hint=$(`#${prefix}-hint`);
   let timer=null, reqId=0;
+  const segPos=w=>{const btns=$$(`#${prefix}-who button`);const i=btns.findIndex(b=>b.dataset.who===w);seg.dataset.pos=i<0?'none':i;};
   function sync(){
     const me=S.me.user;
-    field.classList.toggle('hidden',state.who==='me');
-    $$(`#${prefix}-who button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.who===state.who));seg.dataset.pos=state.who==='me'?0:1;
+    field.classList.toggle('hidden',state.who!=='other');
+    $$(`#${prefix}-who button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.who===state.who));segPos(state.who);
+    if(state.who===null){state.rcp=null;hint.textContent=t('pick_who');hint.className='hint';onChange();return;}
     if(state.who==='me'){
-      if(!me.username){hint.textContent=t('no_username');hint.className='hint bad';state.rcp=null;state.who='other';field.classList.remove('hidden');$$(`#${prefix}-who button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.who==='other'));seg.dataset.pos=1;}
+      if(!me.username){hint.textContent=t('no_username');hint.className='hint bad';state.rcp=null;state.who='other';field.classList.remove('hidden');$$(`#${prefix}-who button`).forEach(b=>b.setAttribute('aria-pressed',b.dataset.who==='other'));segPos('other');}
       else{state.rcp={username:me.username,name:me.name||me.username,token:''};hint.textContent='';hint.className='hint';}
     } else { if(!state.rcp){hint.textContent=t('need_username');hint.className='hint';} }
     onChange();
@@ -650,16 +669,18 @@ function mountSticker(el,g,autoplay){
   else {el.innerHTML=`<img src="${g.image}" alt="">`;}
 }
 function giftMax(){const g=gift.item;let m=20;if(g&&g.per_user_remains!=null)m=Math.min(m,g.per_user_remains);if(g&&g.remains!=null)m=Math.min(m,g.remains);return Math.max(1,m);}
+function updateGiftPick(){
+  $$('#ggrid .gift').forEach(x=>{const on=x.dataset.id===gift.id;x.setAttribute('aria-pressed',on);const a=x.querySelector('.img').__anim;if(a){on?a.play():(a.stop(),a.goToAndStop(0,true));}});
+  mainBtn(t('next'),()=>go('giftcfg'),{disabled:!gift.item});
+}
 function updateGift(){
+  if(cur!=='giftcfg')return;
   const unit=gift.item?gift.item.price:0, bal=S.me.user.balance;
   gift.count=Math.min(giftMax(),Math.max(1,gift.count));$('#g-count').value=gift.count;
   const price=unit*gift.count;
   $('#gift-total').textContent=fmt(price);
   $('#gift-count-hint').textContent=giftMax()<20?t('gift_max',{n:giftMax()}):'';
-  $('#gift-opts-card').classList.toggle('hidden',!gift.item);
-  $$('#ggrid .gift').forEach(x=>{const on=x.dataset.id===gift.id;x.setAttribute('aria-pressed',on);const a=x.querySelector('.img').__anim;if(a){on?a.play():(a.stop(),a.goToAndStop(0,true));}});
-  $('#gift-rcp-card').classList.toggle('hidden',!gift.item);
-  if(!gift.item){mainBtn(t('pick_gift'),()=>{},{disabled:true});return;}
+  if(!gift.item){go('gifts',false,true);return;}
   const ready=!!gift.rcp;
   if(bal>=price) mainBtn(gift.count>1?t('gift_for_n',{n:gift.count,p:fmt(price)}):t('gift_for',{p:fmt(price)}),buyGift,{disabled:!ready});
   else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);go('topup');},{color:'#ffffff'});
@@ -672,10 +693,10 @@ async function renderGifts(){
     $('#g-count').addEventListener('input',()=>{gift.count=digits($('#g-count').value)||1;updateGift();});
     $('#gift-msg').addEventListener('input',()=>{gift.msg=$('#gift-msg').value;$('#gift-msg-cnt').textContent=gift.msg.length+'/255';});
     $('#gift-msg').placeholder=t('gift_msg_ph');
-    $('#ggrid').addEventListener('click',e=>{const c=e.target.closest('.gift');if(!c)return;hap();gift.id=c.dataset.id;gift.item=gift.list.find(g=>g.id===gift.id);updateGift();$('#gift-rcp-card').scrollIntoView({behavior:'smooth',block:'nearest'});});
+    $('#ggrid').addEventListener('click',e=>{const c=e.target.closest('.gift');if(!c)return;hap();gift.id=c.dataset.id;gift.item=gift.list.find(g=>g.id===gift.id);updateGiftPick();});
   }
   const grid=$('#ggrid');
-  if(!S.me.flags.gifts){$('#gifts-off').classList.remove('hidden');grid.innerHTML='';$('#gift-rcp-card').classList.add('hidden');hideMain();return;}
+  if(!S.me.flags.gifts){$('#gifts-off').classList.remove('hidden');grid.innerHTML='';hideMain();return;}
   if(!gift.list){
     grid.innerHTML='<div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div>';
     try{const r=await api('/gifts');gift.list=r.gifts;}catch(e){grid.innerHTML=`<div class="empty">${strip(e.message)}</div>`;return;}
@@ -685,13 +706,19 @@ async function renderGifts(){
     const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const el=en.target.querySelector('.img');if(!el.__mounted){el.__mounted=1;mountSticker(el,gift.list.find(g=>g.id===en.target.dataset.id),false);}}})},{rootMargin:'200px'});
     cards.forEach(c=>io.observe(c));
   }
+  updateGiftPick();
+}
+function renderGiftCfg(){
+  if(!gift.item){go('gifts',false,true);return;}
+  const pv=$('#gift-preview .img');pv.innerHTML='';pv.__anim=null;mountSticker(pv,gift.item,true);
+  $('#gp-title').textContent=gift.item.title||t('gifts');$('#gp-price').textContent=`${fmt(gift.item.price)} ${t('uzs')} · ${gift.item.stars} ⭐`.replace('⭐','★');
   giftSync();updateGift();
 }
 async function buyGift(){
   if(!gift.rcp||!gift.item)return;mbLoading(true);
   try{
     const r=await api('/orders',{product:'gift',gift_id:gift.item.id,count:gift.count,message:gift.msg||null,recipient_username:gift.rcp.username,recipient_name:gift.rcp.name,recipient_token:gift.rcp.token||''});
-    S.me.user.balance=r.balance;(r.orders||[r.order]).slice().reverse().forEach(o=>S.me.recent_orders.unshift(o));hap('ok');const n=r.count||1;gift.item=null;gift.id=null;gift.count=1;gift.msg='';$('#gift-msg').value='';$('#gift-msg-cnt').textContent='0/255';showResult(r.order,n);
+    S.me.user.balance=r.balance;(r.orders||[r.order]).slice().reverse().forEach(o=>S.me.recent_orders.unshift(o));hap('ok');const n=r.count||1;gift.item=null;gift.id=null;gift.count=1;gift.msg='';gift.who=null;gift.rcp=null;$('#gift-msg').value='';$('#gift-msg-cnt').textContent='0/255';stack=stack.filter(x=>x!=='giftcfg');showResult(r.order,n);
   }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateGift();}toast(e.message,true);}
   finally{mbLoading(false);}
 }
