@@ -32,11 +32,23 @@ a{color:var(--gold2);text-decoration:none}
 .hidden{display:none!important}
 
 #app{min-height:100%;display:flex;flex-direction:column}
+#app{position:relative}
 .screen{display:none;flex:1;padding:16px 16px calc(170px + var(--safe-b))}
-.screen.active{display:block;animation:in .22s cubic-bezier(.2,.7,.2,1)}
-@keyframes in{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
-.screen.active.backward{animation-name:inb}
-@keyframes inb{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:none}}
+.screen.active{display:block}
+/* переход: уходящий экран остаётся на месте и растворяется, новый въезжает; дети — каскадом */
+.screen.leaving{display:block;position:absolute;inset:0;pointer-events:none;animation:out .26s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes out{to{opacity:0;transform:translateX(-24px) scale(.985)}}
+.screen.leaving.backward{animation-name:outb}
+@keyframes outb{to{opacity:0;transform:translateX(24px) scale(.985)}}
+.screen.entering{animation:in .36s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateX(28px)}to{opacity:1;transform:none}}
+.screen.entering.backward{animation-name:inb}
+@keyframes inb{from{opacity:0;transform:translateX(-28px)}to{opacity:1;transform:none}}
+.screen.entering>*{animation:rise .42s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*40ms + 40ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.tabbar button{transition:color .2s,transform .2s}
+.tabbar button[aria-current="page"] svg{transform:translateY(-2px);transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.tabbar button svg{transition:transform .25s}
 /* панель действия над таббаром — своя, чтобы экран не прыгал при появлении нативной кнопки */
 .cta{position:fixed;left:12px;right:12px;bottom:calc(76px + var(--safe-b));z-index:11;transform:translateY(130%);opacity:0;transition:transform .28s cubic-bezier(.2,.7,.2,1),opacity .2s;pointer-events:none}
 .cta.show{transform:none;opacity:1;pointer-events:auto}
@@ -426,10 +438,21 @@ const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,
 
 /* ---------- navigation ---------- */
 let cur='home', stack=[];
+const TAB_ORDER=['home','stars','premium','gifts','profile'];
 function go(name,push=true,backward=false){
+  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
+  if(TAB_ORDER.includes(name)&&TAB_ORDER.includes(cur))backward=TAB_ORDER.indexOf(name)<TAB_ORDER.indexOf(cur);
   if(push&&cur!==name)stack.push(cur);
+  const prev=$('#s-'+cur), next=$('#s-'+name);
   cur=name;
-  $$('.screen').forEach(s=>{const on=s.id==='s-'+name;s.classList.toggle('active',on);s.classList.toggle('backward',on&&backward);});
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  $$('.screen.leaving,.screen.entering').forEach(s=>{s.classList.remove('leaving','entering','backward','active');s.style.top='';});
+  if(prev&&prev!==next&&!reduce){
+    prev.classList.remove('active');prev.classList.add('leaving');prev.classList.toggle('backward',backward);prev.style.top=(-window.scrollY)+'px';
+    prev.addEventListener('animationend',()=>{prev.classList.remove('leaving','backward');prev.style.top='';},{once:true});
+  } else if(prev){prev.classList.remove('active');}
+  next.classList.add('active');
+  if(!reduce){next.classList.add('entering');next.classList.toggle('backward',backward);[...next.children].forEach((c,i)=>c.style.setProperty('--i',Math.min(i,6)));next.addEventListener('animationend',e=>{if(e.target===next)next.classList.remove('entering','backward');},{once:true});}
   $$('#tabbar button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===name?'page':'false'));
   $('#tabbar').classList.toggle('hidden',name==='gate'||name==='result');
   $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
