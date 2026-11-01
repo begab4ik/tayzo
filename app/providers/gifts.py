@@ -35,7 +35,7 @@ class TelegramGiftProvider(Provider):
         u = await tg_account.resolve_user(username)
         return Recipient(username=u["username"], name=u["name"], token=str(u["id"]))
 
-    async def fulfill(self, recipient: Recipient, quantity: int, gift_id: int | None = None) -> FulfillResult:
+    async def fulfill(self, recipient: Recipient, quantity: int, gift_id: int | None = None, message: str | None = None) -> FulfillResult:
         if not gift_id:
             raise ProviderError("В заказе нет gift_id")
         need = int(quantity)
@@ -46,7 +46,7 @@ class TelegramGiftProvider(Provider):
             balance = await self._wait_balance(need)
             if balance < need:
                 raise ProviderError(f"Звёзды куплены, но ещё не зачислились (на аккаунте {balance}, нужно {need}) — повтори позже")
-        await tg_account.send_gift(recipient.username, int(gift_id), hide_name=True)
+        await tg_account.send_gift(recipient.username, int(gift_id), hide_name=True, message=message)
         if cost_ton is None:
             async with get_session() as s:
                 cost_ton = (await cfg.get_dec(s, "star_price_ton")) * need

@@ -36,10 +36,11 @@ a{color:var(--gold2);text-decoration:none}
 .screen{display:none;flex:1;padding:16px 16px calc(170px + var(--safe-b))}
 .screen.active{display:block}
 /* переход: уходящий экран остаётся на месте и растворяется, новый въезжает; дети — каскадом */
-.screen.leaving{display:block;position:absolute;inset:0;pointer-events:none;animation:out .16s ease-out forwards}
-@keyframes out{to{opacity:0}}
-.screen.entering{animation:in .28s cubic-bezier(.2,.8,.2,1) both}
-@keyframes in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.screen{will-change:opacity,transform}
+.screen.leaving{display:block;position:absolute;inset:0;pointer-events:none;animation:out .22s cubic-bezier(.4,0,1,1) forwards}
+@keyframes out{to{opacity:0;transform:scale(.992)}}
+.screen.entering{animation:in .4s cubic-bezier(.16,1,.3,1) both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .tabbar button{transition:color .2s}
 .tabbar button svg{transition:transform .22s cubic-bezier(.2,.8,.2,1)}
 .tabbar button[aria-current="page"] svg{transform:scale(1.08)}
@@ -304,6 +305,14 @@ h1.title{font-size:24px;margin:4px 0 14px;display:flex;align-items:center;gap:10
     <div class="seg" id="gift-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
     <div class="field" id="gift-field"><span>@</span><input id="gift-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="gift-state"></div></div>
     <div class="hint" id="gift-hint"></div>
+  </div>
+  <div class="card" id="gift-opts-card">
+    <div class="lbl" data-t="gift_count">Количество</div>
+    <div class="qty"><button id="g-minus" aria-label="−">−</button><input id="g-count" type="text" inputmode="numeric" value="1"><button id="g-plus" aria-label="+">+</button></div>
+    <div class="hint" id="gift-count-hint"></div>
+    <div class="lbl" style="margin-top:14px" data-t="gift_msg">Подпись к подарку</div>
+    <div class="field"><input id="gift-msg" maxlength="255" placeholder="" autocapitalize="sentences"><div class="state" id="gift-msg-cnt" style="width:auto;padding:0 10px;font-size:12px;color:var(--ink3)">0/255</div></div>
+    <div class="hint" data-t="gift_msg_hint">Необязательно. Получатель увидит текст вместе с подарком, отправитель останется скрыт.</div>
     <div class="sum"><span data-t="total">К оплате</span><b><span id="gift-total">0</span><small data-t="uzs">сум</small></b></div>
   </div>
 </section>
@@ -393,6 +402,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  st_pending:"В обработке",st_processing:"Выполняется",st_delivered:"Доставлено",st_failed:"Повтор",st_manual:"Проверяем",st_refunded:"Возврат",
  lt_topup:"Пополнение",lt_purchase:"Покупка",lt_refund:"Возврат",lt_referral_bonus:"Реферальный бонус",lt_promo_bonus:"Промокод",lt_admin_adjust:"Корректировка",
  buy_prem:"Купить Premium",per_star_short:"{p} сум за звезду",
+ gift_count:"Количество",gift_msg:"Подпись к подарку",gift_msg_hint:"Необязательно. Получатель увидит текст вместе с подарком, отправитель останется скрыт.",gift_msg_ph:"Например: с днём рождения!",gift_max:"максимум {n} шт.",gift_for_n:"Подарить {n} шт. за {p} сум",gifts_ok_p:"{n} подарков для @{u} отправятся в течение пары минут — анонимно. Бот пришлёт уведомления.",
  gifts:"Подарки",gifts_tile:"Подарки Telegram",gifts_tile_p:"Анонимно, оплата в сумах",gifts_sub:"Выбери подарок — отправим анонимно, получатель увидит его в профиле",gifts_soon:"Подарки скоро появятся — заглядывай.",gift_for:"Подарить за {p} сум",pick_gift:"Выбери подарок",left:"осталось {n}",gift_title:"{t}",gift_ok_p:"Подарок для @{u} отправится через минуту — анонимно. Бот пришлёт уведомление.",
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды Telegram по 220 сум — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
@@ -406,6 +416,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  st_pending:"Navbatda",st_processing:"Bajarilmoqda",st_delivered:"Yetkazildi",st_failed:"Qayta urinish",st_manual:"Tekshiruvda",st_refunded:"Qaytarildi",
  lt_topup:"To'ldirish",lt_purchase:"Xarid",lt_refund:"Qaytarish",lt_referral_bonus:"Referal bonus",lt_promo_bonus:"Promokod",lt_admin_adjust:"Tuzatish",
  buy_prem:"Premium sotib olish",per_star_short:"1 yulduz — {p} so'm",
+ gift_count:"Soni",gift_msg:"Sovg'aga yozuv",gift_msg_hint:"Ixtiyoriy. Qabul qiluvchi matnni sovg'a bilan ko'radi, yuboruvchi yashirin qoladi.",gift_msg_ph:"Masalan: tug'ilgan kuning bilan!",gift_max:"ko'pi bilan {n} ta",gift_for_n:"{n} ta — {p} so'mga sovg'a qilish",gifts_ok_p:"@{u} uchun {n} ta sovg'a bir necha daqiqada anonim yuboriladi. Bot xabar beradi.",
  gifts:"Sovg'alar",gifts_tile:"Telegram sovg'alari",gifts_tile_p:"Anonim, so'mda to'lov",gifts_sub:"Sovg'ani tanlang — anonim yuboramiz, qabul qiluvchi uni profilida ko'radi",gifts_soon:"Sovg'alar tez orada — kuzatib boring.",gift_for:"{p} so'mga sovg'a qilish",pick_gift:"Sovg'ani tanlang",left:"{n} ta qoldi",gift_title:"{t}",gift_ok_p:"@{u} uchun sovg'a bir daqiqada anonim yuboriladi. Bot xabar beradi.",
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari 220 so'mdan — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
@@ -419,6 +430,7 @@ en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",r
  st_pending:"Queued",st_processing:"Processing",st_delivered:"Delivered",st_failed:"Retrying",st_manual:"Under review",st_refunded:"Refunded",
  lt_topup:"Top-up",lt_purchase:"Purchase",lt_refund:"Refund",lt_referral_bonus:"Referral bonus",lt_promo_bonus:"Promo code",lt_admin_adjust:"Adjustment",
  buy_prem:"Buy Premium",per_star_short:"{p} UZS per star",
+ gift_count:"Quantity",gift_msg:"Gift message",gift_msg_hint:"Optional. The recipient sees the text with the gift; the sender stays hidden.",gift_msg_ph:"e.g. Happy birthday!",gift_max:"max {n}",gift_for_n:"Gift {n}× for {p} UZS",gifts_ok_p:"{n} gifts for @{u} will be sent anonymously within a couple of minutes. The bot will notify you.",
  gifts:"Gifts",gifts_tile:"Telegram Gifts",gifts_tile_p:"Anonymous, paid in soums",gifts_sub:"Pick a gift — we send it anonymously, the recipient sees it on their profile",gifts_soon:"Gifts are coming soon — check back.",gift_for:"Gift for {p} UZS",pick_gift:"Pick a gift",left:"{n} left",gift_title:"{t}",gift_ok_p:"The gift for @{u} will be sent anonymously within a minute. The bot will notify you.",
  copied:"Copied",lang_saved:"Language saved",err:"Something went wrong, try again",min_topup:"Minimum {p} UZS",share_text:"Telegram Stars for 220 UZS — Tayzo",prem_title:"Premium {m} mo",stars_title:"{n} Stars",nothing:"Nothing here yet"}
 };
@@ -428,7 +440,7 @@ const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/ /g,' ');
 const digits=v=>Number(String(v).replace(/\D/g,''))||0;
 function fmtInput(el){const v=digits(el.value);el.value=v?fmt(v):'';}
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
-function applyLang(){document.documentElement.lang=L;$$('[data-t]').forEach(e=>{e.textContent=t(e.dataset.t)});$$('#lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));}
+function applyLang(){document.documentElement.lang=L;$$('[data-t]').forEach(e=>{e.textContent=t(e.dataset.t)});$$('[data-left]').forEach(e=>{e.textContent=t('left',{n:fmt(e.dataset.left)})});const gm=$('#gift-msg');if(gm)gm.placeholder=t('gift_msg_ph');$$('#lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));}
 
 /* ---------- telegram ---------- */
 const tg=window.Telegram&&window.Telegram.WebApp;
@@ -455,7 +467,7 @@ let toastT;function toast(msg,bad){const e=$('#toast');e.textContent=strip(msg);
 
 /* ---------- state ---------- */
 let S={me:null};
-let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:'me',rcp:null,user:'',list:null}, topupAmt=20000;
+let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:'me',rcp:null,user:'',list:null,count:1,msg:''}, topupAmt=20000;
 const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,100000,200000,500000];
 
 /* ---------- navigation ---------- */
@@ -618,19 +630,29 @@ function mountSticker(el,g,autoplay){
   } else if(g.kind==='webm'){el.innerHTML=`<video src="${g.image}" autoplay muted loop playsinline></video>`;}
   else {el.innerHTML=`<img src="${g.image}" alt="">`;}
 }
+function giftMax(){const g=gift.item;let m=20;if(g&&g.per_user_remains!=null)m=Math.min(m,g.per_user_remains);if(g&&g.remains!=null)m=Math.min(m,g.remains);return Math.max(1,m);}
 function updateGift(){
-  const price=gift.item?gift.item.price:0, bal=S.me.user.balance;
+  const unit=gift.item?gift.item.price:0, bal=S.me.user.balance;
+  gift.count=Math.min(giftMax(),Math.max(1,gift.count));$('#g-count').value=gift.count;
+  const price=unit*gift.count;
   $('#gift-total').textContent=fmt(price);
+  $('#gift-count-hint').textContent=giftMax()<20?t('gift_max',{n:giftMax()}):'';
+  $('#gift-opts-card').classList.toggle('hidden',!gift.item);
   $$('#ggrid .gift').forEach(x=>{const on=x.dataset.id===gift.id;x.setAttribute('aria-pressed',on);const a=x.querySelector('.img').__anim;if(a){on?a.play():(a.stop(),a.goToAndStop(0,true));}});
   $('#gift-rcp-card').classList.toggle('hidden',!gift.item);
   if(!gift.item){mainBtn(t('pick_gift'),()=>{},{disabled:true});return;}
   const ready=!!gift.rcp;
-  if(bal>=price) mainBtn(t('gift_for',{p:fmt(price)}),buyGift,{disabled:!ready});
+  if(bal>=price) mainBtn(gift.count>1?t('gift_for_n',{n:gift.count,p:fmt(price)}):t('gift_for',{p:fmt(price)}),buyGift,{disabled:!ready});
   else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);go('topup');},{color:'#ffffff'});
 }
 async function renderGifts(){
   if(!giftSync){
     giftSync=setupRecipient('gift',gift,'gift',()=>1,updateGift);
+    $('#g-minus').addEventListener('click',()=>{hap();gift.count--;updateGift();});
+    $('#g-plus').addEventListener('click',()=>{hap();gift.count++;updateGift();});
+    $('#g-count').addEventListener('input',()=>{gift.count=digits($('#g-count').value)||1;updateGift();});
+    $('#gift-msg').addEventListener('input',()=>{gift.msg=$('#gift-msg').value;$('#gift-msg-cnt').textContent=gift.msg.length+'/255';});
+    $('#gift-msg').placeholder=t('gift_msg_ph');
     $('#ggrid').addEventListener('click',e=>{const c=e.target.closest('.gift');if(!c)return;hap();gift.id=c.dataset.id;gift.item=gift.list.find(g=>g.id===gift.id);updateGift();$('#gift-rcp-card').scrollIntoView({behavior:'smooth',block:'nearest'});});
   }
   const grid=$('#ggrid');
@@ -639,7 +661,7 @@ async function renderGifts(){
     grid.innerHTML='<div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div><div class="skel" style="height:110px"></div>';
     try{const r=await api('/gifts');gift.list=r.gifts;}catch(e){grid.innerHTML=`<div class="empty">${strip(e.message)}</div>`;return;}
     if(!gift.list.length){$('#gifts-off').classList.remove('hidden');grid.innerHTML='';hideMain();return;}
-    grid.innerHTML=gift.list.map(g=>`<button class="gift${g.remains===0?' so':''}" data-id="${g.id}">${g.limited&&g.remains!=null?`<span class="lim">${t('left',{n:fmt(g.remains)})}</span>`:''}<div class="img"></div><b>${fmt(g.price)} ${t('uzs')}</b><span class="gs"><svg><use href="#i-star"/></svg>${g.stars}</span></button>`).join('');
+    grid.innerHTML=gift.list.map(g=>`<button class="gift${g.remains===0?' so':''}" data-id="${g.id}">${g.limited&&g.remains!=null?`<span class="lim" data-left="${g.remains}">${t('left',{n:fmt(g.remains)})}</span>`:''}<div class="img"></div><b>${fmt(g.price)} <span data-t="uzs">${t('uzs')}</span></b><span class="gs"><svg><use href="#i-star"/></svg>${g.stars}</span></button>`).join('');
     const cards=$$('#ggrid .gift');
     const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const el=en.target.querySelector('.img');if(!el.__mounted){el.__mounted=1;mountSticker(el,gift.list.find(g=>g.id===en.target.dataset.id),false);}}})},{rootMargin:'200px'});
     cards.forEach(c=>io.observe(c));
@@ -649,20 +671,20 @@ async function renderGifts(){
 async function buyGift(){
   if(!gift.rcp||!gift.item)return;mbLoading(true);
   try{
-    const r=await api('/orders',{product:'gift',gift_id:gift.item.id,recipient_username:gift.rcp.username,recipient_name:gift.rcp.name,recipient_token:gift.rcp.token||''});
-    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');gift.item=null;gift.id=null;showResult(r.order);
+    const r=await api('/orders',{product:'gift',gift_id:gift.item.id,count:gift.count,message:gift.msg||null,recipient_username:gift.rcp.username,recipient_name:gift.rcp.name,recipient_token:gift.rcp.token||''});
+    S.me.user.balance=r.balance;(r.orders||[r.order]).slice().reverse().forEach(o=>S.me.recent_orders.unshift(o));hap('ok');const n=r.count||1;gift.item=null;gift.id=null;gift.count=1;gift.msg='';$('#gift-msg').value='';$('#gift-msg-cnt').textContent='0/255';showResult(r.order,n);
   }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateGift();}toast(e.message,true);}
   finally{mbLoading(false);}
 }
 
 /* ---------- result ---------- */
 let pollT=null;
-function showResult(o){
+function showResult(o,n=1){
   clearInterval(pollT);
   go('result');
   $('#res-ic').innerHTML=`<svg style="width:52px;height:52px"><use href="${PICON[o.product]||'#i-star'}"/></svg>`;
   $('#res-h').textContent=t('order_ok');
-  $('#res-p').textContent=o.product==='gift'?t('gift_ok_p',{u:o.recipient}):t('order_ok_p',{t:orderTitle(o),u:o.recipient});
+  $('#res-p').textContent=o.product==='gift'?(n>1?t('gifts_ok_p',{n,u:o.recipient}):t('gift_ok_p',{u:o.recipient})):t('order_ok_p',{t:orderTitle(o),u:o.recipient});
   const st=$('#res-st');const paint=s=>{st.className='st '+stCls(s);st.textContent=t('st_'+s);};paint(o.status);
   mainBtn('OK',()=>{clearInterval(pollT);stack=[];go('home',false);},{color:'#ffffff'});
   pollT=setInterval(async()=>{try{const r=await api('/orders/'+o.id);paint(r.order.status);S.me.user.balance=r.balance;const i=S.me.recent_orders.findIndex(x=>x.id===o.id);if(i>-1)S.me.recent_orders[i]=r.order;if(['delivered','refunded','manual'].includes(r.order.status)){clearInterval(pollT);if(r.order.status==='delivered')hap('ok');}}catch(e){}},3000);

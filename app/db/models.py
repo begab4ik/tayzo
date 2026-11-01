@@ -100,6 +100,7 @@ class Order(Base):
     last_error: Mapped[str | None] = mapped_column(Text)
     gift_id: Mapped[int | None] = mapped_column(BigInteger)  # id подарка Telegram (product=gift)
     gift_title: Mapped[str | None] = mapped_column(String(128))
+    gift_message: Mapped[str | None] = mapped_column(String(255))  # подпись к подарку
     fragment_req_id: Mapped[str | None] = mapped_column(String(128))
     tx_hash: Mapped[str | None] = mapped_column(String(256))
     created_at: Mapped[datetime] = now_col(index=True)

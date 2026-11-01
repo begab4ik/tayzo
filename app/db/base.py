@@ -42,3 +42,4 @@ async def init_db() -> None:
         await conn.execute(text("ALTER TABLE orders ALTER COLUMN tx_hash TYPE VARCHAR(256)"))
         await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_id BIGINT"))
         await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_title VARCHAR(128)"))
+        await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_message VARCHAR(255)"))

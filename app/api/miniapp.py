@@ -252,6 +252,8 @@ class OrderIn(BaseModel):
     product: str
     qty: int = 0
     gift_id: str | None = None
+    count: int = Field(default=1, ge=1, le=20)        # сколько подарков
+    message: str | None = Field(default=None, max_length=255)  # подпись к подарку
     recipient_username: str
     recipient_name: str = ""
     recipient_token: str = ""
@@ -298,16 +300,27 @@ async def create_order(c: C, body: OrderIn):
             _err(404, "not_found", str(e) or t(c.lang, "recipient_not_found"))
         except ProviderError:
             _err(502, "provider", t(c.lang, "recipient_check_fail"))
+    count = body.count if body.product == "gift" else 1
+    if gift and gift.get("per_user_remains") is not None:
+        count = min(count, max(1, int(gift["per_user_remains"])))
+    if gift and gift.get("remains") is not None:
+        count = min(count, max(1, int(gift["remains"])))
+    msg = (body.message or "").strip()[:255] or None
+    if u.balance < quote.price_uzs * count:
+        _err(402, "insufficient", t(c.lang, "insufficient", need=fmt_uzs(quote.price_uzs * count), have=fmt_uzs(u.balance)), need=quote.price_uzs * count, have=u.balance)
+    created = []
     try:
-        order = await orders_svc.create(s, u, quote, rcp, gift=gift)
+        for _ in range(count):
+            created.append(await orders_svc.create(s, u, quote, rcp, gift=gift, gift_message=msg))
     except InsufficientBalance as e:
         _err(402, "insufficient", t(c.lang, "insufficient", need=fmt_uzs(e.need), have=fmt_uzs(e.have)), need=e.need, have=e.have)
     await s.commit()
     await s.refresh(u)
     from app.bot.handlers.stars import notify_new_order
 
-    await notify_new_order(order, u)
-    return {"order": _order_json(order), "balance": u.balance}
+    for order in created:
+        await notify_new_order(order, u)
+    return {"order": _order_json(created[0]), "orders": [_order_json(o) for o in created], "count": len(created), "balance": u.balance}
 
 
 @router.get("/orders")
