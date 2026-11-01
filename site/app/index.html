@@ -9,7 +9,7 @@
 <link rel="icon" href="/brand/icon-512.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js" onerror="var s=document.createElement('script');s.src='/app/telegram-web-app.js';document.head.appendChild(s)"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
 <style>
@@ -750,14 +750,16 @@ function renderGate(list){
   $('#gate-list').innerHTML=list.map(c=>`<a class="btn gold block" style="margin-bottom:8px" href="${c.url}" target="_blank">${c.title}</a>`).join('');
   go('gate',false);
 }
-$('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api('/subscribe/check');if(r.need_subscribe.length){toast(t('gate_h'),true);renderGate(r.need_subscribe);}else{S.me.need_subscribe=[];stack=[];go('home',false);}}catch(e){toast(e.message,true)}});
+$('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api('/subscribe/check',{});if(r.need_subscribe.length){toast(t('gate_h'),true);renderGate(r.need_subscribe);}else{S.me.need_subscribe=[];stack=[];go('home',false);}}catch(e){toast(e.message,true)}});
 $('#gate-list').addEventListener('click',e=>{const a=e.target.closest('a');if(a&&tg){e.preventDefault();tg.openTelegramLink(a.href);}});
 
 /* ---------- boot ---------- */
 async function refreshMe(){S.me=await api('/me');L=S.me.user.lang in I?S.me.user.lang:'ru';applyLang();if(S.me.need_subscribe.length){renderGate(S.me.need_subscribe);return false;}return true;}
 (async()=>{
   try{
-    if(!tg||!tg.initData){$('#loader').innerHTML='<div class="gate"><div class="star-i" style="width:56px;height:56px;margin:0 auto 16px"></div><h2>Tayzo</h2><p>Открой приложение из Telegram: <a href="https://t.me/tayzoapp">@tayzoapp</a></p></div>';return;}
+    if(!tg||!tg.initData){
+      const why=!window.Telegram?'Не загрузился скрипт Telegram (проверь интернет/VPN) и обнови страницу.':'Telegram не передал данные входа — обнови приложение Telegram до последней версии и открой Tayzo через кнопку «Tayzo» рядом с полем ввода.';
+      $('#loader').innerHTML=`<div class="gate"><div class="star-i" style="width:56px;height:56px;margin:0 auto 16px"></div><h2>Tayzo</h2><p>${why}</p><p>Или открой бота: <a href="https://t.me/tayzoapp">@tayzoapp</a></p><button class="btn gold" onclick="location.reload()">Обновить</button></div>`;return;}
     const ok=await refreshMe();
     $('#loader').remove();
     if(!ok)return;

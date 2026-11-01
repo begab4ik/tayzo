@@ -187,7 +187,7 @@ async def set_lang(c: C, body: LangIn):
     return {"ok": True}
 
 
-@router.post("/subscribe/check")
+@router.api_route("/subscribe/check", methods=["GET", "POST"])
 async def subscribe_check(c: C):
     channels = await get_channels(c.session)
     missing = await is_subscribed(bot, c.user.id, channels, force=True) if channels else []
