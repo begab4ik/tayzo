@@ -43,14 +43,14 @@ def pay_url(payment: Payment, return_url: str | None = None) -> str:
 
 def _sign(d: dict, action: int) -> str:
     parts = [
-        str(d["click_trans_id"]),
-        str(d["service_id"]),
+        str(d.get("click_trans_id", "")),
+        str(d.get("service_id", "")),
         settings.click_secret_key,
-        str(d["merchant_trans_id"]),
+        str(d.get("merchant_trans_id", "")),
     ]
     if action == COMPLETE:
         parts.append(str(d.get("merchant_prepare_id", "")))
-    parts += [str(d["amount"]), str(d["action"]), str(d["sign_time"])]
+    parts += [str(d.get("amount", "")), str(d.get("action", "")), str(d.get("sign_time", ""))]
     return hashlib.md5("".join(parts).encode()).hexdigest()
 
 

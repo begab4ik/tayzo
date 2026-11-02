@@ -33,9 +33,13 @@ async def click_webhook(request: Request):
     data = {k: v for k, v in form.items()}
     log.info("Click webhook: %s", data)
 
-    async with get_session() as session:
-        response, paid = await click.handle_webhook(session, data)
-        user = await session.get(User, paid.user_id) if paid else None
+    try:
+        async with get_session() as session:
+            response, paid = await click.handle_webhook(session, data)
+            user = await session.get(User, paid.user_id) if paid else None
+    except Exception:  # noqa: BLE001 — Click должен получить JSON с кодом ошибки, а не 500
+        log.exception("Click webhook failed: %s", data)
+        return JSONResponse({"click_trans_id": data.get("click_trans_id"), "merchant_trans_id": data.get("merchant_trans_id"), "error": -8, "error_note": "Error in request from click"})
 
     if paid and user:
         try:
