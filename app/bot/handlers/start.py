@@ -80,6 +80,7 @@ async def set_lang(call: CallbackQuery, session: AsyncSession, user: User, is_ad
     await call.message.answer(text, reply_markup=kb.main_menu(code, is_admin))
 
 
+@router.message(F.text.in_(kb.L("btn_app")))
 @router.message(Command("app"))
 async def cmd_app(message: Message, user: User):
     if not settings.webapp_url:

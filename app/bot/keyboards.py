@@ -21,7 +21,7 @@ def main_menu(lang: str, is_admin: bool = False) -> ReplyKeyboardMarkup:
     b = ReplyKeyboardBuilder()
     sizes: list[int] = []
     if settings.webapp_url:
-        b.button(text=t(lang, "btn_app"), web_app=WebAppInfo(url=settings.webapp_url))
+        b.button(text=t(lang, "btn_app"))  # обычная кнопка: web_app-кнопки reply-клавиатуры не передают initData
         sizes.append(1)
     for key in MENU_KEYS:
         b.button(text=t(lang, key))
