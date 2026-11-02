@@ -34,7 +34,7 @@ def pay_url(payment: Payment, return_url: str | None = None) -> str:
         "service_id": settings.click_service_id,
         "merchant_id": settings.click_merchant_id,
         "amount": f"{payment.amount:.2f}",
-        "transaction_param": str(payment.id),
+        "transaction_param": f"{payment.user_id}-{payment.id}",  # в чеке Click видно tg id и номер платежа
     }
     if return_url:
         params["return_url"] = return_url
@@ -84,7 +84,7 @@ async def handle_webhook(session: AsyncSession, d: dict) -> tuple[dict, Payment 
         log.warning("Click bad sign: %s", d)
         return _resp(d, -1, "SIGN CHECK FAILED!"), None
 
-    merchant_trans_id = str(d.get("merchant_trans_id", ""))
+    merchant_trans_id = str(d.get("merchant_trans_id", "")).rsplit("-", 1)[-1]  # "<tg id>-<payment id>" или просто "<payment id>"
     if not merchant_trans_id.isdigit():
         return _resp(d, -5, "Payment not found"), None
 
