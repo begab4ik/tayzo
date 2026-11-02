@@ -20,7 +20,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Product","name":"Telegram Stars","description":"Звёзды Telegram за сумы с доставкой через бота Tayzo","brand":{"@type":"Brand","name":"Tayzo"},"offers":{"@type":"Offer","priceCurrency":"UZS","price":"240","availability":"https://schema.org/InStock","url":"https://t.me/tayzoapp"}}
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Organization","@id":"https://tayzo.uz/#org","name":"Tayzo","url":"https://tayzo.uz/","logo":"https://tayzo.uz/brand/icon-512.png","sameAs":["https://t.me/tayzoapp"],"contactPoint":{"@type":"ContactPoint","contactType":"customer support","url":"https://t.me/tayzo_support","availableLanguage":["ru","uz","en"]}},
+ {"@type":"WebSite","@id":"https://tayzo.uz/#site","url":"https://tayzo.uz/","name":"Tayzo","inLanguage":["ru","uz","en"],"publisher":{"@id":"https://tayzo.uz/#org"}},
+ {"@type":"Service","@id":"https://tayzo.uz/#stars","name":"Покупка Telegram Stars за сумы","serviceType":"Telegram Stars top-up","provider":{"@id":"https://tayzo.uz/#org"},"areaServed":{"@type":"Country","name":"Uzbekistan"},"availableChannel":{"@type":"ServiceChannel","serviceUrl":"https://t.me/tayzoapp"},"offers":{"@type":"Offer","priceCurrency":"UZS","price":"240","priceSpecification":{"@type":"UnitPriceSpecification","price":"240","priceCurrency":"UZS","unitText":"star"},"availability":"https://schema.org/InStock","url":"https://t.me/tayzoapp"}},
+ {"@type":"Service","@id":"https://tayzo.uz/#premium","name":"Telegram Premium за сумы","serviceType":"Telegram Premium subscription","provider":{"@id":"https://tayzo.uz/#org"},"areaServed":{"@type":"Country","name":"Uzbekistan"},"offers":{"@type":"AggregateOffer","priceCurrency":"UZS","lowPrice":"159990","highPrice":"379990","offerCount":"3","url":"https://t.me/tayzoapp"}}
+]}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
