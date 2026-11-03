@@ -32,8 +32,12 @@ def topup_prompt(lang: str, min_amount: int, max_amount: int) -> str:
     return t(lang, "topup_prompt", min=fmt_uzs(min_amount), max=fmt_uzs(max_amount))
 
 
-def topup_link(lang: str, amount: int) -> str:
-    return t(lang, "topup_link", amount=fmt_uzs(amount))
+def topup_link(lang: str, amount: int, method: str = "Click") -> str:
+    return t(lang, "topup_link", amount=fmt_uzs(amount), method=method)
+
+
+def topup_choose_method(lang: str, amount: int) -> str:
+    return t(lang, "topup_choose_method", amount=fmt_uzs(amount))
 
 
 def topup_success(lang: str, amount: int, balance: int) -> str:

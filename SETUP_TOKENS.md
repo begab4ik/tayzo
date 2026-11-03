@@ -55,6 +55,22 @@ python -m scripts.check_setup
 
 ---
 
+## 2b. Payme Business: PAYME_MERCHANT_ID, PAYME_KEY
+
+Нужен договор с Payme (business.payme.uz → «Подключить Payme»). Интеграция — **Merchant API**.
+
+1. В кабинете **merchant.payme.uz** → твоя касса → **Настройки**:
+   - **ID кассы** → `PAYME_MERCHANT_ID`
+   - **Ключ (Production)** → `PAYME_KEY`; тестовый ключ → `PAYME_TEST_KEY` (для test.paycom.uz)
+2. **Endpoint** (URL для запросов Payme): `https://ТВОЙ-ДОМЕН/webhooks/payme`
+3. Поле счёта в кассе: одно поле **`payment_id`** (тип число) — его бот подставляет в ссылку сам.
+4. Как только ключи впишешь в `tokens.env` и перезапустишь бота — в боте и в приложении появится выбор Click / Payme.
+
+Тест-кабинет Payme (test.paycom.uz) гоняет те же методы (CheckPerformTransaction, CreateTransaction, PerformTransaction,
+CancelTransaction, CheckTransaction, GetStatement) — все они реализованы в `app/payments/payme.py`.
+
+---
+
 ## 3. Tonkeeper: TON_MNEMONIC, TON_WALLET_VERSION
 
 ⚠️ Сид-фраза = полный доступ к деньгам. Держи на этом кошельке только оборотные средства.

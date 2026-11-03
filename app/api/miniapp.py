@@ -32,7 +32,7 @@ from app.core.exceptions import InsufficientBalance, ProviderError, RecipientNot
 from app.core.money import fmt_uzs
 from app.db.base import get_session
 from app.db.models import Order, User
-from app.payments import click
+from app.payments import common as pay
 from app.providers.base import Recipient
 from app.providers.registry import get_provider, is_manual_mode
 from app.providers.telegram_account import tg_account
@@ -164,7 +164,8 @@ async def me(c: C):
             "stars": await cfg.get_bool(s, "stars_enabled"),
             "premium": await cfg.get_bool(s, "premium_enabled"),
             "gifts": await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
-            "click": settings.click_configured,
+            "click": bool(settings.payment_methods),
+            "payment_methods": settings.payment_methods,
             "manual": is_manual_mode(),
         },
         "need_subscribe": [{"title": ch.title, "url": ch.url} for ch in missing],
@@ -340,6 +341,7 @@ async def get_order(c: C, order_id: int):
 
 class TopupIn(BaseModel):
     amount: int = Field(ge=1000, le=100_000_000)
+    method: str = "click"
 
 
 @router.post("/topup")
@@ -348,12 +350,14 @@ async def topup(c: C, body: TopupIn):
     mn, mx = await cfg.get_int(s, "min_topup"), await cfg.get_int(s, "max_topup")
     if not (mn <= body.amount <= mx):
         _err(400, "amount_range", f"{fmt_uzs(mn)} – {fmt_uzs(mx)}", min=mn, max=mx)
-    if not settings.click_configured:
+    methods = pay.available()
+    if not methods:
         _err(503, "unavailable", t(c.lang, "topup_unavailable"))
-    payment = await click.create_payment(s, u.id, body.amount)
+    method = body.method if body.method in methods else methods[0]
+    payment = await pay.create(s, u.id, body.amount, method)
     await s.commit()
     bot_me = await bot.me()
-    return {"payment_id": payment.id, "url": click.pay_url(payment, return_url=f"https://t.me/{bot_me.username}")}
+    return {"payment_id": payment.id, "method": method, "url": pay.pay_url(payment, return_url=f"https://t.me/{bot_me.username}", lang=c.lang)}
 
 
 @router.get("/ledger")

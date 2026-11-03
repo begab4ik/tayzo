@@ -33,6 +33,10 @@ class Settings(BaseSettings):
     click_merchant_id: str = ""
     click_merchant_user_id: str = ""
     click_secret_key: str = ""
+    # Payme (Merchant API) — ключи из кабинета Payme Business
+    payme_merchant_id: str = ""
+    payme_key: str = ""
+    payme_test_key: str = ""
     webhook_host: str = "http://localhost:8080"
     api_host: str = "0.0.0.0"
     api_port: int = 8080
@@ -86,6 +90,14 @@ class Settings(BaseSettings):
     @property
     def click_configured(self) -> bool:
         return bool(self.click_service_id and self.click_merchant_id and self.click_secret_key)
+
+    @property
+    def payme_configured(self) -> bool:
+        return bool(self.payme_merchant_id and (self.payme_key or self.payme_test_key))
+
+    @property
+    def payment_methods(self) -> list[str]:
+        return [m for m, ok in (("click", self.click_configured), ("payme", self.payme_configured)) if ok]
 
     def is_admin(self, user_id: int) -> bool:
         return user_id in self.admin_ids

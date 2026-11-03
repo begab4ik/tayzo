@@ -78,11 +78,19 @@ def topup_amounts_kb(lang: str) -> InlineKeyboardMarkup:
     return b.as_markup()
 
 
-def pay_kb(lang: str, url: str, payment_id: int) -> InlineKeyboardMarkup:
+def pay_kb(lang: str, url: str, payment_id: int, method: str = "click") -> InlineKeyboardMarkup:
     b = InlineKeyboardBuilder()
-    b.button(text=t(lang, "ib_pay_click"), url=url)
+    b.button(text=t(lang, f"ib_pay_{method}"), url=url)
     b.button(text=t(lang, "ib_check_pay"), callback_data=f"paycheck:{payment_id}")
     b.adjust(1)
+    return b.as_markup()
+
+
+def pay_method_kb(lang: str, amount: int, methods: list[str]) -> InlineKeyboardMarkup:
+    b = InlineKeyboardBuilder()
+    for m in methods:
+        b.button(text=t(lang, f"ib_method_{m}"), callback_data=f"paymeth:{m}:{amount}")
+    b.adjust(len(methods))
     return b.as_markup()
 
 

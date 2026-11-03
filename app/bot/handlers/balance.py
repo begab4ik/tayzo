@@ -7,13 +7,12 @@ from app.bot import keyboards as kb
 from app.bot import texts
 from app.bot.i18n import t
 from app.bot.states import TopUp
-from app.config import settings
 from app.core import settings_store as cfg
 from app.core import wallet
 from app.core.enums import LedgerType, PaymentStatus
 from app.core.money import fmt_uzs
 from app.db.models import Payment, User
-from app.payments import click
+from app.payments import common as pay
 
 router = Router(name="balance")
 
@@ -86,25 +85,39 @@ async def topup_amount_input(message: Message, session: AsyncSession, user: User
     await _create_and_send(message, session, user, int(raw), edit=False)
 
 
-async def _create_and_send(message: Message, session: AsyncSession, user: User, amount: int, edit: bool):
+async def _create_and_send(message: Message, session: AsyncSession, user: User, amount: int, edit: bool, method: str | None = None):
     lang = user.language
     mn, mx = await cfg.get_int(session, "min_topup"), await cfg.get_int(session, "max_topup")
     amount = max(amount, mn)
     if amount > mx:
         await message.answer(t(lang, "topup_max", max=fmt_uzs(mx)))
         return
-    if not settings.click_configured:
+    methods = pay.available()
+    if not methods:
         await message.answer(t(lang, "topup_unavailable"))
         return
-    payment = await click.create_payment(session, user.id, amount)
+    if method not in methods:
+        if len(methods) > 1:
+            text, markup = texts.topup_choose_method(lang, amount), kb.pay_method_kb(lang, amount, methods)
+            await (message.edit_text(text, reply_markup=markup) if edit else message.answer(text, reply_markup=markup))
+            return
+        method = methods[0]
+    payment = await pay.create(session, user.id, amount, method)
     await session.commit()
-    url = click.pay_url(payment, return_url=f"https://t.me/{(await message.bot.me()).username}")
-    text = texts.topup_link(lang, amount)
-    markup = kb.pay_kb(lang, url, payment.id)
+    url = pay.pay_url(payment, return_url=f"https://t.me/{(await message.bot.me()).username}", lang=lang)
+    text = texts.topup_link(lang, amount, pay.TITLES[method])
+    markup = kb.pay_kb(lang, url, payment.id, method)
     if edit:
         await message.edit_text(text, reply_markup=markup)
     else:
         await message.answer(text, reply_markup=markup)
+
+
+@router.callback_query(F.data.startswith("paymeth:"))
+async def pay_method_chosen(call: CallbackQuery, session: AsyncSession, user: User):
+    _, method, amount = call.data.split(":")
+    await call.answer()
+    await _create_and_send(call.message, session, user, int(amount), edit=True, method=method)
 
 
 @router.callback_query(F.data.startswith("paycheck:"))

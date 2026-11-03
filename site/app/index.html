@@ -412,6 +412,10 @@ body.kb .screen{padding-bottom:110px}
     <div class="chips" id="t-chips"></div>
     <div class="hint" id="topup-hint"></div>
   </div>
+  <div class="card hidden" id="topup-method">
+    <div class="lbl" data-t="pay_method">Способ оплаты</div>
+    <div class="seg" id="t-method" style="margin-bottom:0"><button data-m="click" aria-pressed="true">Click</button><button data-m="payme" aria-pressed="false">Payme</button></div>
+  </div>
   <div class="card hidden" id="topup-off">
     <div class="lbl"><span data-t="topup_soon">Онлайн-оплата подключается</span></div>
     <p class="hint" data-t="topup_soon_p">Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.</p>
@@ -478,7 +482,7 @@ body.kb .screen{padding-bottom:110px}
 const I = {
 ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"История",stars:"Звёзды",recent:"Последние заказы",all:"Все",no_orders:"Заказов пока нет — самое время купить первые звёзды",
  buy_stars:"Купить звёзды",how_many:"Сколько звёзд",to_whom:"Кому",to_me:"Себе",to_other:"Другому",total:"К оплате",prem_sub:"Себе или в подарок — активируется сразу после оплаты",
- topup_title:"Пополнение",amount:"Сумма",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
+ topup_title:"Пополнение",amount:"Сумма",pay_method:"Способ оплаты",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
  orders:"Заказы",payments:"Платежи",stars_bought:"звёзд куплено",spent:"потрачено",language:"Язык",ref_title:"Приглашай друзей",ref_p:"Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.",copy:"Копировать",share:"Отправить",
  tab_home:"Главная",profile:"Профиль",gate_h:"Подпишись на канал",gate_p:"Чтобы пользоваться Tayzo, подпишись на наш канал — там акции и скидки.",gate_check:"Я подписался",
  per_star:"{p} сум за звезду · от {min}",from:"от",months:"мес",m3:"3 месяца",m6:"6 месяцев",m12:"12 месяцев",best:"Выгодно",
@@ -494,7 +498,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды Telegram по 220 сум — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
  buy_stars:"Yulduz sotib olish",how_many:"Nechta yulduz",to_whom:"Kimga",to_me:"O'zimga",to_other:"Boshqaga",total:"To'lov",prem_sub:"O'zingizga yoki sovg'a — to'lovdan so'ng darhol faollashadi",
- topup_title:"To'ldirish",amount:"Summa",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
+ topup_title:"To'ldirish",amount:"Summa",pay_method:"To'lov usuli",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
  orders:"Buyurtmalar",payments:"To'lovlar",stars_bought:"yulduz olingan",spent:"sarflangan",language:"Til",ref_title:"Do'stlarni taklif qiling",ref_p:"Do'stingizning har bir to'ldirishidan foiz oling — bonus balansga avtomatik tushadi.",copy:"Nusxalash",share:"Yuborish",
  tab_home:"Asosiy",profile:"Profil",gate_h:"Kanalga obuna bo'ling",gate_p:"Tayzo'dan foydalanish uchun kanalimizga obuna bo'ling — u yerda aksiyalar va chegirmalar.",gate_check:"Obuna bo'ldim",
  per_star:"1 yulduz — {p} so'm · kamida {min}",from:"dan",months:"oy",m3:"3 oy",m6:"6 oy",m12:"12 oy",best:"Foydali",
@@ -510,7 +514,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari 220 so'mdan — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
  buy_stars:"Buy Stars",how_many:"How many stars",to_whom:"Recipient",to_me:"Me",to_other:"Someone else",total:"Total",prem_sub:"For yourself or as a gift — activates right after payment",
- topup_title:"Top up",amount:"Amount",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
+ topup_title:"Top up",amount:"Amount",pay_method:"Payment method",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
  orders:"Orders",payments:"Payments",stars_bought:"stars bought",spent:"spent",language:"Language",ref_title:"Invite friends",ref_p:"Earn a percentage of every friend's top-up — the bonus lands on your balance automatically.",copy:"Copy",share:"Share",
  tab_home:"Home",profile:"Profile",gate_h:"Subscribe to the channel",gate_p:"To use Tayzo, subscribe to our channel — deals and discounts live there.",gate_check:"I subscribed",
  per_star:"{p} UZS per star · min {min}",from:"from",months:"mo",m3:"3 months",m6:"6 months",m12:"12 months",best:"Best value",
@@ -561,7 +565,7 @@ let toastT;function toast(msg,bad){const e=$('#toast');e.textContent=strip(msg);
 
 /* ---------- state ---------- */
 let S={me:null};
-let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:null,rcp:null,user:'',list:null,count:1,msg:''}, topupAmt=20000;
+let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,user:''}, gift={id:null,item:null,who:null,rcp:null,user:'',list:null,count:1,msg:''}, topupAmt=20000, topupMethod=null;
 const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,100000,200000,500000];
 
 /* ---------- navigation ---------- */
@@ -806,9 +810,12 @@ function showResult(o,n=1){
 /* ---------- topup ---------- */
 let topupInit=false;
 function clampT(n){const p=P();n=Math.round(Number(n)||p.min_topup);return Math.min(p.max_topup,Math.max(p.min_topup,n));}
+function payMethods(){return (S.me.flags.payment_methods||(S.me.flags.click?['click']:[]));}
 function updateTopup(){
   $$('#t-chips .chip').forEach(c=>c.setAttribute('aria-pressed',Number(c.dataset.a)===topupAmt));
-  if(!S.me.flags.click){hideMain();return;}
+  const ms=payMethods();if(!ms.length){hideMain();return;}
+  if(!ms.includes(topupMethod))topupMethod=ms[0];
+  $$('#t-method button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===topupMethod));$('#t-method').dataset.pos=ms.indexOf(topupMethod);
   mainBtn(t('pay_click',{p:fmt(topupAmt)}),doTopup);
 }
 function renderTopup(){
@@ -820,15 +827,18 @@ function renderTopup(){
     $('#t-minus').addEventListener('click',()=>{hap();topupAmt=clampT(topupAmt-10000);$('#t').value=fmt(topupAmt);updateTopup();});
     $('#t-plus').addEventListener('click',()=>{hap();topupAmt=clampT(topupAmt+10000);$('#t').value=fmt(topupAmt);updateTopup();});
     $('#topup-support').addEventListener('click',()=>openSupport());
+    $('#t-method').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hap();topupMethod=b.dataset.m;updateTopup();});
   }
+  $('#topup-method').classList.toggle('hidden',payMethods().length<2);
+  $('#t-method').innerHTML=payMethods().map(m=>`<button data-m="${m}">${m==='payme'?'Payme':'Click'}</button>`).join('');
   topupAmt=clampT(topupAmt);$('#t').value=fmt(topupAmt);
   $('#topup-hint').textContent=t('min_topup',{p:fmt(P().min_topup)});
-  $('#topup-off').classList.toggle('hidden',S.me.flags.click);
+  $('#topup-off').classList.toggle('hidden',payMethods().length>0);
   updateTopup();
 }
 async function doTopup(){
   mbLoading(true);
-  try{const r=await api('/topup',{amount:topupAmt});hap('ok');tg?tg.openLink(r.url):window.open(r.url);}
+  try{const r=await api('/topup',{amount:topupAmt,method:topupMethod});hap('ok');tg?tg.openLink(r.url):window.open(r.url);}
   catch(e){hap('bad');toast(e.message,true);}
   finally{mbLoading(false);}
 }
