@@ -121,7 +121,7 @@ async def daily_report() -> None:
     )
 
 
-async def warm_nft_catalog() -> None:
+async def warm_nft_catalog(only_if_cold: bool = False) -> None:
     """Прогрев NFT-каталога: коллекции, первая страница каждой, картинки — чтобы в приложении всё открывалось мгновенно."""
     try:
         async with get_session() as session:
@@ -129,6 +129,8 @@ async def warm_nft_catalog() -> None:
                 return
         from app.providers.telegram_account import tg_account
 
+        if only_if_cold and await tg_account.nft_warmed():
+            return
         n = await tg_account.warm_nft()
         log.info("nft catalog warmed: %s collections", n)
     except Exception as e:  # noqa: BLE001
@@ -142,7 +144,7 @@ def build_scheduler() -> AsyncIOScheduler:
     sch.add_job(update_star_cost, IntervalTrigger(hours=1), id="star_cost")
     sch.add_job(update_premium_cost, IntervalTrigger(hours=1), id="premium_cost")
     sch.add_job(update_gifts_catalog, IntervalTrigger(minutes=30), id="gifts_catalog")
-    sch.add_job(warm_nft_catalog, IntervalTrigger(minutes=10), id="nft_warm", max_instances=1, coalesce=True)
+    sch.add_job(warm_nft_catalog, IntervalTrigger(minutes=30), id="nft_warm", max_instances=1, coalesce=True)
     sch.add_job(check_ton_balance, IntervalTrigger(minutes=30), id="ton_balance")
     sch.add_job(daily_report, CronTrigger(hour=9, minute=0), id="daily_report")
     return sch

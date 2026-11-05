@@ -101,7 +101,7 @@ async def main() -> None:
     scheduler.start()
     asyncio.create_task(update_ton_rate())
     asyncio.create_task(update_star_cost())
-    asyncio.create_task(warm_nft_catalog())
+    asyncio.create_task(warm_nft_catalog(only_if_cold=True))
 
     server = uvicorn.Server(uvicorn.Config(api, host=settings.api_host, port=settings.api_port, log_level="warning"))
     worker_task = asyncio.create_task(fulfillment.run_forever(stop))

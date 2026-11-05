@@ -424,7 +424,7 @@ class TelegramAccount:
             items = items[skip:]  # самые дешёвые разбирают первыми — не показываем, чтобы не продать уже проданное
         await self._fill_images(c, items)
         out = {"items": items, "next_offset": getattr(res, "next_offset", None) or "", "count": int(getattr(res, "count", 0) or 0)}
-        await redis.set(key, json.dumps(out), ex=NFT_LIST_TTL)
+        await redis.set(key, json.dumps(out), ex=NFT_LIST_TTL if items else 60)
         return out
 
     async def _fill_images(self, c, items: list[dict]) -> None:
@@ -452,12 +452,18 @@ class TelegramAccount:
                     col["floor"] = floors[col["id"]]
             except Exception as e:  # noqa: BLE001
                 log.warning("warm nft %s failed: %s", col["id"], e)
-            await asyncio.sleep(0.3)
+            await asyncio.sleep(1.5)  # не долбим Telegram: за частые запросы к рынку он молча отдаёт пустые списки
         cols = [c for c in cols if c["count"] > 0]
+        if not cols:
+            log.warning("warm nft: Telegram returned no resale listings at all — keeping previous cache")
+            return 0
         cols.sort(key=lambda x: (-x["count"], x["floor"]))
-        await redis.set(NFT_COLL_KEY, json.dumps(cols), ex=NFT_COLL_TTL * 3)
-        await redis.set(NFT_FLOORS_KEY, json.dumps(floors), ex=NFT_COLL_TTL * 3)
+        await redis.set(NFT_COLL_KEY, json.dumps(cols), ex=NFT_COLL_TTL * 6)
+        await redis.set(NFT_FLOORS_KEY, json.dumps(floors), ex=NFT_COLL_TTL * 6)
         return len(cols)
+
+    async def nft_warmed(self) -> bool:
+        return bool(await redis.get(NFT_FLOORS_KEY))
 
     async def nft_floors(self) -> dict[str, int]:
         raw = await redis.get(NFT_FLOORS_KEY)
