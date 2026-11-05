@@ -45,6 +45,7 @@ async def create(session: AsyncSession, user: User, quote: Quote, recipient: Rec
         gift_id=int(gift["id"]) if gift else None,
         gift_title=(gift.get("title") or None) if gift else None,
         gift_message=(gift_message or None) if gift else None,
+        nft_slug=(gift.get("nft_slug") or None) if gift else None,
     )
     session.add(order)
     await session.flush()
@@ -83,6 +84,8 @@ async def process(session: AsyncSession, order: Order) -> Order:
             order.recipient_name = recipient.name
         if order.product == ProductType.GIFT:
             result = await provider.fulfill(recipient, order.quantity, gift_id=order.gift_id, message=order.gift_message)
+        elif order.product == ProductType.NFT:
+            result = await provider.fulfill(recipient, order.quantity, slug=order.nft_slug)
         else:
             result = await provider.fulfill(recipient, order.quantity)
     except ProviderAuthError as e:

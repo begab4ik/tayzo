@@ -129,6 +129,7 @@ def _order_json(o: Order) -> dict:
         "recipient_name": o.recipient_name,
         "gift_id": str(o.gift_id) if o.gift_id else None,
         "gift_title": o.gift_title,
+        "nft_slug": o.nft_slug,
         "price": o.price,
         "status": o.status,
         "created_at": o.created_at.isoformat(),
@@ -164,6 +165,7 @@ async def me(c: C):
             "stars": await cfg.get_bool(s, "stars_enabled"),
             "premium": await cfg.get_bool(s, "premium_enabled"),
             "gifts": await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
+            "nft": await cfg.get_bool(s, "nft_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
             "click": bool(settings.payment_methods),
             "payment_methods": settings.payment_methods,
             "manual": is_manual_mode(),
@@ -226,6 +228,69 @@ async def gifts(c: C):
     return {"enabled": True, "gifts": out}
 
 
+async def _nft_enabled(s) -> bool:
+    return await cfg.get_bool(s, "nft_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session"))
+
+
+async def _nft_price(s, items: list[dict]) -> list[dict]:
+    out = []
+    mx = await cfg.get_int(s, "nft_max_stars")
+    for it in items:
+        if not it.get("stars") or it["stars"] > mx:
+            continue
+        q = await pricing.quote_nft(s, it["stars"])
+        out.append({**it, "price": q.price_uzs})
+    return out
+
+
+@router.get("/nft")
+async def nft_collections(c: C):
+    s = c.session
+    if not await _nft_enabled(s):
+        return {"enabled": False, "collections": []}
+    try:
+        cols = await tg_account.nft_collections()
+    except Exception as e:  # noqa: BLE001
+        log.warning("nft collections unavailable: %s", e)
+        return {"enabled": True, "collections": [], "error": "catalog"}
+    out = []
+    for col in cols:
+        q = await pricing.quote_nft(s, col["floor"]) if col["floor"] else None
+        out.append({**col, "floor_price": q.price_uzs if q else None})
+    return {"enabled": True, "collections": out}
+
+
+@router.get("/nft/{gift_id}")
+async def nft_list(c: C, gift_id: int, offset: str = "", sort: str = "price", model: str | None = None, backdrop: str | None = None, pattern: str | None = None, filters: int = 0):
+    s = c.session
+    if not await _nft_enabled(s):
+        _err(400, "disabled", "nft disabled")
+    col = await tg_account.nft_collection(str(gift_id))
+    if not col:
+        _err(404, "not_found", "collection not found")
+    try:
+        res = await tg_account.nft_list(gift_id, offset=offset, limit=30, sort="num" if sort == "num" else "price", model=model or None, backdrop=backdrop or None, pattern=pattern or None)
+        attrs = await tg_account.nft_attributes(gift_id) if filters else None
+    except Exception as e:  # noqa: BLE001
+        log.warning("nft list %s failed: %s", gift_id, e)
+        _err(502, "provider", t(c.lang, "err"))
+    return {"collection": col, "items": await _nft_price(s, res["items"]), "next_offset": res["next_offset"], "count": res["count"], "filters": attrs}
+
+
+@router.get("/nft/item/{slug}")
+async def nft_item(c: C, slug: str):
+    s = c.session
+    if not await _nft_enabled(s):
+        _err(400, "disabled", "nft disabled")
+    it = await tg_account.nft_item(slug)
+    if not it or not it.get("for_sale") or it.get("ton_only"):
+        _err(404, "sold", t(c.lang, "nft_sold"))
+    priced = await _nft_price(s, [it])
+    if not priced:
+        _err(400, "too_expensive", t(c.lang, "nft_sold"))
+    return {"item": priced[0]}
+
+
 class RecipientIn(BaseModel):
     product: str = "stars"
     username: str = Field(min_length=1, max_length=64)
@@ -237,7 +302,7 @@ async def resolve_recipient(c: C, body: RecipientIn):
     username = body.username.strip().lstrip("@")
     if not username or not all(ch.isalnum() or ch == "_" for ch in username) or len(username) < 4:
         _err(400, "bad_username", t(c.lang, "bad_username"))
-    product = {"premium": ProductType.PREMIUM, "gift": ProductType.GIFT}.get(body.product, ProductType.STARS)
+    product = {"premium": ProductType.PREMIUM, "gift": ProductType.GIFT, "nft": ProductType.NFT}.get(body.product, ProductType.STARS)
     qty = body.qty if product != ProductType.PREMIUM else (body.qty if body.qty in pricing.PREMIUM_MONTHS else 3)
     try:
         rcp = await get_provider(product).resolve_recipient(username, qty)
@@ -253,6 +318,7 @@ class OrderIn(BaseModel):
     product: str
     qty: int = 0
     gift_id: str | None = None
+    slug: str | None = None                            # NFT: slug лота
     count: int = Field(default=1, ge=1, le=20)        # сколько подарков
     message: str | None = Field(default=None, max_length=255)  # подпись к подарку
     recipient_username: str
@@ -267,6 +333,7 @@ async def create_order(c: C, body: OrderIn):
     if channels and await is_subscribed(bot, u.id, channels):
         _err(403, "subscribe", "subscribe required")
     gift = None
+    nft_slug = None
     if body.product == "stars":
         if not await cfg.get_bool(s, "stars_enabled"):
             _err(400, "disabled", t(c.lang, "stars_disabled"))
@@ -290,6 +357,21 @@ async def create_order(c: C, body: OrderIn):
             _err(400, "sold_out", "sold out")
         quote = await pricing.quote_gift(s, gift["stars"])
         body.qty = gift["stars"]
+    elif body.product == "nft":
+        if not await _nft_enabled(s):
+            _err(400, "disabled", "nft disabled")
+        slug = (body.slug or "").strip()
+        if not slug or len(slug) > 96 or not all(ch.isalnum() or ch in "-_" for ch in slug):
+            _err(400, "bad_slug", "bad slug")
+        it = await tg_account.nft_item(slug)
+        if not it or not it.get("for_sale") or it.get("ton_only"):
+            _err(404, "sold", t(c.lang, "nft_sold"))
+        if it["stars"] > await cfg.get_int(s, "nft_max_stars"):
+            _err(400, "too_expensive", t(c.lang, "nft_sold"))
+        quote = await pricing.quote_nft(s, it["stars"])
+        body.qty = it["stars"]
+        gift = {"id": it["gift_id"], "title": f"{it['title']} #{it['num']}"}
+        nft_slug = slug
     else:
         _err(400, "bad_product", "unknown product")
     rcp = Recipient(username=body.recipient_username.lstrip("@"), name=body.recipient_name or body.recipient_username, token=body.recipient_token)
@@ -302,6 +384,8 @@ async def create_order(c: C, body: OrderIn):
         except ProviderError:
             _err(502, "provider", t(c.lang, "recipient_check_fail"))
     count = body.count if body.product == "gift" else 1
+    if nft_slug:
+        gift = {**gift, "nft_slug": nft_slug}
     if gift and gift.get("per_user_remains") is not None:
         count = min(count, max(1, int(gift["per_user_remains"])))
     if gift and gift.get("remains") is not None:

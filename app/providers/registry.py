@@ -38,6 +38,9 @@ def get_provider(product: ProductType) -> Provider:
 
         stars = _providers[ProductType.STARS]
         _providers[ProductType.GIFT] = TelegramGiftProvider(stars if not isinstance(stars, ManualProvider) else None)
+        from app.providers.nft import TelegramNftProvider
+
+        _providers[ProductType.NFT] = TelegramNftProvider(stars if not isinstance(stars, ManualProvider) else None)
     return _providers[product]
 
 

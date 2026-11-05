@@ -76,6 +76,7 @@ T: dict[str, dict[str, str]] = {
         "uz": "💳 To'lov: <b>{amount}</b>\n\nQuyidagi tugmani bosing va {method} orqali to'lang. Balans bir daqiqa ichida avtomatik to'ldiriladi.",
     },
     "topup_success": {"ru": "✅ Баланс пополнен на <b>{amount}</b>\n💰 Текущий баланс: <b>{balance}</b>", "en": "✅ Balance topped up by <b>{amount}</b>\n💰 Current balance: <b>{balance}</b>", "uz": "✅ Balans <b>{amount}</b> ga to'ldirildi\n💰 Joriy balans: <b>{balance}</b>"},
+    "nft_sold": {"ru": "Этот лот уже продан или снят с продажи — выбери другой", "en": "This item has already been sold or delisted — pick another one", "uz": "Bu lot allaqachon sotilgan yoki sotuvdan olingan — boshqasini tanlang"},
     "pay_not_found": {"ru": "Платёж не найден", "en": "Payment not found", "uz": "To'lov topilmadi"},
     "pay_received": {"ru": "✅ Оплата получена!", "en": "✅ Payment received!", "uz": "✅ To'lov qabul qilindi!"},
     "pay_cancelled": {"ru": "❌ Платёж отменён", "en": "❌ Payment cancelled", "uz": "❌ To'lov bekor qilindi"},

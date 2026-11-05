@@ -189,6 +189,38 @@ h1.title{font-size:24px;margin:2px 0 14px;display:flex;align-items:center;gap:12
 .hint{font-size:13px;color:var(--ink2);margin-top:10px;line-height:1.4}
 .hint.bad{color:var(--bad)}.hint.ok{color:var(--ok)}
 .sum{display:flex;justify-content:space-between;align-items:baseline;padding:14px 2px 0;border-top:1px solid var(--line);margin-top:14px}
+/* NFT */
+.colgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.col{background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:14px 10px 12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;transition:transform .15s var(--ease),border-color .2s}
+.col:active{transform:scale(.97)}
+.col .img{width:84px;height:84px;display:flex;align-items:center;justify-content:center}.col .img svg,.col .img img,.col .img video{width:84px;height:84px;object-fit:contain}
+.col b{font-size:14px;margin-top:4px}.col span{font-size:11.5px;color:var(--ink2);font-weight:700}.col .fl{color:var(--ink);font-size:12.5px}
+.lots{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.lot{display:flex;align-items:center;gap:12px;background:var(--glass);border:1px solid var(--line);border-radius:var(--r2);padding:10px 12px 10px 10px;text-align:left;width:100%;transition:transform .15s var(--ease)}
+.lot:active{transform:scale(.985)}
+.bd{position:relative;flex:none;width:64px;height:64px;border-radius:16px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.bd::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,var(--c1) 0,var(--c2) 72%)}
+.bd .img{position:relative;z-index:1;width:50px;height:50px}.bd .img svg{width:50px;height:50px}
+.bd.big{width:100%;height:220px;border-radius:22px;margin-bottom:14px}.bd.big .img{width:150px;height:150px}.bd.big .img svg{width:150px;height:150px}
+.bd.big .num{position:absolute;z-index:2;right:12px;top:10px;background:rgba(0,0,0,.35);color:#fff;font-weight:800;font-size:12px;padding:4px 9px;border-radius:999px;backdrop-filter:blur(6px)}
+.lot .mid{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.lot .mid b{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lot .mid span{font-size:11.5px;color:var(--ink2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lot .end{text-align:right;flex:none}.lot .end b{font-size:14px;display:block}.lot .end span{font-size:11px;color:var(--ink2);font-weight:700;display:inline-flex;align-items:center;gap:3px}.lot .end svg{width:11px;height:11px}
+.ftool{display:flex;gap:8px;margin:0 0 12px}.ftool .chip{display:inline-flex;align-items:center;gap:6px}.ftool .chip svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ftool .chip .n{background:var(--gold);color:#1a1a1a;font-size:10px;padding:1px 6px;border-radius:999px}
+.attrs{display:flex;flex-direction:column;gap:0}
+.attrs div{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:13.5px}.attrs div:last-child{border-bottom:0}
+.attrs span{color:var(--ink2);font-weight:600}.attrs b{display:flex;align-items:center;gap:8px}.attrs em{font-style:normal;font-size:11px;color:var(--ink2);font-weight:700}
+.attrs i{display:inline-block;width:14px;height:14px;border-radius:50%;border:1px solid rgba(255,255,255,.25)}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:60;opacity:0;pointer-events:none;transition:opacity .2s}.sheet-bg.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:61;background:var(--bg);border-radius:22px 22px 0 0;padding:14px 16px calc(16px + var(--safe-b));max-height:82vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .25s var(--ease)}
+.sheet.show{transform:none}.sheet .grab{width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 12px}
+.sheet .body{overflow-y:auto;flex:1;min-height:0;-webkit-overflow-scrolling:touch}
+.sheet h4{font-size:12.5px;color:var(--ink2);font-weight:700;margin:12px 0 8px;letter-spacing:.01em}
+.sheet .opts{display:flex;flex-wrap:wrap;gap:8px}.sheet .opts .chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;font-size:13px}
+.sheet .opts .chip i{width:12px;height:12px;border-radius:50%;display:inline-block}.sheet .opts .chip small{color:var(--ink2);font-weight:700}.sheet .opts .chip[aria-pressed="true"] small{color:inherit;opacity:.75}
+.sheet .foot{display:flex;gap:8px;padding-top:12px}.sheet .foot .btn{flex:1}
+.more{width:100%;padding:12px;border-radius:14px;background:var(--glass2);border:1px solid var(--line);font-weight:700;font-size:13.5px;color:var(--ink2);margin-bottom:12px}
+.nft-empty{padding:28px 12px;text-align:center;color:var(--ink2);font-weight:600;font-size:13.5px}
 .sum span{color:var(--ink2);font-weight:700;font-size:13px}
 .sum b{font:700 22px Unbounded,sans-serif;color:var(--gold2)}
 .sum b small{font-size:.55em;color:var(--ink);font-family:Manrope,sans-serif;margin-left:4px}
@@ -330,10 +362,11 @@ body.kb .screen{padding-bottom:110px}
     <button class="tile" id="tile-stars" data-go="stars"><span class="ic g-star"><svg><use href="#i-star"/></svg></span><b data-t="buy_stars">Купить звёзды</b><span id="tile-stars-p">220 сум за звезду</span></button>
     <button class="tile" id="tile-prem" data-go="premium"><span class="ic g-prem"><svg><use href="#i-prem"/></svg></span><b data-t="buy_prem">Купить Premium</b><span id="tile-prem-p">от 159 990 сум</span></button>
     <button class="tile wide" id="tile-gifts" data-go="gifts"><span class="ic g-gift"><svg><use href="#i-gift"/></svg></span><div><b data-t="gifts_tile">Подарки Telegram</b><span data-t="gifts_tile_p">Анонимно, оплата в сумах</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
+    <button class="tile wide hidden" id="tile-nft" data-go="nft"><span class="ic g-nft"><svg><use href="#i-nft"/></svg></span><div><b data-t="nft_tile">NFT-подарки</b><span data-t="nft_tile_p">Коллекционные подарки с рынка Telegram</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
   </div>
   <div class="sec"><h3 data-t="soon">Скоро в Tayzo</h3></div>
   <div class="soon">
-    <div class="soon-card"><span class="ic g-nft"><svg><use href="#i-nft"/></svg></span><b data-t="soon_nft">Аренда NFT-подарков</b><span data-t="soon_nft_p">Редкий подарок в профиле на день или неделю</span><em data-t="soon_tag">в разработке</em></div>
+    <div class="soon-card" id="soon-nft"><span class="ic g-nft"><svg><use href="#i-nft"/></svg></span><b data-t="soon_nft">Аренда NFT-подарков</b><span data-t="soon_nft_p">Редкий подарок в профиле на день или неделю</span><em data-t="soon_tag">в разработке</em></div>
     <div class="soon-card"><span class="ic g-game"><svg><use href="#i-game"/></svg></span><b data-t="soon_games">Донаты в игры</b><span data-t="soon_games_p">PUBG Mobile, MLBB, Free Fire, Steam</span><em data-t="soon_tag">в разработке</em></div>
     <div class="soon-card"><span class="ic g-sub"><svg><use href="#i-sub"/></svg></span><b data-t="soon_subs">Подписки</b><span data-t="soon_subs_p">Spotify, YouTube Premium, ChatGPT</span><em data-t="soon_tag">в планах</em></div>
   </div>
@@ -401,6 +434,48 @@ body.kb .screen{padding-bottom:110px}
     <div class="sum"><span data-t="total">К оплате</span><b><span id="gift-total">0</span><small data-t="uzs">сум</small></b></div>
   </div>
 </section>
+
+<!-- NFT: коллекции -->
+<section class="screen" id="s-nft">
+  <h1 class="title"><span class="ic g-nft ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-nft"/></svg></span><span data-t="nft_title">NFT-подарки</span></h1>
+  <p class="sub" data-t="nft_sub">Коллекционные подарки с рынка перепродажи Telegram — покупаем и отправляем сразу получателю</p>
+  <div id="nft-off" class="card hidden"><p class="hint" data-t="nft_soon">NFT-подарки скоро появятся — заглядывай.</p></div>
+  <div class="colgrid" id="colgrid"></div>
+</section>
+
+<!-- NFT: лоты коллекции -->
+<section class="screen" id="s-nftlist">
+  <h1 class="title"><span class="ic g-nft ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-nft"/></svg></span><span id="nl-title">—</span></h1>
+  <p class="sub" id="nl-sub">—</p>
+  <div class="ftool">
+    <button class="chip" id="nl-sort" aria-pressed="true"><svg viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></svg><span id="nl-sort-t" data-t="sort_price">Сначала дешевле</span></button>
+    <button class="chip" id="nl-filter"><svg viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span data-t="filters">Фильтры</span><span class="n hidden" id="nl-fn">0</span></button>
+  </div>
+  <div class="lots" id="lots"></div>
+  <button class="more hidden" id="nl-more" data-t="show_more">Показать ещё</button>
+</section>
+
+<!-- NFT: покупка -->
+<section class="screen" id="s-nftbuy">
+  <h1 class="title"><span class="ic g-nft ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-nft"/></svg></span><span id="nb-title">—</span></h1>
+  <div class="bd big" id="nb-bd"><div class="img"></div><span class="num" id="nb-num"></span></div>
+  <div class="card"><div class="attrs" id="nb-attrs"></div></div>
+  <div class="card" id="nft-rcp-card">
+    <div class="lbl" data-t="to_whom">Кому</div>
+    <div class="seg" id="nft-who"><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button><button data-who="me" aria-pressed="false" data-t="to_me">Себе</button></div>
+    <div class="field" id="nft-field"><span>@</span><input id="nft-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="nft-state"></div></div>
+    <div class="hint" id="nft-hint"></div>
+    <div class="hint" style="margin-top:10px" data-t="nft_note">Подарок уходит получателю напрямую с рынка Telegram, отправитель скрыт. Цена лота может измениться до покупки — тогда вернём деньги на баланс.</div>
+    <div class="sum"><span data-t="total">К оплате</span><b><span id="nb-total">0</span><small data-t="uzs">сум</small></b></div>
+  </div>
+</section>
+
+<div class="sheet-bg" id="sheet-bg"></div>
+<div class="sheet" id="fsheet">
+  <div class="grab"></div>
+  <div class="body" id="fsheet-body"></div>
+  <div class="foot"><button class="btn ghost" id="fs-reset" data-t="reset">Сбросить</button><button class="btn gold" id="fs-apply" data-t="apply">Применить</button></div>
+</div>
 
 <!-- TOPUP -->
 <section class="screen" id="s-topup">
@@ -494,6 +569,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  gift_step2:"Кому подарить",next:"Далее",pick_who:"Выбери, кому отправить подарок",
  gift_count:"Количество",gift_msg:"Подпись к подарку",gift_msg_hint:"Необязательно. Получатель увидит текст вместе с подарком, отправитель останется скрыт.",gift_msg_ph:"Например: с днём рождения!",gift_max:"максимум {n} шт.",gift_for_n:"Подарить {n} шт. за {p} сум",gifts_ok_p:"{n} подарков для @{u} отправятся в течение пары минут — анонимно. Бот пришлёт уведомления.",
  soon:"Скоро в Tayzo",soon_nft:"Аренда NFT-подарков",soon_nft_p:"Редкий подарок в профиле на день или неделю",soon_games:"Донаты в игры",soon_games_p:"PUBG Mobile, MLBB, Free Fire, Steam",soon_subs:"Подписки",soon_subs_p:"Spotify, YouTube Premium, ChatGPT",soon_tag:"в разработке",
+ nft_tile:"NFT-подарки",nft_tile_p:"Коллекционные подарки с рынка Telegram",nft_title:"NFT-подарки",nft_sub:"Коллекционные подарки с рынка перепродажи Telegram — покупаем и отправляем сразу получателю",nft_soon:"NFT-подарки скоро появятся — заглядывай.",lots_n:"{n} лотов в продаже",from_p:"от {p} сум",sort_price:"Сначала дешевле",sort_num:"По номеру",filters:"Фильтры",show_more:"Показать ещё",reset:"Сбросить",apply:"Применить",f_model:"Модель",f_backdrop:"Фон",f_pattern:"Узор",nft_note:"Подарок уходит получателю напрямую с рынка Telegram, отправитель скрыт. Цена лота может измениться до покупки — тогда вернём деньги на баланс.",nft_for:"Купить за {p} сум",nft_empty:"По этим фильтрам лотов нет",nft_ok_p:"Подарок {t} для @{u} будет куплен и отправлен в течение пары минут. Бот пришлёт уведомление.",nft_title_o:"{t}",
  gifts:"Подарки",gifts_tile:"Подарки Telegram",gifts_tile_p:"Анонимно, оплата в сумах",gifts_sub:"Выбери подарок — отправим анонимно, получатель увидит его в профиле",gifts_soon:"Подарки скоро появятся — заглядывай.",gift_for:"Подарить за {p} сум",pick_gift:"Выбери подарок",left:"осталось {n}",gift_title:"{t}",gift_ok_p:"Подарок для @{u} отправится через минуту — анонимно. Бот пришлёт уведомление.",
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды, Premium и подарки Telegram за сумы — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
@@ -510,6 +586,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  gift_step2:"Kimga sovg'a qilamiz",next:"Davom etish",pick_who:"Sovg'ani kimga yuborishni tanlang",
  gift_count:"Soni",gift_msg:"Sovg'aga yozuv",gift_msg_hint:"Ixtiyoriy. Qabul qiluvchi matnni sovg'a bilan ko'radi, yuboruvchi yashirin qoladi.",gift_msg_ph:"Masalan: tug'ilgan kuning bilan!",gift_max:"ko'pi bilan {n} ta",gift_for_n:"{n} ta — {p} so'mga sovg'a qilish",gifts_ok_p:"@{u} uchun {n} ta sovg'a bir necha daqiqada anonim yuboriladi. Bot xabar beradi.",
  soon:"Tez orada Tayzo'da",soon_nft:"NFT sovg'alar ijarasi",soon_nft_p:"Noyob sovg'a profilda bir kun yoki haftaga",soon_games:"O'yinlarga donat",soon_games_p:"PUBG Mobile, MLBB, Free Fire, Steam",soon_subs:"Obunalar",soon_subs_p:"Spotify, YouTube Premium, ChatGPT",soon_tag:"ishlab chiqilmoqda",
+ nft_tile:"NFT sovg'alar",nft_tile_p:"Telegram bozoridan kolleksion sovg'alar",nft_title:"NFT sovg'alar",nft_sub:"Telegram qayta sotish bozoridan kolleksion sovg'alar — sotib olib, darhol qabul qiluvchiga yuboramiz",nft_soon:"NFT sovg'alar tez orada — kuzatib boring.",lots_n:"{n} ta lot sotuvda",from_p:"{p} so'mdan",sort_price:"Avval arzonroq",sort_num:"Raqam bo'yicha",filters:"Filtrlar",show_more:"Yana ko'rsatish",reset:"Tozalash",apply:"Qo'llash",f_model:"Model",f_backdrop:"Fon",f_pattern:"Naqsh",nft_note:"Sovg'a qabul qiluvchiga to'g'ridan-to'g'ri Telegram bozoridan boradi, yuboruvchi yashirin. Lot narxi xariddan oldin o'zgarishi mumkin — unda pulni balansga qaytaramiz.",nft_for:"{p} so'mga sotib olish",nft_empty:"Bu filtrlar bo'yicha lotlar yo'q",nft_ok_p:"@{u} uchun {t} sovg'asi bir necha daqiqada sotib olinib yuboriladi. Bot xabar beradi.",nft_title_o:"{t}",
  gifts:"Sovg'alar",gifts_tile:"Telegram sovg'alari",gifts_tile_p:"Anonim, so'mda to'lov",gifts_sub:"Sovg'ani tanlang — anonim yuboramiz, qabul qiluvchi uni profilida ko'radi",gifts_soon:"Sovg'alar tez orada — kuzatib boring.",gift_for:"{p} so'mga sovg'a qilish",pick_gift:"Sovg'ani tanlang",left:"{n} ta qoldi",gift_title:"{t}",gift_ok_p:"@{u} uchun sovg'a bir daqiqada anonim yuboriladi. Bot xabar beradi.",
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari, Premium va sovg'alar so'mda — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
@@ -526,6 +603,7 @@ en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",r
  gift_step2:"Who is it for",next:"Continue",pick_who:"Choose who receives the gift",
  gift_count:"Quantity",gift_msg:"Gift message",gift_msg_hint:"Optional. The recipient sees the text with the gift; the sender stays hidden.",gift_msg_ph:"e.g. Happy birthday!",gift_max:"max {n}",gift_for_n:"Gift {n}× for {p} UZS",gifts_ok_p:"{n} gifts for @{u} will be sent anonymously within a couple of minutes. The bot will notify you.",
  soon:"Coming to Tayzo",soon_nft:"NFT gift rental",soon_nft_p:"A rare gift on your profile for a day or a week",soon_games:"Game top-ups",soon_games_p:"PUBG Mobile, MLBB, Free Fire, Steam",soon_subs:"Subscriptions",soon_subs_p:"Spotify, YouTube Premium, ChatGPT",soon_tag:"in development",
+ nft_tile:"NFT gifts",nft_tile_p:"Collectible gifts from the Telegram market",nft_title:"NFT gifts",nft_sub:"Collectible gifts from Telegram's resale market — we buy and send straight to the recipient",nft_soon:"NFT gifts are coming soon — check back.",lots_n:"{n} for sale",from_p:"from {p} UZS",sort_price:"Cheapest first",sort_num:"By number",filters:"Filters",show_more:"Show more",reset:"Reset",apply:"Apply",f_model:"Model",f_backdrop:"Backdrop",f_pattern:"Symbol",nft_note:"The gift goes to the recipient straight from the Telegram market, sender hidden. The price may change before purchase — if so, we refund your balance.",nft_for:"Buy for {p} UZS",nft_empty:"No items match these filters",nft_ok_p:"{t} for @{u} will be bought and sent within a couple of minutes. The bot will notify you.",nft_title_o:"{t}",
  gifts:"Gifts",gifts_tile:"Telegram Gifts",gifts_tile_p:"Anonymous, paid in soums",gifts_sub:"Pick a gift — we send it anonymously, the recipient sees it on their profile",gifts_soon:"Gifts are coming soon — check back.",gift_for:"Gift for {p} UZS",pick_gift:"Pick a gift",left:"{n} left",gift_title:"{t}",gift_ok_p:"The gift for @{u} will be sent anonymously within a minute. The bot will notify you.",
  copied:"Copied",lang_saved:"Language saved",err:"Something went wrong, try again",min_topup:"Minimum {p} UZS",share_text:"Telegram Stars, Premium & gifts for UZS — Tayzo",prem_title:"Premium {m} mo",stars_title:"{n} Stars",nothing:"Nothing here yet"}
 };
@@ -572,7 +650,7 @@ const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,
 let cur='home', stack=[];
 const TAB_ORDER=['home','stars','premium','gifts','history'];
 function go(name,push=true,backward=false){
-  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
+  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
   if(TAB_ORDER.includes(name)&&TAB_ORDER.includes(cur))backward=TAB_ORDER.indexOf(name)<TAB_ORDER.indexOf(cur);
   if(push&&cur!==name)stack.push(cur);
   const prev=$('#s-'+cur), next=$('#s-'+name);
@@ -592,7 +670,7 @@ function go(name,push=true,backward=false){
   $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
   ctaWanted=false;
   if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
-  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
+  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
   Promise.resolve(r).then(()=>{if(!ctaWanted)hideMain();});
 }
 function back(){const p=stack.pop()||'home';go(p,false,true);}
@@ -618,7 +696,7 @@ const P=()=>S.me.prices;
 function countUp(el,to){const from=Number(String(el.textContent).replace(/\D/g,''))||0;if(from===to||matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=fmt(to);return;}const t0=performance.now(),d=520;(function f(now){const k=Math.min(1,(now-t0)/d),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f);})(t0);}
 function renderHome(){
   const u=S.me.user;
-  countUp($('#bal'),u.balance);
+  countUp($('#bal'),u.balance);$('#tile-nft').classList.toggle('hidden',!S.me.flags.nft);$('#soon-nft').classList.toggle('hidden',!!S.me.flags.nft);
   const ini=((u.name||u.username||'T').trim()[0]||'T').toUpperCase();$('#home-avatar').textContent=ini;$('#hist-avatar').textContent=ini;
   $('#tile-stars-p').textContent=t('per_star_short',{p:fmt(P().star)});
   $('#tile-prem-p').textContent=`${t('from')} ${fmt(Math.min(...Object.values(P().premium)))} ${t('uzs')}`;
@@ -630,8 +708,8 @@ function renderHome(){
   list.innerHTML=S.me.recent_orders.slice(0,3).map(orderRow).join('');
 }
 const stCls=s=>s==='delivered'?'ok':(s==='refunded'||s==='failed')?'bad':'wait';
-function orderTitle(o){return o.product==='stars'?t('stars_title',{n:fmt(o.quantity)}):o.product==='gift'?t('gift_title',{t:(o.gift_title||'Gift')+' · '+fmt(o.quantity)+' Stars'}):t('prem_title',{m:o.quantity});}
-const PICON={stars:'#i-star',premium:'#i-prem',gift:'#i-gift'};const PCLS={stars:'g-star',premium:'g-prem',gift:'g-gift'};
+function orderTitle(o){return o.product==='stars'?t('stars_title',{n:fmt(o.quantity)}):o.product==='gift'?t('gift_title',{t:(o.gift_title||'Gift')+' · '+fmt(o.quantity)+' Stars'}):o.product==='nft'?t('nft_title_o',{t:(o.gift_title||o.nft_slug||'NFT')+' · '+fmt(o.quantity)+' Stars'}):t('prem_title',{m:o.quantity});}
+const PICON={stars:'#i-star',premium:'#i-prem',gift:'#i-gift',nft:'#i-nft'};const PCLS={stars:'g-star',premium:'g-prem',gift:'g-gift',nft:'g-nft'};
 function orderRow(o){const d=new Date(o.created_at);return `<div class="item"><div class="ic ${PCLS[o.product]||'g-star'}"><svg><use href="${PICON[o.product]||'#i-star'}"/></svg></div><div class="mid"><b>${orderTitle(o)} → @${o.recipient}</b><span>#${o.id} · ${d.toLocaleDateString('ru-RU')} ${d.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'})}</span></div><div class="end"><b>${fmt(o.price)}</b><span class="st ${stCls(o.status)}">${t('st_'+o.status)}</span></div></div>`;}
 
 /* ---------- recipient widget ---------- */
@@ -794,6 +872,102 @@ async function buyGift(){
   finally{mbLoading(false);}
 }
 
+/* ---------- NFT ---------- */
+let nft={cols:null,col:null,items:[],next:'',sort:'price',f:{model:'',backdrop:'',pattern:''},filters:null,item:null,who:null,rcp:null,user:'',tmp:null,loading:false};
+let nftSync=null;
+function mountLot(el,it){el.innerHTML='';if(it.model&&it.model.image){mountSticker(el,{kind:'tgs',image:it.model.image},false);}else{el.innerHTML='<svg style="width:40px;height:40px;stroke:#fff"><use href="#i-nft"/></svg>';}}
+function bdStyle(it){const b=it.backdrop||{};return `--c1:${b.center||'#444'};--c2:${b.edge||'#222'}`;}
+function rar(x){return x&&x.rarity?(x.rarity/10).toFixed(x.rarity%10?1:0)+'%':'';}
+async function renderNft(){
+  const grid=$('#colgrid');
+  if(!S.me.flags.nft){$('#nft-off').classList.remove('hidden');grid.innerHTML='';hideMain();return;}
+  if(!nft.cols){
+    grid.innerHTML='<div class="skel" style="height:150px"></div><div class="skel" style="height:150px"></div><div class="skel" style="height:150px"></div><div class="skel" style="height:150px"></div>';
+    try{const r=await api('/nft');nft.cols=r.collections;}catch(e){grid.innerHTML=`<div class="empty">${strip(e.message)}</div>`;return;}
+    if(!nft.cols.length){$('#nft-off').classList.remove('hidden');grid.innerHTML='';return;}
+    grid.innerHTML=nft.cols.map(c=>`<button class="col" data-id="${c.id}"><div class="img"></div><b>${strip(c.title)}</b><span class="fl">${c.floor_price?t('from_p',{p:fmt(c.floor_price)}):''}</span><span>${t('lots_n',{n:fmt(c.count)})}</span></button>`).join('');
+    const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const el=en.target.querySelector('.img');if(!el.__mounted){el.__mounted=1;mountSticker(el,nft.cols.find(c=>c.id===en.target.dataset.id),false);}}})},{rootMargin:'200px'});
+    $$('#colgrid .col').forEach(c=>io.observe(c));
+    grid.addEventListener('click',e=>{const c=e.target.closest('.col');if(!c)return;hap();openCollection(nft.cols.find(x=>x.id===c.dataset.id));});
+  }
+  hideMain();
+}
+function openCollection(col){nft.col=col;nft.items=[];nft.next='';nft.f={model:'',backdrop:'',pattern:''};nft.filters=null;nft.sort='price';go('nftlist');}
+function fCount(){return ['model','backdrop','pattern'].filter(k=>nft.f[k]).length;}
+async function loadLots(more){
+  if(nft.loading)return;nft.loading=true;
+  const box=$('#lots');
+  if(!more){box.innerHTML='<div class="skel" style="height:84px"></div><div class="skel" style="height:84px"></div><div class="skel" style="height:84px"></div>';$('#nl-more').classList.add('hidden');}
+  else{$('#nl-more').textContent='…';}
+  try{
+    const q=new URLSearchParams({offset:more?nft.next:'',sort:nft.sort,model:nft.f.model,backdrop:nft.f.backdrop,pattern:nft.f.pattern,filters:nft.filters?0:1});
+    const r=await api('/nft/'+nft.col.id+'?'+q.toString());
+    if(r.filters)nft.filters=r.filters;
+    nft.items=more?nft.items.concat(r.items):r.items;nft.next=r.next_offset||'';
+    $('#nl-sub').textContent=t('lots_n',{n:fmt(r.count)});
+    const html=r.items.map(it=>lotRow(it)).join('');
+    if(more)box.insertAdjacentHTML('beforeend',html);else box.innerHTML=html||`<div class="nft-empty">${t('nft_empty')}</div>`;
+    mountLots();
+    $('#nl-more').classList.toggle('hidden',!nft.next);$('#nl-more').textContent=t('show_more');
+  }catch(e){box.innerHTML=`<div class="empty">${strip(e.message)}</div>`;}
+  finally{nft.loading=false;}
+}
+function lotRow(it){return `<button class="lot" data-slug="${it.slug}"><div class="bd" style="${bdStyle(it)}"><div class="img"></div></div><div class="mid"><b>#${it.num}${it.model?' · '+strip(it.model.name):''}</b><span>${it.backdrop?strip(it.backdrop.name):''}${it.pattern?' · '+strip(it.pattern.name):''}</span><span>${it.model?rar(it.model)+' · ':''}${it.backdrop?rar(it.backdrop):''}</span></div><div class="end"><b>${fmt(it.price)} ${t('uzs')}</b><span><svg viewBox="0 0 24 24"><use href="#i-starf"/></svg>${fmt(it.stars)}</span></div></button>`;}
+let lotIO=null;
+function mountLots(){
+  if(!lotIO)lotIO=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const el=en.target.querySelector('.bd .img');if(el&&!el.__mounted){el.__mounted=1;const it=nft.items.find(x=>x.slug===en.target.dataset.slug);if(it)mountLot(el,it);}}})},{rootMargin:'300px'});
+  $$('#lots .lot').forEach(l=>{if(!l.__obs){l.__obs=1;lotIO.observe(l);}});
+}
+let nlInit=false;
+function renderNftList(){
+  if(!nft.col){go('nft',false,true);return;}
+  if(!nlInit){nlInit=true;
+    $('#nl-sort').addEventListener('click',()=>{hap();nft.sort=nft.sort==='price'?'num':'price';$('#nl-sort-t').textContent=t(nft.sort==='price'?'sort_price':'sort_num');loadLots(false);});
+    $('#nl-filter').addEventListener('click',()=>{hap();openSheet();});
+    $('#nl-more').addEventListener('click',()=>{hap();loadLots(true);});
+    $('#lots').addEventListener('click',e=>{const l=e.target.closest('.lot');if(!l)return;hap();const it=nft.items.find(x=>x.slug===l.dataset.slug);if(!it)return;nft.item=it;nft.who=null;nft.rcp=null;go('nftbuy');});
+    $('#sheet-bg').addEventListener('click',closeSheet);
+    $('#fs-reset').addEventListener('click',()=>{hap();nft.tmp={model:'',backdrop:'',pattern:''};paintSheet();});
+    $('#fs-apply').addEventListener('click',()=>{hap();nft.f={...nft.tmp};closeSheet();updateFn();loadLots(false);});
+    $('#fsheet-body').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();const k=c.dataset.k,v=c.dataset.v;nft.tmp[k]=nft.tmp[k]===v?'':v;paintSheet();});
+  }
+  $('#nl-title').textContent=nft.col.title;$('#nl-sub').textContent=t('lots_n',{n:fmt(nft.col.count)});
+  $('#nl-sort-t').textContent=t(nft.sort==='price'?'sort_price':'sort_num');updateFn();
+  hideMain();
+  if(!nft.items.length)loadLots(false);
+}
+function updateFn(){const n=fCount();$('#nl-fn').textContent=n;$('#nl-fn').classList.toggle('hidden',!n);$('#nl-filter').setAttribute('aria-pressed',!!n);}
+function openSheet(){if(!nft.filters)return;nft.tmp={...nft.f};paintSheet();$('#sheet-bg').classList.add('show');$('#fsheet').classList.add('show');}
+function closeSheet(){$('#sheet-bg').classList.remove('show');$('#fsheet').classList.remove('show');}
+function paintSheet(){
+  const F=nft.filters;const sec=(k,title,list,dot)=>list.length?`<h4>${title}</h4><div class="opts">${list.map(o=>`<button class="chip" data-k="${k}" data-v="${o.id}" aria-pressed="${nft.tmp[k]===o.id}">${dot?`<i style="background:radial-gradient(circle,${o.center},${o.edge})"></i>`:''}${strip(o.name)} <small>${o.count}</small></button>`).join('')}</div>`:'';
+  $('#fsheet-body').innerHTML=sec('model',t('f_model'),F.models)+sec('backdrop',t('f_backdrop'),F.backdrops,true)+sec('pattern',t('f_pattern'),F.patterns);
+}
+function renderNftBuy(){
+  const it=nft.item;if(!it){go('nftlist',false,true);return;}
+  if(!nftSync)nftSync=setupRecipient('nft',nft,'nft',()=>it.stars,updateNftBuy);
+  $('#nb-title').textContent=`${it.title} #${it.num}`;$('#nb-num').textContent='#'+it.num;
+  const bd=$('#nb-bd');bd.style.cssText=bdStyle(it);const img=bd.querySelector('.img');img.innerHTML='';img.__anim=null;
+  if(it.model&&it.model.image)mountSticker(img,{kind:'tgs',image:it.model.image},true);
+  const row=(label,x,dot)=>x?`<div><span>${label}</span><b>${dot?`<i style="background:radial-gradient(circle,${x.center},${x.edge})"></i>`:''}${strip(x.name)}<em>${rar(x)}</em></b></div>`:'';
+  $('#nb-attrs').innerHTML=row(t('f_model'),it.model)+row(t('f_backdrop'),it.backdrop,true)+row(t('f_pattern'),it.pattern)+`<div><span>Stars</span><b>${fmt(it.stars)} ★</b></div>`;
+  nftSync();updateNftBuy();
+}
+function updateNftBuy(){
+  if(cur!=='nftbuy'||!nft.item)return;
+  const price=nft.item.price,bal=S.me.user.balance;$('#nb-total').textContent=fmt(price);
+  if(bal>=price)mainBtn(t('nft_for',{p:fmt(price)}),buyNft,{disabled:!nft.rcp});
+  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);topupFrom=cur;go('topup');},{color:'#ffffff'});
+}
+async function buyNft(){
+  if(!nft.rcp||!nft.item)return;mbLoading(true);
+  try{
+    const r=await api('/orders',{product:'nft',slug:nft.item.slug,recipient_username:nft.rcp.username,recipient_name:nft.rcp.name,recipient_token:nft.rcp.token||''});
+    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');nft.item=null;nft.who=null;nft.rcp=null;nft.items=[];stack=stack.filter(x=>x!=='nftbuy');showResult(r.order,1);
+  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateNftBuy();}if(e.code==='sold'){nft.items=[];}toast(e.message,true);}
+  finally{mbLoading(false);}
+}
+
 /* ---------- result ---------- */
 let pollT=null;
 function showResult(o,n=1){
@@ -801,7 +975,7 @@ function showResult(o,n=1){
   go('result');
   const ic=$('#res-ic');ic.innerHTML='<svg class="tick" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46"/><path d="M30 52l13 13 27-29"/></svg>';
   $('#res-h').textContent=t('order_ok');
-  $('#res-p').textContent=o.product==='gift'?(n>1?t('gifts_ok_p',{n,u:o.recipient}):t('gift_ok_p',{u:o.recipient})):t('order_ok_p',{t:orderTitle(o),u:o.recipient});
+  $('#res-p').textContent=o.product==='gift'?(n>1?t('gifts_ok_p',{n,u:o.recipient}):t('gift_ok_p',{u:o.recipient})):o.product==='nft'?t('nft_ok_p',{t:o.gift_title||o.nft_slug,u:o.recipient}):t('order_ok_p',{t:orderTitle(o),u:o.recipient});
   const st=$('#res-st');const paint=s=>{st.className='st '+stCls(s);st.textContent=t('st_'+s);};paint(o.status);
   mainBtn('OK',()=>{clearInterval(pollT);stack=[];go('home',false);},{color:'#ffffff'});
   pollT=setInterval(async()=>{try{const r=await api('/orders/'+o.id);paint(r.order.status);S.me.user.balance=r.balance;const i=S.me.recent_orders.findIndex(x=>x.id===o.id);if(i>-1)S.me.recent_orders[i]=r.order;if(['delivered','refunded','manual'].includes(r.order.status)){clearInterval(pollT);if(r.order.status==='delivered')hap('ok');}}catch(e){}},3000);
@@ -877,7 +1051,7 @@ $('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api(
 $('#gate-list').addEventListener('click',e=>{const a=e.target.closest('a');if(a&&tg){e.preventDefault();tg.openTelegramLink(a.href);}});
 
 /* ---------- boot ---------- */
-function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
+function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:updateNftBuy,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
 function watchPayment(id,amount){
   stopWatch();const started=Date.now();
   const tick=async()=>{try{const r=await api('/payments/'+id);if(r.status==='paid'){stopWatch();S.me=await api('/me');hap('ok');toast(t('pay_ok',{p:fmt(amount)}));if(topupFrom){const f=topupFrom;topupFrom=null;go(f,false,true);}else rerender();return;}if(r.status==='cancelled'){stopWatch();toast(t('pay_cancelled'),true);return;}}catch(e){}
@@ -903,6 +1077,7 @@ async function refreshMe(){S.me=await api('/me');L=S.me.user.lang in I?S.me.user
     else if(m&&m[1]==='premium'){if(m[2]&&[3,6,12].includes(Number(m[2])))prem.months=Number(m[2]);go('premium',false);}
     else if(sp==='topup')go('topup',false);
     else if(sp==='gifts'||new URLSearchParams(location.search).get('screen')==='gifts')go('gifts',false);
+    else if(sp==='nft')go('nft',false);
     else go('home',false);
   }catch(e){$('#loader').innerHTML=`<div class="gate"><h2>😕</h2><p>${strip(e.message)}</p><button class="btn gold" onclick="location.reload()">Retry</button></div>`;}
 })();

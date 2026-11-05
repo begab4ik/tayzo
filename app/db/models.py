@@ -101,6 +101,7 @@ class Order(Base):
     gift_id: Mapped[int | None] = mapped_column(BigInteger)  # id подарка Telegram (product=gift)
     gift_title: Mapped[str | None] = mapped_column(String(128))
     gift_message: Mapped[str | None] = mapped_column(String(255))  # подпись к подарку
+    nft_slug: Mapped[str | None] = mapped_column(String(96))  # slug коллекционного подарка (product=nft), напр. PlushPepe-1234
     fragment_req_id: Mapped[str | None] = mapped_column(String(128))
     tx_hash: Mapped[str | None] = mapped_column(String(256))
     created_at: Mapped[datetime] = now_col(index=True)
@@ -114,6 +115,8 @@ class Order(Base):
             return f"⭐ {self.quantity} Stars"
         if self.product == ProductType.GIFT:
             return f"🎁 {self.gift_title or 'Подарок'} ({self.quantity}⭐)"
+        if self.product == ProductType.NFT:
+            return f"💎 {self.gift_title or self.nft_slug or 'NFT'} ({self.quantity}⭐)"
         return f"💎 Premium {self.quantity} мес."
 
 

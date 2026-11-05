@@ -21,6 +21,7 @@ class ProductType(StrEnum):
     STARS = "stars"
     PREMIUM = "premium"
     GIFT = "gift"  # подарок Telegram за звёзды (отправляется с аккаунта владельца)
+    NFT = "nft"  # коллекционный (NFT) подарок с рынка перепродажи Telegram — покупается сразу на получателя
 
 
 class OrderStatus(StrEnum):
