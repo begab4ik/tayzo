@@ -240,7 +240,8 @@ class TelegramAccount:
 
     # ---------- NFT (рынок перепродажи коллекционных подарков) ----------
     async def nft_collections(self, force: bool = False) -> list[dict]:
-        """Коллекции, у которых есть лоты на перепродаже: id, title, floor (⭐), count, картинка."""
+        """Коллекции (лимитированные подарки). Telegram не всегда отдаёт availability_resale в getStarGifts,
+        поэтому точные count/floor проставляет warm_nft() по первой странице каждой коллекции."""
         if not force:
             raw = await redis.get(NFT_COLL_KEY)
             if raw:
@@ -252,7 +253,7 @@ class TelegramAccount:
         GIFTS_DIR.mkdir(parents=True, exist_ok=True)
         out: list[dict] = []
         for g in getattr(res, "gifts", None) or []:
-            if type(g).__name__ != "StarGift" or not getattr(g, "availability_resale", 0):
+            if type(g).__name__ != "StarGift" or not getattr(g, "limited", False) or getattr(g, "auction", False):
                 continue
             doc = g.sticker
             mime = getattr(doc, "mime_type", "") or ""
@@ -270,14 +271,18 @@ class TelegramAccount:
                     "id": str(g.id),
                     "title": getattr(g, "title", None) or "",
                     "floor": int(getattr(g, "resell_min_stars", 0) or 0),
-                    "count": int(g.availability_resale),
+                    "count": int(getattr(g, "availability_resale", 0) or 0),
                     "total": getattr(g, "availability_total", None),
                     "image": f"/gifts/{fname}",
                     "kind": ext,
                 }
             )
         out.sort(key=lambda x: (-x["count"], x["floor"]))
-        await redis.set(NFT_COLL_KEY, json.dumps(out), ex=NFT_COLL_TTL)
+        # не затираем прогретый список пустыми счётчиками
+        raw = await redis.get(NFT_COLL_KEY)
+        if raw and not any(x["count"] for x in out):
+            return json.loads(raw)
+        await redis.set(NFT_COLL_KEY, json.dumps(out), ex=NFT_COLL_TTL * 3)
         return out
 
     async def nft_collection(self, gift_id: str) -> dict | None:
@@ -435,19 +440,24 @@ class TelegramAccount:
                 m["image"] = urls.get(m["id"]) if m.pop("doc", None) is not None else m.get("image")
 
     async def warm_nft(self) -> int:
-        """Раз в 10 минут: первая страница каждой коллекции в кэш + «от X ⭐» с учётом скрытых дешёвых лотов."""
+        """Раз в 10 минут: первая страница каждой коллекции в кэш + точные count / «от X ⭐» (с учётом скрытого дешёвого лота)."""
         cols = await self.nft_collections(force=True)
         floors: dict[str, int] = {}
         for col in cols:
             try:
                 r = await self.nft_list(int(col["id"]), limit=30, force=True)
+                col["count"] = int(r.get("count") or 0)
                 if r["items"]:
                     floors[col["id"]] = min(it["stars"] for it in r["items"] if it.get("stars"))
+                    col["floor"] = floors[col["id"]]
             except Exception as e:  # noqa: BLE001
                 log.warning("warm nft %s failed: %s", col["id"], e)
-            await asyncio.sleep(0.4)
-        await redis.set(NFT_FLOORS_KEY, json.dumps(floors), ex=NFT_LIST_TTL + 120)
-        return len(floors)
+            await asyncio.sleep(0.3)
+        cols = [c for c in cols if c["count"] > 0]
+        cols.sort(key=lambda x: (-x["count"], x["floor"]))
+        await redis.set(NFT_COLL_KEY, json.dumps(cols), ex=NFT_COLL_TTL * 3)
+        await redis.set(NFT_FLOORS_KEY, json.dumps(floors), ex=NFT_COLL_TTL * 3)
+        return len(cols)
 
     async def nft_floors(self) -> dict[str, int]:
         raw = await redis.get(NFT_FLOORS_KEY)
