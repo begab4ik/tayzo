@@ -31,7 +31,7 @@ from app.core.enums import ProductType
 from app.core.exceptions import InsufficientBalance, ProviderError, RecipientNotFound
 from app.core.money import fmt_uzs
 from app.db.base import get_session
-from app.db.models import Order, User
+from app.db.models import Order, User, Payment
 from app.payments import common as pay
 from app.providers.base import Recipient
 from app.providers.registry import get_provider, is_manual_mode
@@ -358,6 +358,14 @@ async def topup(c: C, body: TopupIn):
     await s.commit()
     bot_me = await bot.me()
     return {"payment_id": payment.id, "method": method, "url": pay.pay_url(payment, return_url=f"https://t.me/{bot_me.username}", lang=c.lang)}
+
+
+@router.get("/payments/{payment_id}")
+async def payment_status(c: C, payment_id: int):
+    p = await c.session.get(Payment, payment_id)
+    if not p or p.user_id != c.user.id:
+        _err(404, "not_found", "payment not found")
+    return {"id": p.id, "status": p.status, "amount": p.amount, "provider": p.provider}
 
 
 @router.get("/ledger")

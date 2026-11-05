@@ -1,7 +1,7 @@
 from typing import Any, Awaitable, Callable
 
 from aiogram import BaseMiddleware
-from aiogram.types import CallbackQuery, Message, TelegramObject
+from aiogram.types import CallbackQuery, Message, TelegramObject, Update
 
 from app.bot import texts
 from app.config import settings
@@ -27,8 +27,10 @@ class UserMiddleware(BaseMiddleware):
         user = await session.get(User, tg_user.id)
         if user is None:
             referrer_id = None
-            if isinstance(event, Message) and event.text and event.text.startswith("/start"):
-                parts = event.text.split(maxsplit=1)
+            # middleware висит на dp.update — event это Update, само сообщение лежит в event.message
+            msg = event.message if isinstance(event, Update) else (event if isinstance(event, Message) else None)
+            if msg and msg.text and msg.text.startswith("/start"):
+                parts = msg.text.split(maxsplit=1)
                 referrer_id = referrals.parse_ref(parts[1] if len(parts) > 1 else None)
                 if referrer_id == tg_user.id or (referrer_id and await session.get(User, referrer_id) is None):
                     referrer_id = None
