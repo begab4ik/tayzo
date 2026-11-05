@@ -41,7 +41,9 @@ async def update_star_cost() -> None:
         return
     from app.providers.fragment import fetch_star_price_ton
 
-    price = await fetch_star_price_ton(fragment_client)
+    async with get_session() as session:
+        probe = await cfg.get(session, "tg_account_username") or await cfg.get(session, "premium_probe_username")
+    price = await fetch_star_price_ton(fragment_client, probe_username=probe)
     if price:
         async with get_session() as session:
             await cfg.set_value(session, "star_price_ton", str(price.quantize(Decimal("0.000001"))))
@@ -125,6 +127,8 @@ async def warm_nft_catalog() -> None:
         async with get_session() as session:
             if not (await cfg.get_bool(session, "nft_enabled") and await cfg.get(session, "tg_session")):
                 return
+        from app.providers.telegram_account import tg_account
+
         n = await tg_account.warm_nft()
         log.info("nft catalog warmed: %s collections", n)
     except Exception as e:  # noqa: BLE001

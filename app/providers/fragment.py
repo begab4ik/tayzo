@@ -205,10 +205,12 @@ async def _record_star_cost(cost_ton: Decimal, quantity: int) -> None:
         log.warning("record star cost failed: %s", e)
 
 
-async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100) -> Decimal | None:
+async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100, probe_username: str = "") -> Decimal | None:
     """Узнать актуальную себестоимость звезды: создаём заявку на probe_qty и смотрим цену (ничего не платим)."""
+    if not probe_username:
+        return None
     try:
-        found = await client.call("searchStarsRecipient", query="telegram", quantity=probe_qty)
+        found = await client.call("searchStarsRecipient", query=probe_username.lstrip("@"), quantity=probe_qty)
         token = (found.get("found") or {}).get("recipient")
         if not token:
             return None
