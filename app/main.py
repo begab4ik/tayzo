@@ -19,7 +19,7 @@ from app.config import settings
 from app.db.base import engine, get_session, init_db
 from app.db.models import RequiredChannel
 from app.workers import fulfillment
-from app.workers.scheduler import build_scheduler, update_ton_rate
+from app.workers.scheduler import build_scheduler, update_star_cost, update_ton_rate, warm_nft_catalog
 
 logging.basicConfig(level=settings.log_level, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 log = logging.getLogger("tayzo")
@@ -100,6 +100,8 @@ async def main() -> None:
     scheduler = build_scheduler()
     scheduler.start()
     asyncio.create_task(update_ton_rate())
+    asyncio.create_task(update_star_cost())
+    asyncio.create_task(warm_nft_catalog())
 
     server = uvicorn.Server(uvicorn.Config(api, host=settings.api_host, port=settings.api_port, log_level="warning"))
     worker_task = asyncio.create_task(fulfillment.run_forever(stop))

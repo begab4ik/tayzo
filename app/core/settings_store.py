@@ -39,8 +39,9 @@ DEFAULTS: dict[str, str] = {
     "gift_markup_percent": "0",      # наценка на подарки сверх цены звёзд
     "gift_stars_buffer": "0",        # докупать звёзд с запасом (шт.)
     "nft_enabled": "1",
-    "nft_markup_percent": "20",      # наценка на NFT-подарки сверх себестоимости (звёзды × цена звезды на Fragment)
+    "nft_markup_percent": "0",       # наценка на NFT-подарки сверх цены звёзд (звёзды лота × 240)
     "nft_max_stars": "20000",        # лоты дороже не показываем (защита от случайной покупки на миллионы)
+    "nft_skip_cheapest": "3",        # сколько самых дешёвых лотов коллекции прятать (их разбирают первыми)
     "tg_session": "",                # сессия Telegram-аккаунта (ставится через вход в админке)
     "tg_account_username": "",
 }
@@ -52,6 +53,7 @@ DESCRIPTIONS: dict[str, str] = {
     "nft_enabled": "NFT-подарки включены",
     "nft_markup_percent": "Наценка на NFT-подарки, %",
     "nft_max_stars": "Макс. цена лота, ⭐",
+    "nft_skip_cheapest": "Прятать самых дешёвых лотов, шт.",
     "premium_probe_username": "Username для проверки цены Premium",
     "star_price_uzs_override": "Цена 1 ⭐, сум (0 = авто по курсу)",
     "markup_percent": "Наценка, %",
@@ -82,14 +84,15 @@ SECTIONS: list[tuple[str, str, list[str]]] = [
     ("refs", "👥 Рефералы", ["referral_percent"]),
     ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "gifts_enabled", "nft_enabled", "maintenance"]),
     ("gifts", "🎁 Подарки", ["gift_markup_percent", "gift_stars_buffer"]),
-    ("nft", "💎 NFT-подарки", ["nft_markup_percent", "nft_max_stars"]),
+    ("nft", "💎 NFT-подарки", ["nft_markup_percent", "nft_max_stars", "nft_skip_cheapest"]),
 ]
 BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled", "gifts_enabled", "nft_enabled"}
 
 # Подсказки при вводе значения
 HINTS: dict[str, str] = {
     "gift_markup_percent": "Процент сверх цены звёзд. <code>0</code> — подарок стоит ровно столько, сколько его звёзды по твоей цене.",
-    "nft_markup_percent": "Себестоимость лота = его цена в ⭐ × цена звезды на Fragment. Сверху добавляется этот процент, цена округляется вверх до 1 000 сум.",
+    "nft_markup_percent": "Цена лота = его цена в ⭐ × твоя цена звезды (как и обычные подарки). <code>0</code> — ровно по цене звёзд, маржа та же, что на звёздах.",
+    "nft_skip_cheapest": "Самые дешёвые лоты коллекции разбирают за секунды — чтобы клиент не купил уже проданное, первые N в выдаче скрываем. Например <code>3</code>.",
     "nft_max_stars": "Лоты дороже этого числа звёзд в каталоге не показываются.",
     "gift_stars_buffer": "Сколько лишних звёзд докупать на аккаунт, когда их не хватает на подарок (чтобы не докупать каждый раз). Например <code>100</code>.",
     "premium_probe_username": "Любой username <b>без</b> Premium (например, запасной аккаунт). По нему бот раз в час узнаёт у Fragment себестоимость Premium. Пусто — не обновлять.",

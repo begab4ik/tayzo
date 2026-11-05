@@ -46,6 +46,8 @@ async def update_star_cost() -> None:
         async with get_session() as session:
             await cfg.set_value(session, "star_price_ton", str(price.quantize(Decimal("0.000001"))))
         log.info("star cost updated: %s TON", price)
+    else:
+        log.warning("star cost probe returned nothing — star_price_ton not updated (will be set from the next real purchase)")
 
 
 async def update_premium_cost() -> None:
@@ -117,12 +119,26 @@ async def daily_report() -> None:
     )
 
 
+async def warm_nft_catalog() -> None:
+    """Прогрев NFT-каталога: коллекции, первая страница каждой, картинки — чтобы в приложении всё открывалось мгновенно."""
+    try:
+        async with get_session() as session:
+            if not (await cfg.get_bool(session, "nft_enabled") and await cfg.get(session, "tg_session")):
+                return
+        n = await tg_account.warm_nft()
+        log.info("nft catalog warmed: %s collections", n)
+    except Exception as e:  # noqa: BLE001
+        log.warning("warm_nft_catalog failed: %s", e)
+
+
 def build_scheduler() -> AsyncIOScheduler:
     sch = AsyncIOScheduler(timezone=settings.timezone)
-    sch.add_job(update_ton_rate, IntervalTrigger(minutes=10), next_run_time=None, id="ton_rate")
+    # NB: next_run_time=None в APScheduler = «задача на паузе», поэтому его тут нет; первый запуск делает main.py
+    sch.add_job(update_ton_rate, IntervalTrigger(minutes=10), id="ton_rate")
     sch.add_job(update_star_cost, IntervalTrigger(hours=1), id="star_cost")
     sch.add_job(update_premium_cost, IntervalTrigger(hours=1), id="premium_cost")
     sch.add_job(update_gifts_catalog, IntervalTrigger(minutes=30), id="gifts_catalog")
+    sch.add_job(warm_nft_catalog, IntervalTrigger(minutes=10), id="nft_warm", max_instances=1, coalesce=True)
     sch.add_job(check_ton_balance, IntervalTrigger(minutes=30), id="ton_balance")
     sch.add_job(daily_report, CronTrigger(hour=9, minute=0), id="daily_report")
     return sch

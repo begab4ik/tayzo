@@ -1,7 +1,6 @@
 """Расчёт цен. Цена = себестоимость в TON × курс TON/UZS × (1 + наценка), округление вверх до 100 сум."""
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
 from decimal import Decimal
 
@@ -71,13 +70,14 @@ async def quote_gift(session: AsyncSession, stars: int) -> Quote:
 
 
 async def quote_nft(session: AsyncSession, stars: int) -> Quote:
-    """NFT-подарок с рынка перепродажи: себестоимость = звёзды × star_price_ton, + nft_markup_percent, округление до 1 000."""
+    """NFT-подарок: цена = звёзды лота × наша цена звезды (240) (+ nft_markup_percent), себестоимость = звёзды × star_price_ton."""
     rate = await cfg.get_dec(session, "ton_rate_uzs")
     star_ton = await cfg.get_dec(session, "star_price_ton")
     cost_ton = star_ton * stars
     cost_uzs = int(cost_ton * rate)
+    each = await star_price_each(session)
     markup = await cfg.get_dec(session, "nft_markup_percent")
-    price = int(math.ceil(Decimal(cost_uzs) * (1 + markup / 100) / 1000)) * 1000
+    price = round_up_100(Decimal(each * stars) * (1 + markup / 100))
     return Quote(ProductType.NFT, stars, price, cost_ton, cost_uzs, rate)
 
 

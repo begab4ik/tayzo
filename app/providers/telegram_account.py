@@ -26,7 +26,8 @@ NFT_DIR = GIFTS_DIR / "nft"
 NFT_COLL_KEY = "tayzo:nft:collections"
 NFT_COLL_TTL = 10 * 60
 NFT_ATTRS_TTL = 15 * 60
-NFT_LIST_TTL = 45
+NFT_LIST_TTL = 10 * 60
+NFT_FLOORS_KEY = "tayzo:nft:floors"
 
 
 class TelegramAccount:
@@ -294,18 +295,23 @@ class TelegramAccount:
     def _hex(v: int | None) -> str:
         return f"#{int(v or 0):06x}"
 
-    async def _model_image(self, c, doc) -> str | None:
-        """Стикер модели (tgs) → site/gifts/nft/m_<id>.tgs (скачивается один раз)."""
+    _dl_sem = asyncio.Semaphore(6)
+
+    async def _model_image(self, c, doc, prefix: str = "m") -> str | None:
+        """Стикер модели/узора (tgs) → site/gifts/nft/<prefix>_<id>.tgs (скачивается один раз, параллельно ≤6)."""
         NFT_DIR.mkdir(parents=True, exist_ok=True)
         mime = getattr(doc, "mime_type", "") or ""
         ext = "tgs" if "tgs" in mime or mime == "application/x-tgsticker" else ("webm" if "webm" in mime else "webp")
-        path = NFT_DIR / f"m_{doc.id}.{ext}"
+        path = NFT_DIR / f"{prefix}_{doc.id}.{ext}"
         if not path.exists():
-            try:
-                await c.download_media(doc, file=str(path))
-            except Exception as e:  # noqa: BLE001
-                log.warning("nft model %s download failed: %s", doc.id, e)
-                return None
+            async with self._dl_sem:
+                if not path.exists():
+                    try:
+                        await c.download_media(doc, file=str(path) + ".part")
+                        os.replace(str(path) + ".part", str(path))
+                    except Exception as e:  # noqa: BLE001
+                        log.warning("nft sticker %s download failed: %s", doc.id, e)
+                        return None
         return f"/gifts/nft/{path.name}"
 
     async def _unique_json(self, c, g, with_images: bool = True) -> dict:
@@ -313,7 +319,7 @@ class TelegramAccount:
         for a in g.attributes:
             n = type(a).__name__
             if n == "StarGiftAttributeModel":
-                model = {"id": str(a.document.id), "name": a.name, "rarity": self._rarity(a), "image": (await self._model_image(c, a.document)) if with_images else None}
+                model = {"id": str(a.document.id), "name": a.name, "rarity": self._rarity(a), "image": None, "doc": a.document if with_images else None}
             elif n == "StarGiftAttributeBackdrop":
                 backdrop = {"id": str(a.backdrop_id), "name": a.name, "rarity": self._rarity(a), "center": self._hex(a.center_color), "edge": self._hex(a.edge_color), "pattern": self._hex(a.pattern_color), "text": self._hex(a.text_color)}
             elif n == "StarGiftAttributePattern":
@@ -359,24 +365,31 @@ class TelegramAccount:
         models, backdrops, patterns = [], [], []
         for a in getattr(res, "attributes", None) or []:
             n = type(a).__name__
-            if n == "StarGiftAttributeModel":
-                models.append({"id": str(a.document.id), "name": a.name, "rarity": self._rarity(a), "count": counts.get(("model", str(a.document.id)), 0), "image": await self._model_image(c, a.document)})
-            elif n == "StarGiftAttributeBackdrop":
-                backdrops.append({"id": str(a.backdrop_id), "name": a.name, "rarity": self._rarity(a), "count": counts.get(("backdrop", str(a.backdrop_id)), 0), "center": self._hex(a.center_color), "edge": self._hex(a.edge_color)})
-            elif n == "StarGiftAttributePattern":
-                patterns.append({"id": str(a.document.id), "name": a.name, "rarity": self._rarity(a), "count": counts.get(("pattern", str(a.document.id)), 0)})
+            if n == "StarGiftAttributeModel" and counts.get(("model", str(a.document.id))):
+                models.append({"id": str(a.document.id), "name": a.name, "rarity": self._rarity(a), "count": counts[("model", str(a.document.id))], "doc": a.document})
+            elif n == "StarGiftAttributeBackdrop" and counts.get(("backdrop", str(a.backdrop_id))):
+                backdrops.append({"id": str(a.backdrop_id), "name": a.name, "rarity": self._rarity(a), "count": counts[("backdrop", str(a.backdrop_id))], "center": self._hex(a.center_color), "edge": self._hex(a.edge_color)})
+            elif n == "StarGiftAttributePattern" and counts.get(("pattern", str(a.document.id))):
+                patterns.append({"id": str(a.document.id), "name": a.name, "rarity": self._rarity(a), "count": counts[("pattern", str(a.document.id))], "doc": a.document})
+        imgs = await asyncio.gather(*[self._model_image(c, m.pop("doc"), "m") for m in models], *[self._model_image(c, p.pop("doc"), "p") for p in patterns])
+        for i, m in enumerate(models):
+            m["image"] = imgs[i]
+        for i, p in enumerate(patterns):
+            p["image"] = imgs[len(models) + i]
         for lst in (models, backdrops, patterns):
             lst.sort(key=lambda x: (-x["count"], x["name"]))
-        out = {"models": [m for m in models if m["count"]], "backdrops": [b for b in backdrops if b["count"]], "patterns": [p for p in patterns if p["count"]], "count": int(getattr(res, "count", 0) or 0)}
+        out = {"models": models, "backdrops": backdrops, "patterns": patterns, "count": int(getattr(res, "count", 0) or 0)}
         await redis.set(key, json.dumps(out), ex=NFT_ATTRS_TTL)
         return out
 
-    async def nft_list(self, gift_id: int, offset: str = "", limit: int = 30, sort: str = "price", model: str | None = None, backdrop: str | None = None, pattern: str | None = None) -> dict:
-        """Лоты коллекции на перепродаже (только за ⭐), с фильтрами. Кэш 45 сек."""
+    async def nft_list(self, gift_id: int, offset: str = "", limit: int = 30, sort: str = "price", model: str | None = None, backdrop: str | None = None, pattern: str | None = None, force: bool = False) -> dict:
+        """Лоты коллекции на перепродаже (только за ⭐), с фильтрами. Кэш 10 минут."""
         key = f"tayzo:nft:list:{gift_id}:{offset}:{limit}:{sort}:{model or ''}:{backdrop or ''}:{pattern or ''}"
-        raw = await redis.get(key)
+        raw = None if force else await redis.get(key)
         if raw:
             return json.loads(raw)
+        async with get_session() as s:
+            skip = await cfg.get_int(s, "nft_skip_cheapest")
         from telethon.tl.functions.payments import GetResaleStarGiftsRequest
         from telethon.tl.types import StarGiftAttributeIdBackdrop, StarGiftAttributeIdModel, StarGiftAttributeIdPattern
 
@@ -402,9 +415,43 @@ class TelegramAccount:
             if j["ton_only"]:
                 continue
             items.append(j)
+        if sort == "price" and not offset and skip:
+            items = items[skip:]  # самые дешёвые разбирают первыми — не показываем, чтобы не продать уже проданное
+        await self._fill_images(c, items)
         out = {"items": items, "next_offset": getattr(res, "next_offset", None) or "", "count": int(getattr(res, "count", 0) or 0)}
         await redis.set(key, json.dumps(out), ex=NFT_LIST_TTL)
         return out
+
+    async def _fill_images(self, c, items: list[dict]) -> None:
+        docs = {}
+        for it in items:
+            m = it.get("model")
+            if m and m.get("doc") is not None:
+                docs.setdefault(m["id"], m["doc"])
+        urls = dict(zip(docs.keys(), await asyncio.gather(*[self._model_image(c, d, "m") for d in docs.values()])))
+        for it in items:
+            m = it.get("model")
+            if m:
+                m["image"] = urls.get(m["id"]) if m.pop("doc", None) is not None else m.get("image")
+
+    async def warm_nft(self) -> int:
+        """Раз в 10 минут: первая страница каждой коллекции в кэш + «от X ⭐» с учётом скрытых дешёвых лотов."""
+        cols = await self.nft_collections(force=True)
+        floors: dict[str, int] = {}
+        for col in cols:
+            try:
+                r = await self.nft_list(int(col["id"]), limit=30, force=True)
+                if r["items"]:
+                    floors[col["id"]] = min(it["stars"] for it in r["items"] if it.get("stars"))
+            except Exception as e:  # noqa: BLE001
+                log.warning("warm nft %s failed: %s", col["id"], e)
+            await asyncio.sleep(0.4)
+        await redis.set(NFT_FLOORS_KEY, json.dumps(floors), ex=NFT_LIST_TTL + 120)
+        return len(floors)
+
+    async def nft_floors(self) -> dict[str, int]:
+        raw = await redis.get(NFT_FLOORS_KEY)
+        return json.loads(raw) if raw else {}
 
     async def nft_item(self, slug: str) -> dict | None:
         """Актуальное состояние лота (цена/владелец) — без кэша, для подтверждения перед покупкой."""
@@ -421,6 +468,7 @@ class TelegramAccount:
         if type(g).__name__ != "StarGiftUnique":
             return None
         j = await self._unique_json(c, g)
+        await self._fill_images(c, [j])
         j["for_sale"] = bool(getattr(g, "resell_amount", None))
         return j
 

@@ -253,15 +253,28 @@ async def nft_collections(c: C):
     except Exception as e:  # noqa: BLE001
         log.warning("nft collections unavailable: %s", e)
         return {"enabled": True, "collections": [], "error": "catalog"}
+    floors = await tg_account.nft_floors()
     out = []
     for col in cols:
-        q = await pricing.quote_nft(s, col["floor"]) if col["floor"] else None
-        out.append({**col, "floor_price": q.price_uzs if q else None})
+        fl = floors.get(col["id"]) or col["floor"]
+        q = await pricing.quote_nft(s, fl) if fl else None
+        out.append({**col, "floor": fl, "floor_price": q.price_uzs if q else None})
     return {"enabled": True, "collections": out}
 
 
+@router.get("/nft/{gift_id}/filters")
+async def nft_filters(c: C, gift_id: int):
+    if not await _nft_enabled(c.session):
+        _err(400, "disabled", "nft disabled")
+    try:
+        return await tg_account.nft_attributes(gift_id)
+    except Exception as e:  # noqa: BLE001
+        log.warning("nft filters %s failed: %s", gift_id, e)
+        _err(502, "provider", t(c.lang, "err"))
+
+
 @router.get("/nft/{gift_id}")
-async def nft_list(c: C, gift_id: int, offset: str = "", sort: str = "price", model: str | None = None, backdrop: str | None = None, pattern: str | None = None, filters: int = 0):
+async def nft_list(c: C, gift_id: int, offset: str = "", sort: str = "price", model: str | None = None, backdrop: str | None = None, pattern: str | None = None):
     s = c.session
     if not await _nft_enabled(s):
         _err(400, "disabled", "nft disabled")
@@ -270,11 +283,10 @@ async def nft_list(c: C, gift_id: int, offset: str = "", sort: str = "price", mo
         _err(404, "not_found", "collection not found")
     try:
         res = await tg_account.nft_list(gift_id, offset=offset, limit=30, sort="num" if sort == "num" else "price", model=model or None, backdrop=backdrop or None, pattern=pattern or None)
-        attrs = await tg_account.nft_attributes(gift_id) if filters else None
     except Exception as e:  # noqa: BLE001
         log.warning("nft list %s failed: %s", gift_id, e)
         _err(502, "provider", t(c.lang, "err"))
-    return {"collection": col, "items": await _nft_price(s, res["items"]), "next_offset": res["next_offset"], "count": res["count"], "filters": attrs}
+    return {"collection": col, "items": await _nft_price(s, res["items"]), "next_offset": res["next_offset"], "count": res["count"]}
 
 
 @router.get("/nft/item/{slug}")

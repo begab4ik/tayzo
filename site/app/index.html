@@ -221,6 +221,19 @@ h1.title{font-size:24px;margin:2px 0 14px;display:flex;align-items:center;gap:12
 .sheet .foot{display:flex;gap:8px;padding-top:12px}.sheet .foot .btn{flex:1}
 .more{width:100%;padding:12px;border-radius:14px;background:var(--glass2);border:1px solid var(--line);font-weight:700;font-size:13.5px;color:var(--ink2);margin-bottom:12px}
 .nft-empty{padding:28px 12px;text-align:center;color:var(--ink2);font-weight:600;font-size:13.5px}
+.seg.s3::before{width:calc(33.333% - 2.7px)}.seg.s3[data-pos="1"]::before{transform:translateX(100%)}.seg.s3[data-pos="2"]::before{transform:translateX(200%)}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.fopt{background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:10px 6px 9px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:3px;transition:border-color .2s,background .2s,transform .15s var(--ease);position:relative}
+.fopt:active{transform:scale(.96)}
+.fopt[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim)}
+.fopt .img{width:60px;height:60px;display:flex;align-items:center;justify-content:center}.fopt .img svg{width:60px;height:60px}
+.fopt .sw{width:56px;height:56px;border-radius:50%;margin:2px 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15)}
+.fopt b{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.fopt span{font-size:11px;color:var(--ink2);font-weight:700}
+.fopt .chk{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--gold);color:var(--gold-ink);font-size:11px;font-weight:900;display:none;align-items:center;justify-content:center}
+.fopt[aria-pressed="true"] .chk{display:flex}
+.fsel{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.fsel .chip{display:inline-flex;align-items:center;gap:6px;padding:7px 12px}.fsel .chip i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.fsel .chip svg{width:16px;height:16px}
+.gkind{margin-bottom:14px}
 .sum span{color:var(--ink2);font-weight:700;font-size:13px}
 .sum b{font:700 22px Unbounded,sans-serif;color:var(--gold2)}
 .sum b small{font-size:.55em;color:var(--ink);font-family:Manrope,sans-serif;margin-left:4px}
@@ -409,6 +422,7 @@ body.kb .screen{padding-bottom:110px}
 <!-- GIFTS -->
 <section class="screen" id="s-gifts">
   <h1 class="title"><span class="ic g-gift ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-gift"/></svg></span><span data-t="gifts">Подарки</span></h1>
+  <div class="seg gkind hidden" id="gifts-kind" data-pos="0"><button data-kind="gift" aria-pressed="true" data-t="kind_gift">Обычные</button><button data-kind="nft" aria-pressed="false" data-t="kind_nft">NFT</button></div>
   <p class="sub" data-t="gifts_sub">Выбери подарок — отправим анонимно, получатель увидит его в профиле</p>
   <div id="gifts-off" class="card hidden"><p class="hint" data-t="gifts_soon">Подарки скоро появятся — заглядывай.</p></div>
   <div class="ggrid" id="ggrid"></div>
@@ -438,6 +452,7 @@ body.kb .screen{padding-bottom:110px}
 <!-- NFT: коллекции -->
 <section class="screen" id="s-nft">
   <h1 class="title"><span class="ic g-nft ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-nft"/></svg></span><span data-t="nft_title">NFT-подарки</span></h1>
+  <div class="seg gkind" id="nft-kind" data-pos="1"><button data-kind="gift" aria-pressed="false" data-t="kind_gift">Обычные</button><button data-kind="nft" aria-pressed="true" data-t="kind_nft">NFT</button></div>
   <p class="sub" data-t="nft_sub">Коллекционные подарки с рынка перепродажи Telegram — покупаем и отправляем сразу получателю</p>
   <div id="nft-off" class="card hidden"><p class="hint" data-t="nft_soon">NFT-подарки скоро появятся — заглядывай.</p></div>
   <div class="colgrid" id="colgrid"></div>
@@ -470,12 +485,14 @@ body.kb .screen{padding-bottom:110px}
   </div>
 </section>
 
-<div class="sheet-bg" id="sheet-bg"></div>
-<div class="sheet" id="fsheet">
-  <div class="grab"></div>
-  <div class="body" id="fsheet-body"></div>
-  <div class="foot"><button class="btn ghost" id="fs-reset" data-t="reset">Сбросить</button><button class="btn gold" id="fs-apply" data-t="apply">Применить</button></div>
-</div>
+<!-- NFT: фильтры -->
+<section class="screen" id="s-nftfilter">
+  <h1 class="title"><span class="ic g-nft ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><use href="#i-nft"/></svg></span><span data-t="filters">Фильтры</span></h1>
+  <p class="sub" id="nf-sub">—</p>
+  <div class="seg s3" id="nf-tabs" data-pos="0"><button data-k="model" aria-pressed="true" data-t="f_model">Модель</button><button data-k="backdrop" aria-pressed="false" data-t="f_backdrop">Фон</button><button data-k="pattern" aria-pressed="false" data-t="f_pattern">Узор</button></div>
+  <div class="fsel" id="nf-sel"></div>
+  <div class="fgrid" id="fgrid"></div>
+</section>
 
 <!-- TOPUP -->
 <section class="screen" id="s-topup">
@@ -569,7 +586,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  gift_step2:"Кому подарить",next:"Далее",pick_who:"Выбери, кому отправить подарок",
  gift_count:"Количество",gift_msg:"Подпись к подарку",gift_msg_hint:"Необязательно. Получатель увидит текст вместе с подарком, отправитель останется скрыт.",gift_msg_ph:"Например: с днём рождения!",gift_max:"максимум {n} шт.",gift_for_n:"Подарить {n} шт. за {p} сум",gifts_ok_p:"{n} подарков для @{u} отправятся в течение пары минут — анонимно. Бот пришлёт уведомления.",
  soon:"Скоро в Tayzo",soon_nft:"Аренда NFT-подарков",soon_nft_p:"Редкий подарок в профиле на день или неделю",soon_games:"Донаты в игры",soon_games_p:"PUBG Mobile, MLBB, Free Fire, Steam",soon_subs:"Подписки",soon_subs_p:"Spotify, YouTube Premium, ChatGPT",soon_tag:"в разработке",
- nft_tile:"NFT-подарки",nft_tile_p:"Коллекционные подарки с рынка Telegram",nft_title:"NFT-подарки",nft_sub:"Коллекционные подарки с рынка перепродажи Telegram — покупаем и отправляем сразу получателю",nft_soon:"NFT-подарки скоро появятся — заглядывай.",lots_n:"{n} лотов в продаже",from_p:"от {p} сум",sort_price:"Сначала дешевле",sort_num:"По номеру",filters:"Фильтры",show_more:"Показать ещё",reset:"Сбросить",apply:"Применить",f_model:"Модель",f_backdrop:"Фон",f_pattern:"Узор",nft_note:"Подарок уходит получателю напрямую с рынка Telegram, отправитель скрыт. Цена лота может измениться до покупки — тогда вернём деньги на баланс.",nft_for:"Купить за {p} сум",nft_empty:"По этим фильтрам лотов нет",nft_ok_p:"Подарок {t} для @{u} будет куплен и отправлен в течение пары минут. Бот пришлёт уведомление.",nft_title_o:"{t}",
+ nft_tile:"NFT-подарки",nft_tile_p:"Коллекционные подарки с рынка Telegram",kind_gift:"Обычные",kind_nft:"NFT",show_lots:"Показать лоты",f_any:"Любой",f_loading:"Загружаем фильтры…",nft_title:"NFT-подарки",nft_sub:"Коллекционные подарки с рынка перепродажи Telegram — покупаем и отправляем сразу получателю",nft_soon:"NFT-подарки скоро появятся — заглядывай.",lots_n:"{n} лотов в продаже",from_p:"от {p} сум",sort_price:"Сначала дешевле",sort_num:"По номеру",filters:"Фильтры",show_more:"Показать ещё",reset:"Сбросить",apply:"Применить",f_model:"Модель",f_backdrop:"Фон",f_pattern:"Узор",nft_note:"Подарок уходит получателю напрямую с рынка Telegram, отправитель скрыт. Цена лота может измениться до покупки — тогда вернём деньги на баланс.",nft_for:"Купить за {p} сум",nft_empty:"По этим фильтрам лотов нет",nft_ok_p:"Подарок {t} для @{u} будет куплен и отправлен в течение пары минут. Бот пришлёт уведомление.",nft_title_o:"{t}",
  gifts:"Подарки",gifts_tile:"Подарки Telegram",gifts_tile_p:"Анонимно, оплата в сумах",gifts_sub:"Выбери подарок — отправим анонимно, получатель увидит его в профиле",gifts_soon:"Подарки скоро появятся — заглядывай.",gift_for:"Подарить за {p} сум",pick_gift:"Выбери подарок",left:"осталось {n}",gift_title:"{t}",gift_ok_p:"Подарок для @{u} отправится через минуту — анонимно. Бот пришлёт уведомление.",
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды, Premium и подарки Telegram за сумы — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
@@ -586,7 +603,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  gift_step2:"Kimga sovg'a qilamiz",next:"Davom etish",pick_who:"Sovg'ani kimga yuborishni tanlang",
  gift_count:"Soni",gift_msg:"Sovg'aga yozuv",gift_msg_hint:"Ixtiyoriy. Qabul qiluvchi matnni sovg'a bilan ko'radi, yuboruvchi yashirin qoladi.",gift_msg_ph:"Masalan: tug'ilgan kuning bilan!",gift_max:"ko'pi bilan {n} ta",gift_for_n:"{n} ta — {p} so'mga sovg'a qilish",gifts_ok_p:"@{u} uchun {n} ta sovg'a bir necha daqiqada anonim yuboriladi. Bot xabar beradi.",
  soon:"Tez orada Tayzo'da",soon_nft:"NFT sovg'alar ijarasi",soon_nft_p:"Noyob sovg'a profilda bir kun yoki haftaga",soon_games:"O'yinlarga donat",soon_games_p:"PUBG Mobile, MLBB, Free Fire, Steam",soon_subs:"Obunalar",soon_subs_p:"Spotify, YouTube Premium, ChatGPT",soon_tag:"ishlab chiqilmoqda",
- nft_tile:"NFT sovg'alar",nft_tile_p:"Telegram bozoridan kolleksion sovg'alar",nft_title:"NFT sovg'alar",nft_sub:"Telegram qayta sotish bozoridan kolleksion sovg'alar — sotib olib, darhol qabul qiluvchiga yuboramiz",nft_soon:"NFT sovg'alar tez orada — kuzatib boring.",lots_n:"{n} ta lot sotuvda",from_p:"{p} so'mdan",sort_price:"Avval arzonroq",sort_num:"Raqam bo'yicha",filters:"Filtrlar",show_more:"Yana ko'rsatish",reset:"Tozalash",apply:"Qo'llash",f_model:"Model",f_backdrop:"Fon",f_pattern:"Naqsh",nft_note:"Sovg'a qabul qiluvchiga to'g'ridan-to'g'ri Telegram bozoridan boradi, yuboruvchi yashirin. Lot narxi xariddan oldin o'zgarishi mumkin — unda pulni balansga qaytaramiz.",nft_for:"{p} so'mga sotib olish",nft_empty:"Bu filtrlar bo'yicha lotlar yo'q",nft_ok_p:"@{u} uchun {t} sovg'asi bir necha daqiqada sotib olinib yuboriladi. Bot xabar beradi.",nft_title_o:"{t}",
+ nft_tile:"NFT sovg'alar",nft_tile_p:"Telegram bozoridan kolleksion sovg'alar",kind_gift:"Oddiy",kind_nft:"NFT",show_lots:"Lotlarni ko'rsatish",f_any:"Istalgan",f_loading:"Filtrlar yuklanmoqda…",nft_title:"NFT sovg'alar",nft_sub:"Telegram qayta sotish bozoridan kolleksion sovg'alar — sotib olib, darhol qabul qiluvchiga yuboramiz",nft_soon:"NFT sovg'alar tez orada — kuzatib boring.",lots_n:"{n} ta lot sotuvda",from_p:"{p} so'mdan",sort_price:"Avval arzonroq",sort_num:"Raqam bo'yicha",filters:"Filtrlar",show_more:"Yana ko'rsatish",reset:"Tozalash",apply:"Qo'llash",f_model:"Model",f_backdrop:"Fon",f_pattern:"Naqsh",nft_note:"Sovg'a qabul qiluvchiga to'g'ridan-to'g'ri Telegram bozoridan boradi, yuboruvchi yashirin. Lot narxi xariddan oldin o'zgarishi mumkin — unda pulni balansga qaytaramiz.",nft_for:"{p} so'mga sotib olish",nft_empty:"Bu filtrlar bo'yicha lotlar yo'q",nft_ok_p:"@{u} uchun {t} sovg'asi bir necha daqiqada sotib olinib yuboriladi. Bot xabar beradi.",nft_title_o:"{t}",
  gifts:"Sovg'alar",gifts_tile:"Telegram sovg'alari",gifts_tile_p:"Anonim, so'mda to'lov",gifts_sub:"Sovg'ani tanlang — anonim yuboramiz, qabul qiluvchi uni profilida ko'radi",gifts_soon:"Sovg'alar tez orada — kuzatib boring.",gift_for:"{p} so'mga sovg'a qilish",pick_gift:"Sovg'ani tanlang",left:"{n} ta qoldi",gift_title:"{t}",gift_ok_p:"@{u} uchun sovg'a bir daqiqada anonim yuboriladi. Bot xabar beradi.",
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari, Premium va sovg'alar so'mda — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
@@ -603,7 +620,7 @@ en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",r
  gift_step2:"Who is it for",next:"Continue",pick_who:"Choose who receives the gift",
  gift_count:"Quantity",gift_msg:"Gift message",gift_msg_hint:"Optional. The recipient sees the text with the gift; the sender stays hidden.",gift_msg_ph:"e.g. Happy birthday!",gift_max:"max {n}",gift_for_n:"Gift {n}× for {p} UZS",gifts_ok_p:"{n} gifts for @{u} will be sent anonymously within a couple of minutes. The bot will notify you.",
  soon:"Coming to Tayzo",soon_nft:"NFT gift rental",soon_nft_p:"A rare gift on your profile for a day or a week",soon_games:"Game top-ups",soon_games_p:"PUBG Mobile, MLBB, Free Fire, Steam",soon_subs:"Subscriptions",soon_subs_p:"Spotify, YouTube Premium, ChatGPT",soon_tag:"in development",
- nft_tile:"NFT gifts",nft_tile_p:"Collectible gifts from the Telegram market",nft_title:"NFT gifts",nft_sub:"Collectible gifts from Telegram's resale market — we buy and send straight to the recipient",nft_soon:"NFT gifts are coming soon — check back.",lots_n:"{n} for sale",from_p:"from {p} UZS",sort_price:"Cheapest first",sort_num:"By number",filters:"Filters",show_more:"Show more",reset:"Reset",apply:"Apply",f_model:"Model",f_backdrop:"Backdrop",f_pattern:"Symbol",nft_note:"The gift goes to the recipient straight from the Telegram market, sender hidden. The price may change before purchase — if so, we refund your balance.",nft_for:"Buy for {p} UZS",nft_empty:"No items match these filters",nft_ok_p:"{t} for @{u} will be bought and sent within a couple of minutes. The bot will notify you.",nft_title_o:"{t}",
+ nft_tile:"NFT gifts",nft_tile_p:"Collectible gifts from the Telegram market",kind_gift:"Regular",kind_nft:"NFT",show_lots:"Show items",f_any:"Any",f_loading:"Loading filters…",nft_title:"NFT gifts",nft_sub:"Collectible gifts from Telegram's resale market — we buy and send straight to the recipient",nft_soon:"NFT gifts are coming soon — check back.",lots_n:"{n} for sale",from_p:"from {p} UZS",sort_price:"Cheapest first",sort_num:"By number",filters:"Filters",show_more:"Show more",reset:"Reset",apply:"Apply",f_model:"Model",f_backdrop:"Backdrop",f_pattern:"Symbol",nft_note:"The gift goes to the recipient straight from the Telegram market, sender hidden. The price may change before purchase — if so, we refund your balance.",nft_for:"Buy for {p} UZS",nft_empty:"No items match these filters",nft_ok_p:"{t} for @{u} will be bought and sent within a couple of minutes. The bot will notify you.",nft_title_o:"{t}",
  gifts:"Gifts",gifts_tile:"Telegram Gifts",gifts_tile_p:"Anonymous, paid in soums",gifts_sub:"Pick a gift — we send it anonymously, the recipient sees it on their profile",gifts_soon:"Gifts are coming soon — check back.",gift_for:"Gift for {p} UZS",pick_gift:"Pick a gift",left:"{n} left",gift_title:"{t}",gift_ok_p:"The gift for @{u} will be sent anonymously within a minute. The bot will notify you.",
  copied:"Copied",lang_saved:"Language saved",err:"Something went wrong, try again",min_topup:"Minimum {p} UZS",share_text:"Telegram Stars, Premium & gifts for UZS — Tayzo",prem_title:"Premium {m} mo",stars_title:"{n} Stars",nothing:"Nothing here yet"}
 };
@@ -650,7 +667,7 @@ const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,
 let cur='home', stack=[];
 const TAB_ORDER=['home','stars','premium','gifts','history'];
 function go(name,push=true,backward=false){
-  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
+  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
   if(TAB_ORDER.includes(name)&&TAB_ORDER.includes(cur))backward=TAB_ORDER.indexOf(name)<TAB_ORDER.indexOf(cur);
   if(push&&cur!==name)stack.push(cur);
   const prev=$('#s-'+cur), next=$('#s-'+name);
@@ -670,7 +687,7 @@ function go(name,push=true,backward=false){
   $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
   ctaWanted=false;
   if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
-  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
+  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
   Promise.resolve(r).then(()=>{if(!ctaWanted)hideMain();});
 }
 function back(){const p=stack.pop()||'home';go(p,false,true);}
@@ -843,7 +860,9 @@ async function renderGifts(){
     $('#gift-msg').addEventListener('input',()=>{gift.msg=$('#gift-msg').value;$('#gift-msg-cnt').textContent=gift.msg.length+'/255';});
     $('#gift-msg').placeholder=t('gift_msg_ph');
     $('#ggrid').addEventListener('click',e=>{const c=e.target.closest('.gift');if(!c)return;hap();gift.id=c.dataset.id;gift.item=gift.list.find(g=>g.id===gift.id);updateGiftPick();});
+    $('#gifts-kind').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.kind==='gift')return;hap();go('nft');});
   }
+  $('#gifts-kind').classList.toggle('hidden',!S.me.flags.nft);
   const grid=$('#ggrid');
   if(!S.me.flags.gifts){$('#gifts-off').classList.remove('hidden');grid.innerHTML='';hideMain();return;}
   if(!gift.list){
@@ -878,8 +897,10 @@ let nftSync=null;
 function mountLot(el,it){el.innerHTML='';if(it.model&&it.model.image){mountSticker(el,{kind:'tgs',image:it.model.image},false);}else{el.innerHTML='<svg style="width:40px;height:40px;stroke:#fff"><use href="#i-nft"/></svg>';}}
 function bdStyle(it){const b=it.backdrop||{};return `--c1:${b.center||'#444'};--c2:${b.edge||'#222'}`;}
 function rar(x){return x&&x.rarity?(x.rarity/10).toFixed(x.rarity%10?1:0)+'%':'';}
+let nftInit=false;
 async function renderNft(){
   const grid=$('#colgrid');
+  if(!nftInit){nftInit=true;$('#nft-kind').addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.dataset.kind==='nft')return;hap();stack=stack.filter(x=>x!=='gifts');go('gifts');});}
   if(!S.me.flags.nft){$('#nft-off').classList.remove('hidden');grid.innerHTML='';hideMain();return;}
   if(!nft.cols){
     grid.innerHTML='<div class="skel" style="height:150px"></div><div class="skel" style="height:150px"></div><div class="skel" style="height:150px"></div><div class="skel" style="height:150px"></div>';
@@ -900,9 +921,9 @@ async function loadLots(more){
   if(!more){box.innerHTML='<div class="skel" style="height:84px"></div><div class="skel" style="height:84px"></div><div class="skel" style="height:84px"></div>';$('#nl-more').classList.add('hidden');}
   else{$('#nl-more').textContent='…';}
   try{
-    const q=new URLSearchParams({offset:more?nft.next:'',sort:nft.sort,model:nft.f.model,backdrop:nft.f.backdrop,pattern:nft.f.pattern,filters:nft.filters?0:1});
+    const q=new URLSearchParams({offset:more?nft.next:'',sort:nft.sort,model:nft.f.model,backdrop:nft.f.backdrop,pattern:nft.f.pattern});
     const r=await api('/nft/'+nft.col.id+'?'+q.toString());
-    if(r.filters)nft.filters=r.filters;
+    if(!nft.filters&&!nft.fLoading)loadFilters();
     nft.items=more?nft.items.concat(r.items):r.items;nft.next=r.next_offset||'';
     $('#nl-sub').textContent=t('lots_n',{n:fmt(r.count)});
     const html=r.items.map(it=>lotRow(it)).join('');
@@ -923,13 +944,9 @@ function renderNftList(){
   if(!nft.col){go('nft',false,true);return;}
   if(!nlInit){nlInit=true;
     $('#nl-sort').addEventListener('click',()=>{hap();nft.sort=nft.sort==='price'?'num':'price';$('#nl-sort-t').textContent=t(nft.sort==='price'?'sort_price':'sort_num');loadLots(false);});
-    $('#nl-filter').addEventListener('click',()=>{hap();openSheet();});
+    $('#nl-filter').addEventListener('click',()=>{hap();nft.tmp={...nft.f};go('nftfilter');});
     $('#nl-more').addEventListener('click',()=>{hap();loadLots(true);});
     $('#lots').addEventListener('click',e=>{const l=e.target.closest('.lot');if(!l)return;hap();const it=nft.items.find(x=>x.slug===l.dataset.slug);if(!it)return;nft.item=it;nft.who=null;nft.rcp=null;go('nftbuy');});
-    $('#sheet-bg').addEventListener('click',closeSheet);
-    $('#fs-reset').addEventListener('click',()=>{hap();nft.tmp={model:'',backdrop:'',pattern:''};paintSheet();});
-    $('#fs-apply').addEventListener('click',()=>{hap();nft.f={...nft.tmp};closeSheet();updateFn();loadLots(false);});
-    $('#fsheet-body').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();const k=c.dataset.k,v=c.dataset.v;nft.tmp[k]=nft.tmp[k]===v?'':v;paintSheet();});
   }
   $('#nl-title').textContent=nft.col.title;$('#nl-sub').textContent=t('lots_n',{n:fmt(nft.col.count)});
   $('#nl-sort-t').textContent=t(nft.sort==='price'?'sort_price':'sort_num');updateFn();
@@ -937,12 +954,38 @@ function renderNftList(){
   if(!nft.items.length)loadLots(false);
 }
 function updateFn(){const n=fCount();$('#nl-fn').textContent=n;$('#nl-fn').classList.toggle('hidden',!n);$('#nl-filter').setAttribute('aria-pressed',!!n);}
-function openSheet(){if(!nft.filters)return;nft.tmp={...nft.f};paintSheet();$('#sheet-bg').classList.add('show');$('#fsheet').classList.add('show');}
-function closeSheet(){$('#sheet-bg').classList.remove('show');$('#fsheet').classList.remove('show');}
-function paintSheet(){
-  const F=nft.filters;const sec=(k,title,list,dot)=>list.length?`<h4>${title}</h4><div class="opts">${list.map(o=>`<button class="chip" data-k="${k}" data-v="${o.id}" aria-pressed="${nft.tmp[k]===o.id}">${dot?`<i style="background:radial-gradient(circle,${o.center},${o.edge})"></i>`:''}${strip(o.name)} <small>${o.count}</small></button>`).join('')}</div>`:'';
-  $('#fsheet-body').innerHTML=sec('model',t('f_model'),F.models)+sec('backdrop',t('f_backdrop'),F.backdrops,true)+sec('pattern',t('f_pattern'),F.patterns);
+async function loadFilters(){
+  nft.fLoading=true;const col=nft.col;
+  try{const r=await api('/nft/'+col.id+'/filters');if(nft.col===col)nft.filters=r;if(cur==='nftfilter')paintFilter();}catch(e){}
+  finally{nft.fLoading=false;}
 }
+let nfInit=false,nfTab='model',fIO=null;
+function renderNftFilter(){
+  if(!nft.col){go('nft',false,true);return;}
+  if(!nfInit){nfInit=true;
+    $('#nf-tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;hap();nfTab=b.dataset.k;paintFilter();});
+    $('#fgrid').addEventListener('click',e=>{const c=e.target.closest('.fopt');if(!c)return;hap();const k=c.dataset.k,v=c.dataset.v;nft.tmp[k]=nft.tmp[k]===v?'':v;paintFilter();});
+    $('#nf-sel').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();if(c.dataset.k==='all')nft.tmp={model:'',backdrop:'',pattern:''};else nft.tmp[c.dataset.k]='';paintFilter();});
+  }
+  $('#nf-sub').textContent=nft.col.title;
+  if(!nft.filters&&!nft.fLoading)loadFilters();
+  paintFilter();
+}
+function fsum(){const F=nft.filters;if(!F)return [];return ['model','backdrop','pattern'].filter(k=>nft.tmp[k]).map(k=>({k,o:(F[k+'s']||[]).find(x=>x.id===nft.tmp[k])})).filter(x=>x.o);}
+function paintFilter(){
+  const F=nft.filters;const grid=$('#fgrid');
+  $$('#nf-tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===nfTab));$('#nf-tabs').dataset.pos=['model','backdrop','pattern'].indexOf(nfTab);
+  const sel=fsum();
+  $('#nf-sel').innerHTML=sel.length?sel.map(x=>`<button class="chip" data-k="${x.k}" aria-pressed="true">${x.k==='backdrop'?`<i style="background:radial-gradient(circle,${x.o.center},${x.o.edge})"></i>`:''}${strip(x.o.name)} <svg viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2.5"><path d="M6 6l12 12M18 6L6 18"/></svg></button>`).join('')+`<button class="chip" data-k="all">${t('reset')}</button>`:'';
+  if(!F){grid.innerHTML=`<div class="nft-empty" style="grid-column:1/-1">${t('f_loading')}</div>`;mainBtn(t('show_lots'),applyFilter);return;}
+  const list=F[nfTab+'s']||[];
+  grid.innerHTML=list.map(o=>`<button class="fopt" data-k="${nfTab}" data-v="${o.id}" aria-pressed="${nft.tmp[nfTab]===o.id}"><span class="chk">✓</span>${nfTab==='backdrop'?`<div class="sw" style="background:radial-gradient(circle,${o.center} 0,${o.edge} 72%)"></div>`:`<div class="img" data-img="${o.image||''}"></div>`}<b>${strip(o.name)}</b><span>${fmt(o.count)}${o.rarity?' · '+rar(o):''}</span></button>`).join('')||`<div class="nft-empty" style="grid-column:1/-1">${t('nothing')}</div>`;
+  if(!fIO)fIO=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const el=en.target;if(!el.__mounted){el.__mounted=1;if(el.dataset.img)mountSticker(el,{kind:'tgs',image:el.dataset.img},false);}}})},{rootMargin:'300px'});
+  $$('#fgrid .img').forEach(el=>fIO.observe(el));
+  const n=['model','backdrop','pattern'].filter(k=>nft.tmp[k]).length;
+  mainBtn(n?t('show_lots'):t('show_lots'),applyFilter);
+}
+function applyFilter(){nft.f={...nft.tmp};updateFn();nft.items=[];stack=stack.filter(x=>x!=='nftfilter');go('nftlist',false,true);}
 function renderNftBuy(){
   const it=nft.item;if(!it){go('nftlist',false,true);return;}
   if(!nftSync)nftSync=setupRecipient('nft',nft,'nft',()=>it.stars,updateNftBuy);
@@ -1051,7 +1094,7 @@ $('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api(
 $('#gate-list').addEventListener('click',e=>{const a=e.target.closest('a');if(a&&tg){e.preventDefault();tg.openTelegramLink(a.href);}});
 
 /* ---------- boot ---------- */
-function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:updateNftBuy,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
+function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:updateNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
 function watchPayment(id,amount){
   stopWatch();const started=Date.now();
   const tick=async()=>{try{const r=await api('/payments/'+id);if(r.status==='paid'){stopWatch();S.me=await api('/me');hap('ok');toast(t('pay_ok',{p:fmt(amount)}));if(topupFrom){const f=topupFrom;topupFrom=null;go(f,false,true);}else rerender();return;}if(r.status==='cancelled'){stopWatch();toast(t('pay_cancelled'),true);return;}}catch(e){}

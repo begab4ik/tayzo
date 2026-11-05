@@ -139,6 +139,7 @@ class FragmentStarsProvider(Provider):
             cost = sum(Decimal(m["amount"]) for m in messages) / Decimal(10**9)
 
         tx_hash = await ton_wallet.send(messages)
+        await _record_star_cost(cost, quantity)
         return FulfillResult(ok=True, external_id=f"{req_id}:{tx_hash}", cost_ton=cost)
 
     async def healthcheck(self) -> str:
@@ -188,6 +189,20 @@ class FragmentPremiumProvider(Provider):
             cost = sum(Decimal(m["amount"]) for m in messages) / Decimal(10**9)
         tx_hash = await ton_wallet.send(messages)
         return FulfillResult(ok=True, external_id=f"{req_id}:{tx_hash}", cost_ton=cost)
+
+
+async def _record_star_cost(cost_ton: Decimal, quantity: int) -> None:
+    """Фактическая себестоимость звезды по реальной покупке — надёжнее часового пробника."""
+    if cost_ton <= 0 or quantity <= 0:
+        return
+    try:
+        from app.core import settings_store as cfg
+        from app.db.base import get_session
+
+        async with get_session() as s:
+            await cfg.set_value(s, "star_price_ton", str((cost_ton / quantity).quantize(Decimal("0.000001"))))
+    except Exception as e:  # noqa: BLE001
+        log.warning("record star cost failed: %s", e)
 
 
 async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100) -> Decimal | None:
