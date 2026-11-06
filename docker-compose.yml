@@ -59,6 +59,7 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - ./site:/srv/site:ro
+      - ./vybe:/srv/vybe:ro
       - caddydata:/data
       - caddyconfig:/config
     depends_on:

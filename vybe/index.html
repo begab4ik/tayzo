@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Братские вайбы</title>
+<meta name="description" content="У нас только братские вайбы. Официально.">
+<meta name="robots" content="noindex">
+<meta property="og:title" content="У нас только братские вайбы">
+<meta property="og:description" content="Романтика? Нет. Доказательства внутри.">
+<meta property="og:image" content="https://vybe.uz/photos/1.jpg">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ctext y='52' font-size='52'%3E🤝%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Caveat:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0b0a10;--bg2:#15121c;--ink:#f6f1ee;--ink2:#b9afb4;--ink3:#7d7380;
+  --rose:#ff5c8a;--rose2:#ff8fb1;--peach:#ffb27a;--violet:#8b6cff;--line:rgba(255,255,255,.08);
+  --card:#fffaf5;--ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,-apple-system,sans-serif;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+.glow{position:fixed;inset:0;pointer-events:none;z-index:0;background:
+  radial-gradient(60vw 60vw at 15% -10%,rgba(255,92,138,.22),transparent 60%),
+  radial-gradient(50vw 50vw at 95% 20%,rgba(139,108,255,.18),transparent 60%),
+  radial-gradient(70vw 50vw at 50% 110%,rgba(255,178,122,.14),transparent 60%)}
+.noise{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.35;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+main{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px}
+
+/* hero */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:72px 0 48px;position:relative}
+.kicker{font-family:Caveat,cursive;font-size:clamp(22px,3.4vw,32px);color:var(--rose2);transform:rotate(-2deg);display:inline-block;margin-bottom:14px}
+h1{font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(38px,8.6vw,108px);line-height:.98;letter-spacing:-.02em}
+h1 .s{display:block;color:var(--ink3);font-weight:400;font-size:.42em;letter-spacing:0;margin-bottom:.35em;text-decoration:line-through;text-decoration-color:var(--rose);text-decoration-thickness:.08em}
+h1 .g{background:linear-gradient(95deg,#fff 0%,var(--rose2) 40%,var(--peach) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{margin-top:26px;max-width:560px;color:var(--ink2);font-size:clamp(16px,2vw,19px);line-height:1.55}
+.cta{margin-top:34px;display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 22px;border-radius:999px;font-weight:600;font-size:15px;text-decoration:none;color:var(--ink);border:1px solid var(--line);background:rgba(255,255,255,.04);transition:transform .25s var(--ease),background .25s}
+.btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.08)}
+.btn.rose{background:var(--rose);border-color:transparent;color:#1a0a10;box-shadow:0 14px 40px -14px rgba(255,92,138,.8)}
+.hearts{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.hearts span{position:absolute;bottom:-40px;font-size:22px;opacity:0;animation:float 9s linear infinite}
+@keyframes float{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.7}100%{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+.stamp{position:absolute;right:4%;top:14%;font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(12px,1.6vw,16px);letter-spacing:.14em;text-transform:uppercase;color:var(--rose);border:3px solid var(--rose);padding:10px 14px;border-radius:8px;transform:rotate(12deg);opacity:.9}
+
+/* sections */
+section{padding:70px 0}
+h2{font-family:Unbounded,sans-serif;font-weight:600;font-size:clamp(24px,4vw,40px);letter-spacing:-.01em;margin-bottom:10px}
+.sub{color:var(--ink2);max-width:600px;line-height:1.55;font-size:16px}
+
+/* polaroids */
+.wall{position:relative;margin-top:46px;display:grid;grid-template-columns:repeat(2,1fr);gap:34px 26px}
+@media(min-width:760px){.wall{grid-template-columns:repeat(4,1fr);gap:26px}}
+.pol{background:var(--card);padding:12px 12px 72px;border-radius:6px;box-shadow:0 30px 60px -30px rgba(0,0,0,.9),0 2px 0 rgba(255,255,255,.4) inset;transform:rotate(var(--r));transition:transform .5s var(--ease),box-shadow .5s;position:relative;will-change:transform}
+.pol:hover{transform:rotate(0) scale(1.04);z-index:2;box-shadow:0 50px 80px -30px rgba(255,92,138,.45)}
+.pol img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:3px;filter:saturate(1.05) contrast(1.02)}
+.pol figcaption{position:absolute;left:10px;right:10px;bottom:10px;height:54px;display:flex;align-items:center;justify-content:center;font-family:Caveat,cursive;font-size:19px;line-height:1.05;color:#2a1f26;text-align:center;transform:rotate(-1deg)}
+.pol .tape{position:absolute;top:-12px;left:50%;width:84px;height:26px;background:rgba(255,220,120,.75);transform:translateX(-50%) rotate(var(--t));box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.reveal{opacity:0;transform:translateY(28px) rotate(var(--r,0));transition:opacity .8s var(--ease),transform .8s var(--ease)}
+.reveal.in{opacity:1;transform:translateY(0) rotate(var(--r,0))}
+
+/* facts */
+.facts{margin-top:40px;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.fact{background:var(--bg2);border:1px solid var(--line);border-radius:22px;padding:22px 22px 20px}
+.fact b{display:block;font-family:Unbounded,sans-serif;font-weight:800;font-size:38px;background:linear-gradient(95deg,var(--rose2),var(--peach));-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-.02em}
+.fact span{display:block;margin-top:6px;color:var(--ink2);font-size:14.5px;line-height:1.45}
+
+/* meter */
+.meter{margin-top:40px;background:var(--bg2);border:1px solid var(--line);border-radius:26px;padding:26px}
+.meter .row{display:flex;justify-content:space-between;font-size:14px;color:var(--ink2);margin-bottom:10px;font-weight:600}
+.bar{height:16px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;position:relative}
+.bar i{position:absolute;inset:0;width:0;border-radius:999px;background:linear-gradient(90deg,var(--violet),var(--rose),var(--peach));transition:width 1.6s var(--ease)}
+.meter .note{margin-top:12px;font-family:Caveat,cursive;font-size:22px;color:var(--rose2)}
+
+/* reactions */
+.react{text-align:center;padding-bottom:110px}
+.react h2{margin-bottom:6px}
+.chips{margin-top:28px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.chip{display:inline-flex;align-items:center;gap:10px;padding:14px 20px;border-radius:999px;background:var(--bg2);border:1px solid var(--line);color:var(--ink);font-weight:600;font-size:16px;cursor:pointer;transition:transform .2s var(--ease),border-color .2s,background .2s;user-select:none;-webkit-tap-highlight-color:transparent}
+.chip em{font-style:normal;font-size:22px}
+.chip small{font-size:13px;color:var(--ink3);font-weight:600;min-width:22px;text-align:left}
+.chip:active{transform:scale(.95)}
+.chip[aria-pressed="true"]{border-color:var(--rose);background:rgba(255,92,138,.12)}
+.chip[aria-pressed="true"] small{color:var(--rose2)}
+.said{margin-top:22px;min-height:30px;font-family:Caveat,cursive;font-size:26px;color:var(--rose2);transition:opacity .3s}
+.foot{color:var(--ink3);font-size:13px;padding:0 0 34px;text-align:center}
+.foot a{color:var(--ink3)}
+.burst{position:fixed;pointer-events:none;z-index:9;font-size:22px;animation:burst .9s var(--ease) forwards}
+@keyframes burst{to{transform:translate(var(--dx),var(--dy)) scale(.4);opacity:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="glow"></div><div class="noise"></div>
+<main>
+  <header class="hero">
+    <div class="hearts" id="hearts"></div>
+    <div class="stamp">официально</div>
+    <span class="kicker">вместо романтического сайта</span>
+    <h1><span class="s">любовь, цветы, свидания</span><span class="g">У нас только братские вайбы</span></h1>
+    <p class="lead">Красивая страница, тёплый свет, фотки на стене. Всё как у влюблённых — кроме одного: это не про любовь. Это про братана, с которым просто хорошо.</p>
+    <div class="cta"><a class="btn rose" href="#proof">🤝 Смотреть доказательства</a><a class="btn" href="#react">Выразить чувства</a></div>
+  </header>
+
+  <section id="proof">
+    <h2>Доказательства</h2>
+    <p class="sub">Четыре кадра, по которым любой суд признает: это братские вайбы в чистом виде.</p>
+    <div class="wall">
+      <figure class="pol reveal" style="--r:-3deg;--t:-4deg"><i class="tape"></i><img src="photos/1.jpg" alt="Селфи на концерте"><figcaption>сектор B, ряд 6. поцелуй в воздух — не считается</figcaption></figure>
+      <figure class="pol reveal" style="--r:2.5deg;--t:3deg"><i class="tape"></i><img src="photos/2.jpg" alt="Селфи снизу"><figcaption>ракурс снизу. так снимают только братьев</figcaption></figure>
+      <figure class="pol reveal" style="--r:-1.5deg;--t:-6deg"><i class="tape"></i><img src="photos/3.jpg" alt="Протягивает в ладонях"><figcaption>предложение? нет. это просто «подержи»</figcaption></figure>
+      <figure class="pol reveal" style="--r:3deg;--t:5deg"><i class="tape"></i><img src="photos/4.jpg" alt="В кафе"><figcaption>угрожает вилкой. романтика отменяется</figcaption></figure>
+    </div>
+  </section>
+
+  <section>
+    <h2>Цифры</h2>
+    <p class="sub">Статистика собрана честно, пересчитана дважды, обжалованию не подлежит.</p>
+    <div class="facts">
+      <div class="fact reveal"><b>100%</b><span>братских вайбов. Примесей не обнаружено.</span></div>
+      <div class="fact reveal"><b>0</b><span>романтических подтекстов за всё время наблюдений.</span></div>
+      <div class="fact reveal"><b>∞</b><span>уровень взаимного кринжа и поддержки.</span></div>
+      <div class="fact reveal"><b>1</b><span>человек, который всё это читает и улыбается. Это ты.</span></div>
+    </div>
+    <div class="meter reveal">
+      <div class="row"><span>Романтика</span><span>Братство</span></div>
+      <div class="bar"><i id="bar"></i></div>
+      <div class="note" id="note">загружаем чувства…</div>
+    </div>
+  </section>
+
+  <section class="react" id="react">
+    <h2>Что чувствуешь?</h2>
+    <p class="sub" style="margin:0 auto">Нажми на то, что ближе. Можно несколько раз — чувства штука такая.</p>
+    <div class="chips" id="chips">
+      <button class="chip" data-k="sad" data-say="грустно… но братские вайбы тоже вайбы"><em>😢</em>Грустно<small>0</small></button>
+      <button class="chip" data-k="pity" data-say="жалко — согласен. но посмотри, какая стена с фотками"><em>🥲</em>Жалко<small>0</small></button>
+      <button class="chip" data-k="ok" data-say="ну и ладно. зато честно"><em>😤</em>Ну и ладно<small>0</small></button>
+      <button class="chip" data-k="bro" data-say="вот это настоящий ответ. братан 🤝"><em>🤝</em>Братан<small>0</small></button>
+      <button class="chip" data-k="cringe" data-say="кринж принят. он был запланирован"><em>🫣</em>Кринж<small>0</small></button>
+    </div>
+    <div class="said" id="said"></div>
+  </section>
+  <p class="foot">vybe.uz · сделано с братской любовью · <a href="https://t.me/tayzoapp">tayzo</a></p>
+</main>
+<script>
+// плавающие сердечки (на самом деле — рукопожатия и звёзды, мы же не романтики)
+(()=>{const h=document.getElementById('hearts'),e=['🤝','✨','💫','🫶','⭐'];for(let i=0;i<16;i++){const s=document.createElement('span');s.textContent=e[i%e.length];s.style.left=Math.random()*100+'%';s.style.animationDelay=(Math.random()*9)+'s';s.style.animationDuration=(8+Math.random()*7)+'s';s.style.fontSize=(14+Math.random()*16)+'px';h.appendChild(s);}})();
+// появление
+const io=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target);}}),{threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+// шкала
+const mio=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){document.getElementById('bar').style.width='100%';setTimeout(()=>{document.getElementById('note').textContent='шкала зашкалила. романтика: 0%, братство: 100%';},1500);mio.disconnect();}}),{threshold:.4});
+mio.observe(document.querySelector('.meter'));
+// реакции
+const seed={sad:12,pity:9,ok:7,bro:21,cringe:15};let votes={};try{votes=JSON.parse(localStorage.getItem('vybe_votes')||'{}');}catch(e){}
+const chips=document.querySelectorAll('.chip');
+function paint(){chips.forEach(c=>{const k=c.dataset.k;c.querySelector('small').textContent=(seed[k]||0)+(votes[k]||0);c.setAttribute('aria-pressed',!!votes[k]);});}
+chips.forEach(c=>c.addEventListener('click',ev=>{const k=c.dataset.k;votes[k]=(votes[k]||0)+1;try{localStorage.setItem('vybe_votes',JSON.stringify(votes));}catch(e){}paint();
+  const s=document.getElementById('said');s.style.opacity=0;setTimeout(()=>{s.textContent=c.dataset.say;s.style.opacity=1;},150);
+  const r=c.getBoundingClientRect();for(let i=0;i<8;i++){const b=document.createElement('span');b.className='burst';b.textContent=c.querySelector('em').textContent;b.style.left=(r.left+r.width/2)+'px';b.style.top=(r.top+r.height/2)+'px';b.style.setProperty('--dx',(Math.random()*160-80)+'px');b.style.setProperty('--dy',(-60-Math.random()*120)+'px');document.body.appendChild(b);setTimeout(()=>b.remove(),900);}
+  if(navigator.vibrate)navigator.vibrate(8);}));
+paint();
+</script>
+</body>
+</html>
