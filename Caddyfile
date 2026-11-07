@@ -50,7 +50,7 @@
     }
 }
 
-# vybe.uz — братские вайбы (статика из ./vybe)
+# vybe.uz — заглушка «домен продаётся» (статика из ./vybe)
 vybe.uz, www.vybe.uz {
     @www host www.vybe.uz
     redir @www https://vybe.uz{uri} permanent
@@ -60,6 +60,5 @@ vybe.uz, www.vybe.uz {
         Cache-Control "public, max-age=600"
         X-Content-Type-Options nosniff
     }
-    header /photos/* Cache-Control "public, max-age=604800"
     file_server
 }
