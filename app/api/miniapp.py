@@ -331,6 +331,7 @@ class OrderIn(BaseModel):
     qty: int = 0
     gift_id: str | None = None
     slug: str | None = None                            # NFT: slug лота
+    pay_method: str | None = None                      # click/payme: если не хватает баланса — оплатить и сразу купить
     count: int = Field(default=1, ge=1, le=20)        # сколько подарков
     message: str | None = Field(default=None, max_length=255)  # подпись к подарку
     recipient_username: str
@@ -338,24 +339,20 @@ class OrderIn(BaseModel):
     recipient_token: str = ""
 
 
-@router.post("/orders")
-async def create_order(c: C, body: OrderIn):
-    s, u = c.session, c.user
-    channels = await get_channels(s)
-    if channels and await is_subscribed(bot, u.id, channels):
-        _err(403, "subscribe", "subscribe required")
+async def _prepare_order(s, lang: str, body: "OrderIn"):
+    """Проверки + цена + получатель. Возвращает (quote, rcp, gift, count, msg). Бросает HTTPException."""
     gift = None
     nft_slug = None
     if body.product == "stars":
         if not await cfg.get_bool(s, "stars_enabled"):
-            _err(400, "disabled", t(c.lang, "stars_disabled"))
+            _err(400, "disabled", t(lang, "stars_disabled"))
         mn, mx = await cfg.get_int(s, "min_stars"), await cfg.get_int(s, "max_stars")
         if not (mn <= body.qty <= mx):
-            _err(400, "qty_range", t(c.lang, "qty_range", min=mn, max=mx))
+            _err(400, "qty_range", t(lang, "qty_range", min=mn, max=mx))
         quote = await pricing.quote_stars(s, body.qty)
     elif body.product == "premium":
         if not await cfg.get_bool(s, "premium_enabled"):
-            _err(400, "disabled", t(c.lang, "premium_disabled"))
+            _err(400, "disabled", t(lang, "premium_disabled"))
         if body.qty not in pricing.PREMIUM_MONTHS:
             _err(400, "bad_months", "months must be 3, 6 or 12")
         quote = await pricing.quote_premium(s, body.qty)
@@ -377,9 +374,9 @@ async def create_order(c: C, body: OrderIn):
             _err(400, "bad_slug", "bad slug")
         it = await tg_account.nft_item(slug)
         if not it or not it.get("for_sale") or it.get("ton_only"):
-            _err(404, "sold", t(c.lang, "nft_sold"))
+            _err(404, "sold", t(lang, "nft_sold"))
         if it["stars"] > await cfg.get_int(s, "nft_max_stars"):
-            _err(400, "too_expensive", t(c.lang, "nft_sold"))
+            _err(400, "too_expensive", t(lang, "nft_sold"))
         quote = await pricing.quote_nft(s, it["stars"])
         body.qty = it["stars"]
         gift = {"id": it["gift_id"], "title": f"{it['title']} #{it['num']}"}
@@ -392,9 +389,9 @@ async def create_order(c: C, body: OrderIn):
         try:
             rcp = await get_provider(quote.product).resolve_recipient(rcp.username, body.qty)
         except RecipientNotFound as e:
-            _err(404, "not_found", str(e) or t(c.lang, "recipient_not_found"))
+            _err(404, "not_found", str(e) or t(lang, "recipient_not_found"))
         except ProviderError:
-            _err(502, "provider", t(c.lang, "recipient_check_fail"))
+            _err(502, "provider", t(lang, "recipient_check_fail"))
     count = body.count if body.product == "gift" else 1
     if nft_slug:
         gift = {**gift, "nft_slug": nft_slug}
@@ -403,21 +400,91 @@ async def create_order(c: C, body: OrderIn):
     if gift and gift.get("remains") is not None:
         count = min(count, max(1, int(gift["remains"])))
     msg = (body.message or "").strip()[:255] or None
-    if u.balance < quote.price_uzs * count:
-        _err(402, "insufficient", t(c.lang, "insufficient", need=fmt_uzs(quote.price_uzs * count), have=fmt_uzs(u.balance)), need=quote.price_uzs * count, have=u.balance)
+    return quote, rcp, gift, count, msg
+
+
+async def _place_order(s, u, lang: str, quote, rcp, gift, count, msg) -> list:
     created = []
     try:
         for _ in range(count):
             created.append(await orders_svc.create(s, u, quote, rcp, gift=gift, gift_message=msg))
     except InsufficientBalance as e:
-        _err(402, "insufficient", t(c.lang, "insufficient", need=fmt_uzs(e.need), have=fmt_uzs(e.have)), need=e.need, have=e.have)
+        _err(402, "insufficient", t(lang, "insufficient", need=fmt_uzs(e.need), have=fmt_uzs(e.have)), need=e.need, have=e.have)
     await s.commit()
     await s.refresh(u)
     from app.bot.handlers.stars import notify_new_order
 
     for order in created:
         await notify_new_order(order, u)
+    return created
+
+
+MIN_PAY = 1000  # меньше платёжки не принимают
+
+
+@router.post("/orders")
+async def create_order(c: C, body: OrderIn):
+    s, u = c.session, c.user
+    channels = await get_channels(s)
+    if channels and await is_subscribed(bot, u.id, channels):
+        _err(403, "subscribe", "subscribe required")
+    quote, rcp, gift, count, msg = await _prepare_order(s, c.lang, body)
+    total = quote.price_uzs * count
+    if u.balance < total:
+        methods = pay.available()
+        if body.pay_method and body.pay_method in methods:
+            # «оплатил → сразу купилось»: платёж на недостающую сумму, заказ создастся в вебхуке
+            amount = max(total - u.balance, MIN_PAY)
+            payment = await pay.create(s, u.id, amount, body.pay_method)
+            payment.intent = {
+                "product": body.product, "qty": body.qty, "gift_id": body.gift_id, "slug": body.slug, "count": count, "message": msg,
+                "recipient_username": rcp.username, "recipient_name": rcp.name, "recipient_token": rcp.token or "", "total": total, "lang": c.lang,
+            }
+            await s.commit()
+            bot_me = await bot.me()
+            return {"pay": {"payment_id": payment.id, "method": body.pay_method, "amount": amount, "total": total,
+                            "url": pay.pay_url(payment, return_url=f"https://t.me/{bot_me.username}", lang=c.lang)}}
+        _err(402, "insufficient", t(c.lang, "insufficient", need=fmt_uzs(total), have=fmt_uzs(u.balance)), need=total, have=u.balance)
+    created = await _place_order(s, u, c.lang, quote, rcp, gift, count, msg)
     return {"order": _order_json(created[0]), "orders": [_order_json(o) for o in created], "count": len(created), "balance": u.balance}
+
+
+async def run_payment_intent(payment_id: int) -> bool:
+    """После зачисления платежа: если к нему привязана покупка — сразу оформляем заказ.
+    Не получилось (цена выросла, лот продан, получатель пропал) — деньги остаются на балансе, пишем причину."""
+    from fastapi import HTTPException
+
+    from app.db.base import get_session
+
+    async with get_session() as s:
+        p = await s.get(Payment, payment_id, with_for_update=True)
+        if not p or not p.intent or p.order_id or p.note:
+            return False
+        u = await s.get(User, p.user_id)
+        it = dict(p.intent)
+        lang = it.pop("lang", None) or (u.language if u else "ru")
+        it.pop("total", None)
+        try:
+            body = OrderIn(**{k: v for k, v in it.items() if v is not None})
+            quote, rcp, gift, count, msg = await _prepare_order(s, lang, body)
+            if u.balance < quote.price_uzs * count:
+                raise HTTPException(402, {"message": t(lang, "insufficient", need=fmt_uzs(quote.price_uzs * count), have=fmt_uzs(u.balance))})
+            created = await _place_order(s, u, lang, quote, rcp, gift, count, msg)
+            p.order_id = created[0].id
+            await s.commit()
+            return True
+        except HTTPException as e:
+            d = e.detail if isinstance(e.detail, dict) else {"message": str(e.detail)}
+            p.note = str(d.get("message") or "error")[:255]
+            await s.commit()
+            log.warning("payment %s intent failed: %s", payment_id, p.note)
+        except Exception as e:  # noqa: BLE001
+            await s.rollback()
+            p = await s.get(Payment, payment_id)
+            p.note = f"{type(e).__name__}"[:255]
+            await s.commit()
+            log.exception("payment %s intent crashed", payment_id)
+    return False
 
 
 @router.get("/orders")
@@ -461,7 +528,9 @@ async def payment_status(c: C, payment_id: int):
     p = await c.session.get(Payment, payment_id)
     if not p or p.user_id != c.user.id:
         _err(404, "not_found", "payment not found")
-    return {"id": p.id, "status": p.status, "amount": p.amount, "provider": p.provider}
+    order = await c.session.get(Order, p.order_id) if p.order_id else None
+    return {"id": p.id, "status": p.status, "amount": p.amount, "provider": p.provider, "has_intent": bool(p.intent),
+            "order": _order_json(order) if order else None, "note": p.note}
 
 
 @router.get("/ledger")

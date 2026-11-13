@@ -61,6 +61,29 @@ input{font:inherit;color:inherit}
 input::placeholder{color:var(--ink3)}
 a{color:var(--gold2);text-decoration:none}
 .hidden{display:none!important}
+.balp{padding:7px 12px;font-size:13px;color:var(--gold2)}.balp svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;color:currentColor}
+.hero{text-align:center;margin:2px 0 18px}
+.hero .hs{width:68px;height:68px;margin:0 auto 10px;border-radius:22px;background:linear-gradient(150deg,#ffd166,#f59e0b);display:flex;align-items:center;justify-content:center;box-shadow:0 18px 40px -16px rgba(245,179,1,.8),inset 0 1px 0 rgba(255,255,255,.45)}
+.hero .hs svg{width:38px;height:38px;fill:#fff}
+.hero h1{font:800 24px/1.1 Unbounded,sans-serif;letter-spacing:-.01em}
+.hero p{color:var(--ink2);font-size:13.5px;font-weight:600;margin-top:6px}
+.lbl2{font-size:13px;font-weight:700;color:var(--ink2);margin:16px 2px 8px}
+.packs .opt{padding:13px 16px}.packs .opt b{display:flex;align-items:center;gap:10px;font-size:15.5px}.packs .opt b svg{width:20px;height:20px;fill:var(--gold);flex:none}
+.packs .opt .p{font:700 15px Unbounded,sans-serif}.packs .opt .p small{font:600 11px Inter,sans-serif;color:var(--ink2);margin-left:4px}
+.fst{width:20px;height:20px;fill:var(--gold);flex:none}
+#q{flex:1;min-width:0;background:transparent;border:0;outline:0;font:700 17px Inter,sans-serif;color:var(--ink);padding:12px 0}
+#q-price{font-size:13px;font-weight:700;color:var(--ink2);padding-right:10px;white-space:nowrap;width:auto}
+.ps-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}.ps-bg.show{opacity:1;pointer-events:auto}
+.ps{position:fixed;left:0;right:0;bottom:0;z-index:41;background:var(--bg);border-top:1px solid var(--line2);border-radius:24px 24px 0 0;padding:12px 16px calc(18px + var(--safe-b));transform:translateY(105%);transition:transform .25s var(--ease);text-align:center}
+.ps.show{transform:none}.ps .grab{width:38px;height:4px;border-radius:2px;background:var(--line2);margin:0 auto 14px}
+.ps h3{font:700 18px Unbounded,sans-serif}
+.pm{display:flex;align-items:center;gap:14px;width:100%;background:var(--glass);border:1px solid var(--line);border-radius:18px;padding:14px 16px;margin-bottom:8px;text-align:left;transition:transform .15s var(--ease),border-color .2s}
+.pm:active{transform:scale(.98);border-color:var(--gold)}
+.pm .lg{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font:800 13px Unbounded,sans-serif;color:#fff;flex:none}
+.pm .lg.click{background:#00a7ff}.pm .lg.payme{background:#33cccc}
+.pm b{font-size:16px;display:block}.pm span{font-size:12px;color:var(--ink2);font-weight:600}
+.pm .p{margin-left:auto;font:700 15px Unbounded,sans-serif;white-space:nowrap}
+.ps-spin{width:44px;height:44px;margin:6px auto 14px;border:4px solid var(--glass2);border-top-color:var(--gold);border-radius:50%;animation:rot .8s linear infinite}
 
 /* screens */
 #app{position:fixed;inset:0;z-index:1}
@@ -360,52 +383,21 @@ body.kb .screen{padding-bottom:110px}
 </svg>
 <div id="app">
 
-<!-- HOME -->
-<section class="screen" id="s-home">
-  <div class="top">
-    <div class="brand"><i class="star-i"></i>Tayzo</div>
-    <div class="topr"><button class="theme" id="theme-btn" aria-label="Тема"><svg><use href="#i-theme"/></svg></button><button class="avatar" id="home-avatar" data-go="profile" aria-label="Профиль">B</button></div>
-  </div>
-  <div class="bal">
-    <div class="deco"></div>
-    <div class="lbl" data-t="balance">Баланс</div>
-    <div class="num"><span id="bal">0</span><small data-t="uzs">сум</small></div>
-    <div class="row">
-      <button class="btn dark" data-go="topup" data-t="topup">Пополнить</button>
-      <button class="btn light" data-go="history" data-t="history">История</button>
-    </div>
-  </div>
-  <div class="tiles">
-    <button class="tile" id="tile-stars" data-go="stars"><span class="ic g-star"><svg><use href="#i-star"/></svg></span><b data-t="buy_stars">Купить звёзды</b><span id="tile-stars-p">220 сум за звезду</span></button>
-    <button class="tile" id="tile-prem" data-go="premium"><span class="ic g-prem"><svg><use href="#i-prem"/></svg></span><b data-t="buy_prem">Купить Premium</b><span id="tile-prem-p">от 159 990 сум</span></button>
-    <button class="tile wide" id="tile-gifts" data-go="gifts"><span class="ic g-gift"><svg><use href="#i-gift"/></svg></span><div><b data-t="gifts_tile">Подарки Telegram</b><span data-t="gifts_tile_p">Анонимно, оплата в сумах</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
-    <button class="tile wide hidden" id="tile-nft" data-go="nft"><span class="ic g-nft"><svg><use href="#i-nft"/></svg></span><div><b data-t="nft_tile">NFT-подарки</b><span data-t="nft_tile_p">Коллекционные подарки с рынка Telegram</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
-  </div>
-  <div class="sec"><h3 data-t="soon">Скоро в Tayzo</h3></div>
-  <div class="soon">
-    <div class="soon-card" id="soon-nft"><span class="ic g-nft"><svg><use href="#i-nft"/></svg></span><b data-t="soon_nft">Аренда NFT-подарков</b><span data-t="soon_nft_p">Редкий подарок в профиле на день или неделю</span><em data-t="soon_tag">в разработке</em></div>
-    <div class="soon-card"><span class="ic g-game"><svg><use href="#i-game"/></svg></span><b data-t="soon_games">Донаты в игры</b><span data-t="soon_games_p">PUBG Mobile, MLBB, Free Fire, Steam</span><em data-t="soon_tag">в разработке</em></div>
-    <div class="soon-card"><span class="ic g-sub"><svg><use href="#i-sub"/></svg></span><b data-t="soon_subs">Подписки</b><span data-t="soon_subs_p">Spotify, YouTube Premium, ChatGPT</span><em data-t="soon_tag">в планах</em></div>
-  </div>
-  <div class="sec"><h3 data-t="recent">Последние заказы</h3><button data-go="history" data-t="all">Все</button></div>
-  <div class="list" id="home-orders"><div class="empty" data-t="no_orders">Заказов пока нет — самое время купить первые звёзды</div></div>
-</section>
-
 <!-- STARS -->
 <section class="screen" id="s-stars">
-  <h1 class="title"><span class="ic g-star ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#i-star"/></svg></span><span data-t="buy_stars">Купить звёзды</span></h1>
-  <p class="sub" id="stars-sub">220 сум за звезду · от 50</p>
-  <div class="card">
-    <div class="lbl" data-t="how_many">Сколько звёзд</div>
-    <div class="qty"><button id="q-minus" aria-label="−">−</button><input id="q" type="text" inputmode="numeric" value="100"><button id="q-plus" aria-label="+">+</button></div>
-    <div class="chips" id="q-chips"></div>
-  </div>
+  <div class="top"><div class="brand"><i class="star-i"></i>Tayzo</div><button class="pill balp hidden" data-go="topup"><svg><use href="#i-card"/></svg><span class="balv">0</span></button></div>
+  <div class="hero"><div class="hs"><svg viewBox="0 0 24 24"><use href="#i-starf"/></svg></div><h1>Telegram Stars</h1><p id="stars-sub">240 сум за звезду</p></div>
   <div class="card">
     <div class="lbl" data-t="to_whom">Кому</div>
     <div class="seg" id="stars-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
     <div class="field" id="stars-field"><span>@</span><input id="stars-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="stars-state"></div></div>
     <div class="hint" id="stars-hint"></div>
-    <div class="sum"><span data-t="total">К оплате</span><b><span id="stars-total">22 000</span><small data-t="uzs">сум</small></b></div>
+  </div>
+  <div class="lbl2" data-t="pick_pack">Выбери пакет</div>
+  <div class="opts packs" id="q-packs"></div>
+  <div class="card">
+    <div class="lbl" data-t="other_qty">Другое количество</div>
+    <div class="field"><svg class="fst" viewBox="0 0 24 24"><use href="#i-starf"/></svg><input id="q" type="text" inputmode="numeric" placeholder="50 – 100 000"><div class="state" id="q-price"></div></div>
   </div>
 </section>
 
@@ -419,7 +411,7 @@ body.kb .screen{padding-bottom:110px}
     <div class="seg" id="prem-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
     <div class="field" id="prem-field"><span>@</span><input id="prem-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="prem-state"></div></div>
     <div class="hint" id="prem-hint"></div>
-    <div class="sum"><span data-t="total">К оплате</span><b><span id="prem-total">0</span><small data-t="uzs">сум</small></b></div>
+    <span id="prem-total" class="hidden"></span>
   </div>
 </section>
 
@@ -521,7 +513,7 @@ body.kb .screen{padding-bottom:110px}
 
 <!-- HISTORY -->
 <section class="screen" id="s-history">
-  <div class="top"><h1 class="title" style="margin:0" data-t="history">История</h1><button class="avatar" id="hist-avatar" data-go="profile" aria-label="Профиль">B</button></div>
+  <div class="top"><h1 class="title" style="margin:0" data-t="history">История</h1></div>
   <div class="seg" id="hist-seg"><button data-h="orders" aria-pressed="true" data-t="orders">Заказы</button><button data-h="ledger" aria-pressed="false" data-t="payments">Платежи</button></div>
   <div class="list" id="hist-list"></div>
 </section>
@@ -534,6 +526,7 @@ body.kb .screen{padding-bottom:110px}
     <div><b id="st-spent">0</b><span data-t="spent">потрачено</span></div>
     <div><b id="st-bal">0</b><span data-t="balance">баланс</span></div>
   </div>
+  <button class="btn gold block" style="margin-bottom:12px" data-go="topup" data-t="topup">Пополнить</button>
   <div class="card"><div class="lbl" data-t="language">Язык</div><div class="lang" id="lang"><button data-l="ru">Русский</button><button data-l="uz">O'zbek</button><button data-l="en">English</button></div></div>
   <div class="card"><div class="lbl"><span data-t="ref_title">Приглашай друзей</span> · <span id="ref-pct">5</span>%</div><p class="hint" style="margin:0 0 10px" data-t="ref_p">Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.</p><div class="ref"><code id="ref-link">—</code><button id="ref-copy" data-t="copy">Копировать</button><button id="ref-share" data-t="share">Отправить</button></div></div>
   <div style="display:flex;gap:8px"><button class="btn ghost block" data-go="history" data-t="history">История</button><button class="btn ghost block" id="support-btn" data-t="write_support">Написать в поддержку</button></div>
@@ -563,14 +556,30 @@ body.kb .screen{padding-bottom:110px}
 
 </div>
 
+<div class="ps-bg" id="ps-bg"></div>
+<div class="ps" id="ps">
+  <div class="grab"></div>
+  <div id="ps-pick">
+    <h3 data-t="pay_how">Способ оплаты</h3>
+    <p class="hint" id="ps-sum" style="margin:4px 0 14px"></p>
+    <div id="ps-list"></div>
+  </div>
+  <div id="ps-wait" class="hidden">
+    <div class="ps-spin"></div>
+    <h3 data-t="wait_h">Ждём оплату</h3>
+    <p class="hint" style="margin:6px 0 16px" data-t="wait_p">Оплати на открывшейся странице — заказ оформится сам, возвращаться и нажимать ничего не нужно.</p>
+    <button class="btn gold block" id="ps-open" data-t="open_pay">Открыть оплату ещё раз</button>
+    <button class="btn ghost block" style="margin-top:8px" id="ps-cancel" data-t="cancel">Отмена</button>
+  </div>
+</div>
 <div class="cta" id="cta"><button id="cta-btn"><span class="sp"></span><span id="cta-text"></span></button></div>
 
 <nav class="tabbar" id="tabbar">
-  <button data-go="home" aria-current="page"><svg><use href="#i-home"/></svg><span data-t="tab_home">Главная</span></button>
-  <button data-go="stars"><svg><use href="#i-star"/></svg><span data-t="stars">Звёзды</span></button>
+  <button data-go="stars" aria-current="page"><svg><use href="#i-star"/></svg><span data-t="stars">Звёзды</span></button>
   <button data-go="premium"><svg><use href="#i-prem"/></svg><span>Premium</span></button>
   <button data-go="gifts"><svg><use href="#i-gift"/></svg><span data-t="gifts">Подарки</span></button>
   <button data-go="history"><svg><use href="#i-clock"/></svg><span data-t="history">История</span></button>
+  <button data-go="profile"><svg><use href="#i-user"/></svg><span data-t="tab_profile">Профиль</span></button>
 </nav>
 
 <script>
@@ -578,7 +587,7 @@ body.kb .screen{padding-bottom:110px}
 const I = {
 ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"История",stars:"Звёзды",recent:"Последние заказы",all:"Все",no_orders:"Заказов пока нет — самое время купить первые звёзды",
  buy_stars:"Купить звёзды",how_many:"Сколько звёзд",to_whom:"Кому",to_me:"Себе",to_other:"Другому",total:"К оплате",prem_sub:"Себе или в подарок — активируется сразу после оплаты",
- topup_title:"Пополнение",amount:"Сумма",pay_method:"Способ оплаты",pay_ok:"Баланс пополнен на {p} сум",pay_cancelled:"Платёж отменён",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
+ topup_title:"Пополнение",amount:"Сумма",pay_method:"Способ оплаты",tab_profile:"Профиль",pick_pack:"Выбери пакет",other_qty:"Другое количество",pk_stars:"{n} звёзд",pay_how:"Чем оплатить?",pay_need:"К оплате {p} сум",pay_bal_used:"К оплате {p} сум · {b} спишется с баланса",pm_click_p:"Карта Uzcard / Humo или приложение Click",pm_payme_p:"Карта Uzcard / Humo или приложение Payme",wait_h:"Ждём оплату",wait_p:"Оплати на открывшейся странице — заказ оформится сам, возвращаться и нажимать ничего не нужно.",open_pay:"Открыть оплату ещё раз",cancel:"Отмена",intent_fail:"Оплата прошла, но заказ не оформлен: {m} Деньги на балансе.",pay_off:"Онлайн-оплата временно недоступна",pay_ok:"Баланс пополнен на {p} сум",pay_cancelled:"Платёж отменён",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
  orders:"Заказы",payments:"Платежи",stars_bought:"звёзд куплено",spent:"потрачено",language:"Язык",ref_title:"Приглашай друзей",ref_p:"Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.",copy:"Копировать",share:"Отправить",
  tab_home:"Главная",profile:"Профиль",gate_h:"Подпишись на канал",gate_p:"Чтобы пользоваться Tayzo, подпишись на наш канал — там акции и скидки.",gate_check:"Я подписался",
  per_star:"{p} сум за звезду · от {min}",from:"от",months:"мес",m3:"3 месяца",m6:"6 месяцев",m12:"12 месяцев",best:"Выгодно",
@@ -595,7 +604,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды, Premium и подарки Telegram за сумы — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
  buy_stars:"Yulduz sotib olish",how_many:"Nechta yulduz",to_whom:"Kimga",to_me:"O'zimga",to_other:"Boshqaga",total:"To'lov",prem_sub:"O'zingizga yoki sovg'a — to'lovdan so'ng darhol faollashadi",
- topup_title:"To'ldirish",amount:"Summa",pay_method:"To'lov usuli",pay_ok:"Balans {p} so'mga to'ldirildi",pay_cancelled:"To'lov bekor qilindi",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
+ topup_title:"To'ldirish",amount:"Summa",pay_method:"To'lov usuli",tab_profile:"Profil",pick_pack:"To'plamni tanlang",other_qty:"Boshqa miqdor",pk_stars:"{n} Stars",pay_how:"Qanday to'laysiz?",pay_need:"To'lov: {p} so'm",pay_bal_used:"To'lov: {p} so'm · {b} balansdan yechiladi",pm_click_p:"Uzcard / Humo kartasi yoki Click ilovasi",pm_payme_p:"Uzcard / Humo kartasi yoki Payme ilovasi",wait_h:"To'lov kutilmoqda",wait_p:"Ochilgan sahifada to'lang — buyurtma o'zi rasmiylashadi, qaytib hech narsa bosish shart emas.",open_pay:"To'lovni qayta ochish",cancel:"Bekor qilish",intent_fail:"To'lov o'tdi, lekin buyurtma rasmiylashmadi: {m} Pul balansda.",pay_off:"Onlayn to'lov vaqtincha ishlamayapti",pay_ok:"Balans {p} so'mga to'ldirildi",pay_cancelled:"To'lov bekor qilindi",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
  orders:"Buyurtmalar",payments:"To'lovlar",stars_bought:"yulduz olingan",spent:"sarflangan",language:"Til",ref_title:"Do'stlarni taklif qiling",ref_p:"Do'stingizning har bir to'ldirishidan foiz oling — bonus balansga avtomatik tushadi.",copy:"Nusxalash",share:"Yuborish",
  tab_home:"Asosiy",profile:"Profil",gate_h:"Kanalga obuna bo'ling",gate_p:"Tayzo'dan foydalanish uchun kanalimizga obuna bo'ling — u yerda aksiyalar va chegirmalar.",gate_check:"Obuna bo'ldim",
  per_star:"1 yulduz — {p} so'm · kamida {min}",from:"dan",months:"oy",m3:"3 oy",m6:"6 oy",m12:"12 oy",best:"Foydali",
@@ -612,7 +621,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari, Premium va sovg'alar so'mda — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
  buy_stars:"Buy Stars",how_many:"How many stars",to_whom:"Recipient",to_me:"Me",to_other:"Someone else",total:"Total",prem_sub:"For yourself or as a gift — activates right after payment",
- topup_title:"Top up",amount:"Amount",pay_method:"Payment method",pay_ok:"Balance topped up by {p} UZS",pay_cancelled:"Payment cancelled",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
+ topup_title:"Top up",amount:"Amount",pay_method:"Payment method",tab_profile:"Profile",pick_pack:"Pick a pack",other_qty:"Other amount",pk_stars:"{n} Stars",pay_how:"How would you like to pay?",pay_need:"To pay: {p} UZS",pay_bal_used:"To pay: {p} UZS · {b} taken from balance",pm_click_p:"Uzcard / Humo card or the Click app",pm_payme_p:"Uzcard / Humo card or the Payme app",wait_h:"Waiting for payment",wait_p:"Pay on the page that opened — the order places itself, no need to come back and tap anything.",open_pay:"Open payment again",cancel:"Cancel",intent_fail:"Payment received, but the order wasn't placed: {m} The money is on your balance.",pay_off:"Online payment is temporarily unavailable",pay_ok:"Balance topped up by {p} UZS",pay_cancelled:"Payment cancelled",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
  orders:"Orders",payments:"Payments",stars_bought:"stars bought",spent:"spent",language:"Language",ref_title:"Invite friends",ref_p:"Earn a percentage of every friend's top-up — the bonus lands on your balance automatically.",copy:"Copy",share:"Share",
  tab_home:"Home",profile:"Profile",gate_h:"Subscribe to the channel",gate_p:"To use Tayzo, subscribe to our channel — deals and discounts live there.",gate_check:"I subscribed",
  per_star:"{p} UZS per star · min {min}",from:"from",months:"mo",m3:"3 months",m6:"6 months",m12:"12 months",best:"Best value",
@@ -668,8 +677,8 @@ let stars={qty:100,who:'me',rcp:null,user:''}, prem={months:3,who:'me',rcp:null,
 const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,100000,200000,500000];
 
 /* ---------- navigation ---------- */
-let cur='home', stack=[];
-const TAB_ORDER=['home','stars','premium','gifts','history'];const tabOf=n=>n==='nft'?'gifts':n;
+let cur='stars', stack=[];
+const TAB_ORDER=['stars','premium','gifts','history','profile'];const tabOf=n=>n==='nft'?'gifts':n;
 function go(name,push=true,backward=false){
   if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
   if(TAB_ORDER.includes(tabOf(name))&&TAB_ORDER.includes(tabOf(cur)))backward=TAB_ORDER.indexOf(tabOf(name))<TAB_ORDER.indexOf(tabOf(cur));
@@ -690,11 +699,13 @@ function go(name,push=true,backward=false){
   $('#tabbar').classList.toggle('hidden',name==='gate'||name==='result');
   $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
   ctaWanted=false;
-  if(BB){(name==='home'||name==='gate')?BB.hide():BB.show();}
+  if(BB){(TAB_ORDER.includes(tabOf(name))||name==='gate')?BB.hide():BB.show();}paintBal();
   const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
   Promise.resolve(r).then(()=>{if(!ctaWanted)hideMain();});
 }
-function back(){const p=stack.pop()||'home';go(p,false,true);}
+function back(){const p=stack.pop()||'stars';go(p,false,true);}
+const mapGo=n=>(n==='gifts'&&S.me&&S.me.flags.nft)?'nft':n;
+function paintBal(){if(!S.me)return;const b=S.me.user.balance;$$('.balp').forEach(e=>{e.classList.toggle('hidden',!(b>0));e.querySelector('.balv').textContent=fmt(b);});}
 if(BB)BB.onClick(back);
 document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){hap();go((b.dataset.go==='gifts'&&S.me&&S.me.flags.nft)?'nft':b.dataset.go);}});
 /* клавиатура */
@@ -709,25 +720,13 @@ if(tg&&tg.onEvent){tg.onEvent('viewportChanged',()=>{if(tg.isExpanded===false)re
   document.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;const tg_=e.target;if(tg_.closest('.chips,input,.qty,.ggrid,.cta,.tabbar'))return;sx=e.touches[0].clientX;sy=e.touches[0].clientY;st=Date.now();active=TAB_ORDER.includes(cur);},{passive:true});
   document.addEventListener('touchend',e=>{if(!active)return;active=false;const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy,dt=Date.now()-st;
     if(Math.abs(dx)<70||Math.abs(dy)>Math.abs(dx)*0.6||dt>600)return;
-    const i=TAB_ORDER.indexOf(cur);const n=dx<0?i+1:i-1;if(n<0||n>=TAB_ORDER.length)return;hap();go(TAB_ORDER[n]);},{passive:true});
+    const i=TAB_ORDER.indexOf(cur);const n=dx<0?i+1:i-1;if(n<0||n>=TAB_ORDER.length)return;hap();go(mapGo(TAB_ORDER[n]));},{passive:true});
 })();
 
 /* ---------- home ---------- */
 const P=()=>S.me.prices;
 function countUp(el,to){const from=Number(String(el.textContent).replace(/\D/g,''))||0;if(from===to||matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=fmt(to);return;}const t0=performance.now(),d=520;(function f(now){const k=Math.min(1,(now-t0)/d),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f);})(t0);}
-function renderHome(){
-  const u=S.me.user;
-  countUp($('#bal'),u.balance);$('#tile-nft').classList.toggle('hidden',!S.me.flags.nft);$('#soon-nft').classList.toggle('hidden',!!S.me.flags.nft);
-  const ini=((u.name||u.username||'T').trim()[0]||'T').toUpperCase();$('#home-avatar').textContent=ini;$('#hist-avatar').textContent=ini;
-  $('#tile-stars-p').textContent=t('per_star_short',{p:fmt(P().star)});
-  $('#tile-prem-p').textContent=`${t('from')} ${fmt(Math.min(...Object.values(P().premium)))} ${t('uzs')}`;
-  $('#tile-stars').classList.toggle('off',!S.me.flags.stars);
-  $('#tile-prem').classList.toggle('off',!S.me.flags.premium);
-  $('#tile-gifts').classList.toggle('hidden',!S.me.flags.gifts);
-  const list=$('#home-orders');
-  if(!S.me.recent_orders.length){list.innerHTML=`<div class="empty">${t('no_orders')}</div>`;return;}
-  list.innerHTML=S.me.recent_orders.slice(0,3).map(orderRow).join('');
-}
+function renderHome(){}
 const stCls=s=>s==='delivered'?'ok':(s==='refunded'||s==='failed')?'bad':'wait';
 function orderTitle(o){return o.product==='stars'?t('stars_title',{n:fmt(o.quantity)}):o.product==='gift'?t('gift_title',{t:(o.gift_title||'Gift')+' · '+fmt(o.quantity)+' Stars'}):o.product==='nft'?t('nft_title_o',{t:(o.gift_title||o.nft_slug||'NFT')+' · '+fmt(o.quantity)+' Stars'}):t('prem_title',{m:o.quantity});}
 const PICON={stars:'#i-star',premium:'#i-prem',gift:'#i-gift',nft:'#i-nft'};const PCLS={stars:'g-star',premium:'g-prem',gift:'g-gift',nft:'g-nft'};
@@ -769,47 +768,41 @@ function setupRecipient(prefix,state,product,getQty,onChange){
 let starsSync;
 function clampQ(n){const p=P();n=Math.round(Number(n)||p.min_stars);return Math.min(p.max_stars,Math.max(p.min_stars,n));}
 function starsPrice(){return stars.qty*P().star;}
+const STAR_PACKS=[50,100,250,500,1000];
 function updateStars(){
-  const price=starsPrice(), bal=S.me.user.balance;
-  $('#stars-total').textContent=fmt(price);
-  $$('#q-chips .chip').forEach(c=>c.setAttribute('aria-pressed',Number(c.dataset.q)===stars.qty));
+  const price=starsPrice();
+  $$('#q-packs .opt').forEach(c=>c.setAttribute('aria-pressed',Number(c.dataset.q)===stars.qty&&!stars.custom));
+  $('#q-price').textContent=stars.custom?`${fmt(price)} ${t('uzs')}`:'';
   const ready=!!stars.rcp&&S.me.flags.stars;
-  if(bal>=price) mainBtn(t('buy_for',{p:fmt(price)}),buyStars,{disabled:!ready});
-  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);topupFrom=cur;go('topup');},{color:'#ffffff'});
+  mainBtn(t('buy_for',{p:fmt(price)}),buyStars,{disabled:!ready});
 }
+function paintPacks(){$('#q-packs').innerHTML=STAR_PACKS.filter(q=>q>=P().min_stars).map(q=>`<button class="opt" data-q="${q}"><b><svg viewBox="0 0 24 24"><use href="#i-starf"/></svg>${fmt(q)} Stars</b><div class="p">${fmt(q*P().star)}<small>${t('uzs')}</small></div></button>`).join('');}
 function renderStars(){
   if(!starsSync){
-    $('#q-chips').innerHTML=STAR_PRESETS.map(q=>`<button class="chip" data-q="${q}">${fmt(q)}</button>`).join('');
-    $('#q-chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();stars.qty=Number(c.dataset.q);$('#q').value=fmt(stars.qty);updateStars();});
-    $('#q').addEventListener('input',()=>{fmtInput($('#q'));stars.qty=clampQ(digits($('#q').value));updateStars();});
-    $('#q').addEventListener('change',()=>{$('#q').value=fmt(stars.qty);});
-    $('#q-minus').addEventListener('click',()=>{hap();stars.qty=clampQ(stars.qty-50);$('#q').value=fmt(stars.qty);updateStars();});
-    $('#q-plus').addEventListener('click',()=>{hap();stars.qty=clampQ(stars.qty+50);$('#q').value=fmt(stars.qty);updateStars();});
+    $('#q-packs').addEventListener('click',e=>{const c=e.target.closest('.opt');if(!c)return;hap();stars.qty=Number(c.dataset.q);stars.custom=false;$('#q').value='';updateStars();});
+    $('#q').addEventListener('input',()=>{fmtInput($('#q'));const v=digits($('#q').value);stars.custom=v>0;stars.qty=v>0?clampQ(v):100;updateStars();});
+    $('#q').addEventListener('change',()=>{if(stars.custom)$('#q').value=fmt(stars.qty);});
     starsSync=setupRecipient('stars',stars,'stars',()=>stars.qty,updateStars);
   }
-  $('#stars-sub').textContent=t('per_star',{p:fmt(P().star),min:P().min_stars});
-  stars.qty=clampQ(stars.qty);$('#q').value=fmt(stars.qty);
+  paintPacks();
+  $('#stars-sub').textContent=t('per_star_short',{p:fmt(P().star)});
+  $('#q').placeholder=`${fmt(P().min_stars)} – ${fmt(P().max_stars)}`;
+  stars.qty=clampQ(stars.qty);if(!STAR_PACKS.includes(stars.qty)){stars.custom=true;$('#q').value=fmt(stars.qty);}
   starsSync();
 }
-async function buyStars(){
-  if(!stars.rcp)return;mbLoading(true);
-  try{
-    const r=await api('/orders',{product:'stars',qty:stars.qty,recipient_username:stars.rcp.username,recipient_name:stars.rcp.name,recipient_token:stars.rcp.token||''});
-    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');showResult(r.order);
-  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateStars();}else if(e.code==='subscribe'){await refreshMe();}toast(e.message,true);}
-  finally{mbLoading(false);}
+function buyStars(){
+  if(!stars.rcp)return;
+  placeOrder({product:'stars',qty:stars.qty,recipient_username:stars.rcp.username,recipient_name:stars.rcp.name,recipient_token:stars.rcp.token||''},starsPrice());
 }
 
 /* ---------- premium ---------- */
 let premSync;
 function premPrice(){return P().premium[prem.months];}
 function updatePrem(){
-  const price=premPrice(), bal=S.me.user.balance;
-  $('#prem-total').textContent=fmt(price);
+  const price=premPrice();
   $$('#prem-opts .opt').forEach(o=>o.setAttribute('aria-pressed',Number(o.dataset.m)===prem.months));
   const ready=!!prem.rcp&&S.me.flags.premium;
-  if(bal>=price) mainBtn(t('buy_for',{p:fmt(price)}),buyPrem,{disabled:!ready});
-  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);topupFrom=cur;go('topup');},{color:'#ffffff'});
+  mainBtn(t('buy_for',{p:fmt(price)}),buyPrem,{disabled:!ready});
 }
 function renderPrem(){
   const pr=P().premium;
@@ -820,13 +813,9 @@ function renderPrem(){
   }
   premSync();
 }
-async function buyPrem(){
-  if(!prem.rcp)return;mbLoading(true);
-  try{
-    const r=await api('/orders',{product:'premium',qty:prem.months,recipient_username:prem.rcp.username,recipient_name:prem.rcp.name,recipient_token:prem.rcp.token||''});
-    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');showResult(r.order);
-  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updatePrem();}toast(e.message,true);}
-  finally{mbLoading(false);}
+function buyPrem(){
+  if(!prem.rcp)return;
+  placeOrder({product:'premium',qty:prem.months,recipient_username:prem.rcp.username,recipient_name:prem.rcp.name,recipient_token:prem.rcp.token||''},premPrice());
 }
 
 /* ---------- gifts ---------- */
@@ -852,8 +841,7 @@ function updateGift(){
   $('#gift-count-hint').textContent=giftMax()<20?t('gift_max',{n:giftMax()}):'';
   if(!gift.item){go('gifts',false,true);return;}
   const ready=!!gift.rcp;
-  if(bal>=price) mainBtn(gift.count>1?t('gift_for_n',{n:gift.count,p:fmt(price)}):t('gift_for',{p:fmt(price)}),buyGift,{disabled:!ready});
-  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);topupFrom=cur;go('topup');},{color:'#ffffff'});
+  mainBtn(gift.count>1?t('gift_for_n',{n:gift.count,p:fmt(price)}):t('gift_for',{p:fmt(price)}),buyGift,{disabled:!ready});
 }
 async function renderGifts(){
   if(!giftSync){
@@ -886,13 +874,10 @@ function renderGiftCfg(){
   $('#gp-title').textContent=gift.item.title||t('gifts');$('#gp-price').textContent=`${fmt(gift.item.price)} ${t('uzs')} · ${gift.item.stars} ⭐`.replace('⭐','★');
   giftSync();updateGift();
 }
-async function buyGift(){
-  if(!gift.rcp||!gift.item)return;mbLoading(true);
-  try{
-    const r=await api('/orders',{product:'gift',gift_id:gift.item.id,count:gift.count,message:gift.msg||null,recipient_username:gift.rcp.username,recipient_name:gift.rcp.name,recipient_token:gift.rcp.token||''});
-    S.me.user.balance=r.balance;(r.orders||[r.order]).slice().reverse().forEach(o=>S.me.recent_orders.unshift(o));hap('ok');const n=r.count||1;gift.item=null;gift.id=null;gift.count=1;gift.msg='';gift.who=null;gift.rcp=null;$('#gift-msg').value='';$('#gift-msg-cnt').textContent='0/255';stack=stack.filter(x=>x!=='giftcfg');showResult(r.order,n);
-  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateGift();}toast(e.message,true);}
-  finally{mbLoading(false);}
+function buyGift(){
+  if(!gift.rcp||!gift.item)return;
+  placeOrder({product:'gift',gift_id:gift.item.id,count:gift.count,message:gift.msg||null,recipient_username:gift.rcp.username,recipient_name:gift.rcp.name,recipient_token:gift.rcp.token||''},gift.item.price*gift.count,
+    ()=>{gift.item=null;gift.id=null;gift.count=1;gift.msg='';gift.who=null;gift.rcp=null;$('#gift-msg').value='';$('#gift-msg-cnt').textContent='0/255';stack=stack.filter(x=>x!=='giftcfg');});
 }
 
 /* ---------- NFT ---------- */
@@ -1003,17 +988,43 @@ function renderNftBuy(){
 function updateNftBuy(){
   if(cur!=='nftbuy'||!nft.item)return;
   const price=nft.item.price,bal=S.me.user.balance;$('#nb-total').textContent=fmt(price);
-  if(bal>=price)mainBtn(t('nft_for',{p:fmt(price)}),buyNft,{disabled:!nft.rcp});
-  else mainBtn(t('topup_for',{p:fmt(price-bal)}),()=>{topupAmt=Math.max(P().min_topup,price-bal);topupFrom=cur;go('topup');},{color:'#ffffff'});
+  mainBtn(t('nft_for',{p:fmt(price)}),buyNft,{disabled:!nft.rcp});
 }
-async function buyNft(){
-  if(!nft.rcp||!nft.item)return;mbLoading(true);
+function buyNft(){
+  if(!nft.rcp||!nft.item)return;
+  placeOrder({product:'nft',slug:nft.item.slug,recipient_username:nft.rcp.username,recipient_name:nft.rcp.name,recipient_token:nft.rcp.token||''},nft.item.price,
+    ()=>{nft.item=null;nft.who=null;nft.rcp=null;nft.items=[];stack=stack.filter(x=>x!=='nftbuy');});
+}
+
+/* ---------- оплата и покупка одним действием ---------- */
+let payCtx=null;
+function openPs(mode){$('#ps-pick').classList.toggle('hidden',mode!=='pick');$('#ps-wait').classList.toggle('hidden',mode!=='wait');$('#ps-bg').classList.add('show');$('#ps').classList.add('show');}
+function closePs(){$('#ps-bg').classList.remove('show');$('#ps').classList.remove('show');}
+function openPay(url){try{tg?tg.openLink(url):window.open(url);}catch(e){window.open(url);}}
+function placeOrder(payload,price,onDone){
+  const bal=S.me.user.balance;
+  if(bal>=price)return sendOrder(payload,onDone);
+  const ms=payMethods();
+  if(!ms.length){toast(t('pay_off'),true);return;}
+  if(ms.length===1)return sendOrder({...payload,pay_method:ms[0]},onDone);
+  const need=Math.max(price-bal,1000);
+  $('#ps-sum').textContent=bal>0?t('pay_bal_used',{p:fmt(need),b:fmt(Math.min(bal,price))}):t('pay_need',{p:fmt(need)});
+  $('#ps-list').innerHTML=ms.map(m=>`<button class="pm" data-m="${m}"><span class="lg ${m}">${m==='payme'?'Pay':'Click'}</span><div><b>${m==='payme'?'Payme':'Click'}</b><span>${t('pm_'+m+'_p')}</span></div><div class="p">${fmt(need)}</div></button>`).join('');
+  payCtx={payload,onDone};openPs('pick');
+}
+async function sendOrder(payload,onDone){
+  mbLoading(true);
   try{
-    const r=await api('/orders',{product:'nft',slug:nft.item.slug,recipient_username:nft.rcp.username,recipient_name:nft.rcp.name,recipient_token:nft.rcp.token||''});
-    S.me.user.balance=r.balance;S.me.recent_orders.unshift(r.order);hap('ok');nft.item=null;nft.who=null;nft.rcp=null;nft.items=[];stack=stack.filter(x=>x!=='nftbuy');showResult(r.order,1);
-  }catch(e){hap('bad');if(e.code==='insufficient'){S.me.user.balance=e.data.have;updateNftBuy();}if(e.code==='sold'){nft.items=[];}toast(e.message,true);}
+    const r=await api('/orders',payload);
+    if(r.pay){payCtx={url:r.pay.url,onDone,count:payload.count||1};openPs('wait');openPay(r.pay.url);watchPayment(r.pay.payment_id,r.pay.amount);}
+    else{closePs();S.me.user.balance=r.balance;(r.orders||[r.order]).slice().reverse().forEach(o=>S.me.recent_orders.unshift(o));hap('ok');onDone&&onDone();showResult(r.order,r.count||1);}
+  }catch(e){hap('bad');closePs();if(e.code==='insufficient'){S.me.user.balance=e.data.have;rerender();}else if(e.code==='subscribe'){await refreshMe();}if(e.code==='sold')nft.items=[];toast(e.message,true);}
   finally{mbLoading(false);}
 }
+$('#ps-list').addEventListener('click',e=>{const b=e.target.closest('.pm');if(!b||!payCtx)return;hap();const c=payCtx;sendOrder({...c.payload,pay_method:b.dataset.m},c.onDone);});
+$('#ps-bg').addEventListener('click',()=>{if(!$('#ps-wait').classList.contains('hidden'))return;closePs();});
+$('#ps-open').addEventListener('click',()=>{hap();if(payCtx&&payCtx.url)openPay(payCtx.url);});
+$('#ps-cancel').addEventListener('click',()=>{hap();stopWatch();closePs();});
 
 /* ---------- result ---------- */
 let pollT=null;
@@ -1024,7 +1035,7 @@ function showResult(o,n=1){
   $('#res-h').textContent=t('order_ok');
   $('#res-p').textContent=o.product==='gift'?(n>1?t('gifts_ok_p',{n,u:o.recipient}):t('gift_ok_p',{u:o.recipient})):o.product==='nft'?t('nft_ok_p',{t:o.gift_title||o.nft_slug,u:o.recipient}):t('order_ok_p',{t:orderTitle(o),u:o.recipient});
   const st=$('#res-st');const paint=s=>{st.className='st '+stCls(s);st.textContent=t('st_'+s);};paint(o.status);
-  mainBtn('OK',()=>{clearInterval(pollT);stack=[];go('home',false);},{color:'#ffffff'});
+  mainBtn('OK',()=>{clearInterval(pollT);stack=[];go('stars',false);},{color:'#ffffff'});
   pollT=setInterval(async()=>{try{const r=await api('/orders/'+o.id);paint(r.order.status);S.me.user.balance=r.balance;const i=S.me.recent_orders.findIndex(x=>x.id===o.id);if(i>-1)S.me.recent_orders[i]=r.order;if(['delivered','refunded','manual'].includes(r.order.status)){clearInterval(pollT);if(r.order.status==='delivered')hap('ok');}}catch(e){}},3000);
 }
 
@@ -1094,16 +1105,24 @@ function renderGate(list){
   $('#gate-list').innerHTML=list.map(c=>`<a class="btn gold block" style="margin-bottom:8px" href="${c.url}" target="_blank">${c.title}</a>`).join('');
   go('gate',false);
 }
-$('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api('/subscribe/check',{});if(r.need_subscribe.length){toast(t('gate_h'),true);renderGate(r.need_subscribe);}else{S.me.need_subscribe=[];stack=[];go('home',false);}}catch(e){toast(e.message,true)}});
+$('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api('/subscribe/check',{});if(r.need_subscribe.length){toast(t('gate_h'),true);renderGate(r.need_subscribe);}else{S.me.need_subscribe=[];stack=[];go('stars',false);}}catch(e){toast(e.message,true)}});
 $('#gate-list').addEventListener('click',e=>{const a=e.target.closest('a');if(a&&tg){e.preventDefault();tg.openTelegramLink(a.href);}});
 
 /* ---------- boot ---------- */
 function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:updateNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
 function watchPayment(id,amount){
-  stopWatch();const started=Date.now();
-  const tick=async()=>{try{const r=await api('/payments/'+id);if(r.status==='paid'){stopWatch();S.me=await api('/me');hap('ok');toast(t('pay_ok',{p:fmt(amount)}));if(topupFrom){const f=topupFrom;topupFrom=null;go(f,false,true);}else rerender();return;}if(r.status==='cancelled'){stopWatch();toast(t('pay_cancelled'),true);return;}}catch(e){}
-    if(Date.now()-started>15*60*1000)stopWatch();};
-  payWatch={id,tick,timer:setInterval(tick,3000)};
+  stopWatch();const started=Date.now();let paidTicks=0;
+  const tick=async()=>{try{const r=await api('/payments/'+id);
+    if(r.status==='paid'){
+      if(r.has_intent&&!r.order&&!r.note&&paidTicks++<10)return; // заказ оформляется сразу после зачисления — ждём пару секунд
+      stopWatch();S.me=await api('/me');hap('ok');paintBal();
+      if(r.order){const c=payCtx||{};closePs();c.onDone&&c.onDone();showResult(r.order,c.count||1);return;}
+      closePs();
+      if(r.has_intent){toast(t('intent_fail',{m:strip(r.note||'')}),true);rerender();return;}
+      toast(t('pay_ok',{p:fmt(amount)}));if(topupFrom){const f=topupFrom;topupFrom=null;go(f,false,true);}else rerender();return;}
+    if(r.status==='cancelled'){stopWatch();closePs();toast(t('pay_cancelled'),true);return;}}catch(e){}
+    if(Date.now()-started>20*60*1000){stopWatch();closePs();}};
+  payWatch={id,tick,timer:setInterval(tick,2500)};
 }
 function stopWatch(){if(payWatch){clearInterval(payWatch.timer);payWatch=null;}}
 function onReturn(){if(payWatch)payWatch.tick();else if(S.me)api('/me').then(m=>{S.me=m;rerender();}).catch(()=>{});}
@@ -1125,7 +1144,7 @@ async function refreshMe(){S.me=await api('/me');L=S.me.user.lang in I?S.me.user
     else if(sp==='topup')go('topup',false);
     else if(sp==='gifts'||new URLSearchParams(location.search).get('screen')==='gifts')go('gifts',false);
     else if(sp==='nft')go('nft',false);
-    else go('home',false);
+    else go('stars',false);
   }catch(e){$('#loader').innerHTML=`<div class="gate"><h2>😕</h2><p>${strip(e.message)}</p><button class="btn gold" onclick="location.reload()">Retry</button></div>`;}
 })();
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')onReturn();});

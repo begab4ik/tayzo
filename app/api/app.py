@@ -48,13 +48,22 @@ async def click_webhook(request: Request):
 
 
 async def _notify_paid(paid, user: User, via: str) -> None:
-    try:
-        await bot.send_message(paid.user_id, topup_success(user.language, paid.amount, user.balance))
-    except Exception as e:  # noqa: BLE001 — юзер мог заблокировать бота
-        log.warning("notify user %s failed: %s", paid.user_id, e)
     from app.bot.notify import notify_admins
 
-    await notify_admins(f"💳 Пополнение {fmt_uzs(paid.amount)} через {via} от {user.display} (id{user.id})")
+    bought = False
+    if getattr(paid, "intent", None):
+        from app.api.miniapp import run_payment_intent
+
+        try:
+            bought = await run_payment_intent(paid.id)
+        except Exception:  # noqa: BLE001
+            log.exception("run_payment_intent %s failed", paid.id)
+    if not bought:
+        try:
+            await bot.send_message(paid.user_id, topup_success(user.language, paid.amount, user.balance))
+        except Exception as e:  # noqa: BLE001 — юзер мог заблокировать бота
+            log.warning("notify user %s failed: %s", paid.user_id, e)
+    await notify_admins(f"💳 {'Оплата заказа' if bought else 'Пополнение'} {fmt_uzs(paid.amount)} через {via} от {user.display} (id{user.id})")
 
 
 @api.post("/webhooks/payme")

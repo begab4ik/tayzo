@@ -78,6 +78,9 @@ class Payment(Base):
     click_trans_id: Mapped[str | None] = mapped_column(String(64), unique=True)
     click_paydoc_id: Mapped[str | None] = mapped_column(String(64))
     raw: Mapped[dict | None] = mapped_column(JSONB)
+    intent: Mapped[dict | None] = mapped_column(JSONB)  # «оплатил → сразу купилось»: что купить после зачисления
+    order_id: Mapped[int | None] = mapped_column(BigInteger)  # заказ, созданный по intent
+    note: Mapped[str | None] = mapped_column(String(255))  # почему intent не выполнился (деньги остались на балансе)
     created_at: Mapped[datetime] = now_col(index=True)
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
