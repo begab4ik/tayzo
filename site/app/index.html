@@ -67,6 +67,11 @@ a{color:var(--gold2);text-decoration:none}
 .hero .hs svg{width:38px;height:38px;fill:#fff}
 .hero h1{font:800 24px/1.1 Unbounded,sans-serif;letter-spacing:-.01em}
 .hero p{color:var(--ink2);font-size:13.5px;font-weight:600;margin-top:6px}
+.shead{display:flex;align-items:center;gap:12px;margin:0 0 14px}
+.shead .hs{width:46px;height:46px;border-radius:15px;flex:none;background:linear-gradient(150deg,#ffd166,#f59e0b);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 26px -12px rgba(245,179,1,.8),inset 0 1px 0 rgba(255,255,255,.45)}
+.shead .hs svg{width:26px;height:26px;fill:#fff}
+.shead .tt{flex:1;min-width:0}.shead h1{font:800 20px/1.1 Unbounded,sans-serif;letter-spacing:-.01em}.shead p{color:var(--ink2);font-size:13px;font-weight:600;margin-top:3px}
+.ctight{padding:12px}.ctight .seg{margin-bottom:0}.ctight .field{margin-top:10px}.ctight .hint:empty{display:none}.ctight .hint{margin-top:8px}
 .lbl2{font-size:13px;font-weight:700;color:var(--ink2);margin:16px 2px 8px}
 .packs .opt{padding:13px 16px}.packs .opt b{display:flex;align-items:center;gap:10px;font-size:15.5px}.packs .opt b svg{width:20px;height:20px;fill:var(--gold);flex:none}
 .packs .opt .p{font:700 15px Unbounded,sans-serif}.packs .opt .p small{font:600 11px Inter,sans-serif;color:var(--ink2);margin-left:4px}
@@ -419,10 +424,8 @@ body.kb .screen{padding-bottom:110px}
 
 <!-- STARS -->
 <section class="screen" id="s-stars">
-  <div class="top"><div class="brand"><i class="star-i"></i>Tayzo</div><button class="pill balp hidden" data-go="topup"><svg><use href="#i-card"/></svg><span class="balv">0</span></button></div>
-  <div class="hero"><div class="hs"><svg viewBox="0 0 24 24"><use href="#i-starf"/></svg></div><h1>Telegram Stars</h1><p id="stars-sub">240 сум за звезду</p></div>
-  <div class="card">
-    <div class="lbl" data-t="to_whom">Кому</div>
+  <div class="shead"><div class="hs"><svg viewBox="0 0 24 24"><use href="#i-starf"/></svg></div><div class="tt"><h1>Telegram Stars</h1><p id="stars-sub">240 сум за звезду</p></div><button class="pill balp hidden" data-go="topup"><svg><use href="#i-card"/></svg><span class="balv">0</span></button></div>
+  <div class="card ctight">
     <div class="seg" id="stars-who"><button data-who="me" aria-pressed="true" data-t="to_me">Себе</button><button data-who="other" aria-pressed="false" data-t="to_other">Другому</button></div>
     <div class="field" id="stars-field"><span>@</span><input id="stars-user" placeholder="username" autocapitalize="off" autocorrect="off" spellcheck="false"><div class="state" id="stars-state"></div></div>
     <div class="hint" id="stars-hint"></div>
