@@ -72,6 +72,18 @@ a{color:var(--gold2);text-decoration:none}
 .shead .hs svg{width:26px;height:26px;fill:#fff}
 .shead .tt{flex:1;min-width:0}.shead h1{font:800 20px/1.1 Unbounded,sans-serif;letter-spacing:-.01em}.shead p{color:var(--ink2);font-size:13px;font-weight:600;margin-top:3px}
 .ctight{padding:12px}.ctight .seg{margin-bottom:0}.ctight .field{margin-top:10px}.ctight .hint:empty{display:none}.ctight .hint{margin-top:8px}
+.g-sms,.shead .hs.sms{background:linear-gradient(150deg,#34d399,#0ea5a4)}
+.shead .hs.sms{box-shadow:0 12px 26px -12px rgba(16,185,129,.8),inset 0 1px 0 rgba(255,255,255,.4)}.shead .hs.sms svg{width:26px;height:26px}
+.chips.sv{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:0 16px}.chips.sv::-webkit-scrollbar{display:none}.chips.sv .chip{flex:none}
+.cn{display:flex;align-items:center;gap:12px;width:100%;background:var(--glass);border:1px solid var(--line);border-radius:16px;padding:13px 16px;text-align:left;transition:border-color .2s,background .2s}
+.cn b{font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cn span{font-size:11.5px;color:var(--ink3);font-weight:700}.cn em{font-style:normal;font:700 14.5px Unbounded,sans-serif;white-space:nowrap}.cn em small{font:600 11px Inter,sans-serif;color:var(--ink2);margin-left:3px}
+.cn[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-dim)}
+.mine{display:flex;align-items:center;gap:12px;width:100%;background:var(--gold-dim);border:1px solid var(--gold);border-radius:16px;padding:12px 16px;margin-bottom:10px;text-align:left}
+.mine b{font-size:15px;display:block}.mine span{font-size:12px;color:var(--ink2);font-weight:600}.mine em{margin-left:auto;font-style:normal;font-weight:800;font-size:13px;color:var(--gold2)}
+.actc{text-align:left}.bigcopy{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;background:var(--glass2);border:1px solid var(--line);border-radius:16px;padding:14px 16px;margin:6px 0 10px}
+.bigcopy b{font:700 22px Unbounded,sans-serif;letter-spacing:.01em}.bigcopy span{font-size:12.5px;font-weight:700;color:var(--gold2)}
+.bigcopy.code{border-color:var(--gold);background:var(--gold-dim)}.bigcopy.code b{font-size:30px;letter-spacing:.12em}
+.rowbtn{display:flex;flex-direction:column;gap:8px}.rowbtn .btn{width:100%}
 .lbl2{font-size:13px;font-weight:700;color:var(--ink2);margin:16px 2px 8px}
 .packs .opt{padding:13px 16px}.packs .opt b{display:flex;align-items:center;gap:10px;font-size:15.5px}.packs .opt b svg{width:20px;height:20px;fill:var(--gold);flex:none}
 .packs .opt .p{font:700 15px Unbounded,sans-serif}.packs .opt .p small{font:600 11px Inter,sans-serif;color:var(--ink2);margin-left:4px}
@@ -384,6 +396,7 @@ body.kb .screen{padding-bottom:110px}
     <symbol id="i-game" viewBox="0 0 24 24"><path fill="currentColor" fill-opacity=".26" stroke="none" d="M7.6 6.5h8.8a5.2 5.2 0 0 1 5.1 6.2l-.6 3.3a2.6 2.6 0 0 1-4.6 1.1l-1.2-1.5H8.9l-1.2 1.5a2.6 2.6 0 0 1-4.6-1.1l-.6-3.3a5.2 5.2 0 0 1 5.1-6.2z"/><path d="M7.6 6.5h8.8a5.2 5.2 0 0 1 5.1 6.2l-.6 3.3a2.6 2.6 0 0 1-4.6 1.1l-1.2-1.5H8.9l-1.2 1.5a2.6 2.6 0 0 1-4.6-1.1l-.6-3.3a5.2 5.2 0 0 1 5.1-6.2z"/><path d="M8 10v3.4M6.3 11.7h3.4"/><circle cx="16.6" cy="10.8" r=".9" fill="currentColor" stroke="none"/><circle cx="14.6" cy="12.8" r=".9" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-sub" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="3" fill="currentColor" fill-opacity=".24"/><path d="M10.2 9.2v5.6c0 .5.5.8.9.5l4.3-2.8c.4-.3.4-.8 0-1.1l-4.3-2.8c-.4-.2-.9.1-.9.6z" fill="currentColor" fill-opacity=".7" stroke="none"/><path d="M8 21.2h8"/></symbol>
     <symbol id="i-theme" viewBox="0 0 24 24"><path fill="currentColor" fill-opacity=".26" d="M12.6 3.2a8.8 8.8 0 1 0 8.2 11.6 7 7 0 0 1-8.2-11.6z"/></symbol>
+    <symbol id="i-sim" viewBox="0 0 24 24"><rect x="6.2" y="2.8" width="11.6" height="18.4" rx="3" fill="currentColor" fill-opacity=".26"/><path d="M10 6h4M11 18h2"/><path d="M9 10.5h6v4H9z" fill="currentColor" fill-opacity=".55" stroke="none"/></symbol>
     <symbol id="i-filter" viewBox="0 0 24 24"><path d="M4 7h16M7 12h10M10 17h4"/></symbol>
     <symbol id="i-sort" viewBox="0 0 24 24"><path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/></symbol>
   
@@ -410,6 +423,7 @@ body.kb .screen{padding-bottom:110px}
     <button class="tile" id="tile-stars" data-go="stars"><span class="ic g-star"><svg><use href="#i-star"/></svg></span><b data-t="buy_stars">Купить звёзды</b><span id="tile-stars-p">220 сум за звезду</span></button>
     <button class="tile" id="tile-prem" data-go="premium"><span class="ic g-prem"><svg><use href="#i-prem"/></svg></span><b data-t="buy_prem">Купить Premium</b><span id="tile-prem-p">от 159 990 сум</span></button>
     <button class="tile wide" id="tile-gifts" data-go="gifts"><span class="ic g-gift"><svg><use href="#i-gift"/></svg></span><div><b data-t="gifts_tile">Подарки Telegram</b><span data-t="gifts_tile_p">Анонимно, оплата в сумах</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
+    <button class="tile wide hidden" id="tile-sms" data-go="sms"><span class="ic g-sms"><svg><use href="#i-sim"/></svg></span><div><b data-t="sms_tile">Виртуальные номера</b><span data-t="sms_tile_p">Номер для регистрации в Telegram и других сервисах</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
     <button class="tile wide hidden" id="tile-nft" data-go="nft"><span class="ic g-nft"><svg><use href="#i-nft"/></svg></span><div><b data-t="nft_tile">NFT-подарки</b><span data-t="nft_tile_p">Коллекционные подарки с рынка Telegram</span></div><svg class="chev"><use href="#i-chev"/></svg></button>
   </div>
   <div class="sec"><h3 data-t="soon">Скоро в Tayzo</h3></div>
@@ -527,6 +541,36 @@ body.kb .screen{padding-bottom:110px}
   <div class="fgrid" id="fgrid"></div>
 </section>
 
+<!-- SMS: выбор сервиса и страны -->
+<section class="screen" id="s-sms">
+  <div class="shead"><div class="hs sms"><svg viewBox="0 0 24 24" style="fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;color:#fff"><use href="#i-sim"/></svg></div><div class="tt"><h1 data-t="sms_title">Виртуальные номера</h1><p data-t="sms_sub">Получи SMS с кодом прямо здесь</p></div><button class="pill balp hidden" data-go="topup"><svg><use href="#i-card"/></svg><span class="balv">0</span></button></div>
+  <div id="sms-mine"></div>
+  <div class="chips sv" id="sms-sv"></div>
+  <div class="field" style="margin:10px 0"><svg class="fst" viewBox="0 0 24 24" style="fill:none;stroke:var(--ink2);stroke-width:2;stroke-linecap:round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input id="sms-q" placeholder="Поиск страны" autocapitalize="off" autocorrect="off" spellcheck="false" style="flex:1;min-width:0;background:transparent;border:0;outline:0;font:600 16px Inter,sans-serif;color:var(--ink);padding:13px 0"></div>
+  <div class="lots" id="sms-list"></div>
+  <p class="hint" data-t="sms_note">Деньги списываются при выдаче номера. Если SMS не придёт за 20 минут — вернём на баланс автоматически.</p>
+</section>
+
+<!-- SMS: активация -->
+<section class="screen" id="s-act">
+  <div class="shead"><div class="hs sms"><svg viewBox="0 0 24 24" style="fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;color:#fff"><use href="#i-sim"/></svg></div><div class="tt"><h1 id="act-title">—</h1><p id="act-sub">—</p></div></div>
+  <div class="card actc">
+    <div class="lbl" data-t="act_number">Твой номер</div>
+    <button class="bigcopy" id="act-phone"><b>—</b><span data-t="copy">Копировать</span></button>
+    <div class="hint" data-t="act_step1">Введи этот номер в приложении, где регистрируешься, и запроси код по SMS.</div>
+  </div>
+  <div class="card actc">
+    <div class="lbl" data-t="act_code">Код из SMS</div>
+    <div id="act-wait"><div class="ps-spin" style="margin:8px auto 10px"></div><div class="hint" style="text-align:center"><span data-t="act_waiting">Ждём SMS…</span> <b id="act-timer">20:00</b></div></div>
+    <button class="bigcopy code hidden" id="act-code"><b>—</b><span data-t="copy">Копировать</span></button>
+    <div class="hint hidden" id="act-end"></div>
+  </div>
+  <div class="rowbtn" id="act-btns">
+    <button class="btn ghost" id="act-more" data-t="act_more">Ещё одна SMS</button>
+    <button class="btn ghost" id="act-cancel" data-t="act_cancel">Отменить и вернуть деньги</button>
+  </div>
+</section>
+
 <!-- TOPUP -->
 <section class="screen" id="s-topup">
   <h1 class="title"><span class="ic g-card ti" style="border-radius:12px;display:flex;align-items:center;justify-content:center"><svg style="width:20px;height:20px;stroke:#fff;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round"><use href="#i-card"/></svg></span><span data-t="topup_title">Пополнение</span></h1>
@@ -624,7 +668,7 @@ body.kb .screen{padding-bottom:110px}
 const I = {
 ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"История",stars:"Звёзды",recent:"Последние заказы",all:"Все",no_orders:"Заказов пока нет — самое время купить первые звёзды",
  buy_stars:"Купить звёзды",how_many:"Сколько звёзд",to_whom:"Кому",to_me:"Себе",to_other:"Другому",total:"К оплате",prem_sub:"Себе или в подарок — активируется сразу после оплаты",
- topup_title:"Пополнение",amount:"Сумма",pay_method:"Способ оплаты",tab_profile:"Профиль",pick_pack:"Выбери пакет",other_qty:"Другое количество",pk_stars:"{n} звёзд",pay_how:"Чем оплатить?",pay_need:"К оплате {p} сум",pay_bal_used:"К оплате {p} сум · {b} спишется с баланса",pm_card_p:"Карта Uzcard / Humo или приложение {n}",pm_soon:"Временно недоступно",pm_balance:"С баланса Tayzo",pm_balance_p:"На балансе {b} сум",pm_balance_low:"На балансе {b} сум — не хватает",pm_payme_p:"Карта Uzcard / Humo или приложение Payme",wait_h:"Ждём оплату",wait_p:"Оплати на открывшейся странице — заказ оформится сам, возвращаться и нажимать ничего не нужно.",open_pay:"Открыть оплату ещё раз",cancel:"Отмена",intent_fail:"Оплата прошла, но заказ не оформлен: {m} Деньги на балансе.",pay_off:"Онлайн-оплата временно недоступна",pay_ok:"Баланс пополнен на {p} сум",pay_cancelled:"Платёж отменён",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
+ topup_title:"Пополнение",amount:"Сумма",pay_method:"Способ оплаты",sms_tile:"Виртуальные номера",sms_tile_p:"Номер для регистрации в Telegram и других сервисах",sms_title:"Виртуальные номера",sms_sub:"Получи SMS с кодом прямо здесь",sms_search:"Поиск страны",sms_note:"Деньги списываются при выдаче номера. Если SMS не придёт за 20 минут — вернём на баланс автоматически.",sms_buy:"Купить номер за {p} сум",sms_pick:"Выбери страну",pcs:"шт.",act_number:"Твой номер",act_code:"Код из SMS",act_step1:"Введи этот номер в приложении, где регистрируешься, и запроси код по SMS.",act_waiting:"Ждём SMS…",act_more:"Ещё одна SMS",act_cancel:"Отменить и вернуть деньги",act_refunded:"Отменено, {p} сум вернули на баланс",act_ended:"SMS не пришла — {p} сум вернули на баланс. Попробуй другую страну.",act_done:"Номер использован.",act_ok:"Готово",copied:"Скопировано",tab_profile:"Профиль",pick_pack:"Выбери пакет",other_qty:"Другое количество",pk_stars:"{n} звёзд",pay_how:"Чем оплатить?",pay_need:"К оплате {p} сум",pay_bal_used:"К оплате {p} сум · {b} спишется с баланса",pm_card_p:"Карта Uzcard / Humo или приложение {n}",pm_soon:"Временно недоступно",pm_balance:"С баланса Tayzo",pm_balance_p:"На балансе {b} сум",pm_balance_low:"На балансе {b} сум — не хватает",pm_payme_p:"Карта Uzcard / Humo или приложение Payme",wait_h:"Ждём оплату",wait_p:"Оплати на открывшейся странице — заказ оформится сам, возвращаться и нажимать ничего не нужно.",open_pay:"Открыть оплату ещё раз",cancel:"Отмена",intent_fail:"Оплата прошла, но заказ не оформлен: {m} Деньги на балансе.",pay_off:"Онлайн-оплата временно недоступна",pay_ok:"Баланс пополнен на {p} сум",pay_cancelled:"Платёж отменён",topup_soon:"Онлайн-оплата подключается",topup_soon_p:"Пока пополнить баланс можно через поддержку — напиши, и мы зачислим вручную за пару минут.",write_support:"Написать в поддержку",
  orders:"Заказы",payments:"Платежи",stars_bought:"звёзд куплено",spent:"потрачено",language:"Язык",ref_title:"Приглашай друзей",ref_p:"Получай процент с каждого пополнения друга — бонус падает на баланс автоматически.",copy:"Копировать",share:"Отправить",
  tab_home:"Главная",profile:"Профиль",gate_h:"Подпишись на канал",gate_p:"Чтобы пользоваться Tayzo, подпишись на наш канал — там акции и скидки.",gate_check:"Я подписался",
  per_star:"{p} сум за звезду · от {min}",from:"от",months:"мес",m3:"3 месяца",m6:"6 месяцев",m12:"12 месяцев",best:"Выгодно",
@@ -641,7 +685,7 @@ ru:{balance:"Баланс",uzs:"сум",topup:"Пополнить",history:"Ис
  copied:"Скопировано",lang_saved:"Язык сохранён",err:"Что-то пошло не так, попробуй ещё раз",min_topup:"Минимум {p} сум",share_text:"Звёзды, Premium и подарки Telegram за сумы — Tayzo",prem_title:"Premium {m} мес",stars_title:"{n} Stars",nothing:"Пока пусто"},
 uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduzlar",recent:"So'nggi buyurtmalar",all:"Hammasi",no_orders:"Hali buyurtma yo'q — birinchi yulduzlarni olish vaqti keldi",
  buy_stars:"Yulduz sotib olish",how_many:"Nechta yulduz",to_whom:"Kimga",to_me:"O'zimga",to_other:"Boshqaga",total:"To'lov",prem_sub:"O'zingizga yoki sovg'a — to'lovdan so'ng darhol faollashadi",
- topup_title:"To'ldirish",amount:"Summa",pay_method:"To'lov usuli",tab_profile:"Profil",pick_pack:"To'plamni tanlang",other_qty:"Boshqa miqdor",pk_stars:"{n} Stars",pay_how:"Qanday to'laysiz?",pay_need:"To'lov: {p} so'm",pay_bal_used:"To'lov: {p} so'm · {b} balansdan yechiladi",pm_card_p:"Uzcard / Humo kartasi yoki {n} ilovasi",pm_soon:"Vaqtincha mavjud emas",pm_balance:"Tayzo balansidan",pm_balance_p:"Balansda {b} so'm",pm_balance_low:"Balansda {b} so'm — yetarli emas",pm_payme_p:"Uzcard / Humo kartasi yoki Payme ilovasi",wait_h:"To'lov kutilmoqda",wait_p:"Ochilgan sahifada to'lang — buyurtma o'zi rasmiylashadi, qaytib hech narsa bosish shart emas.",open_pay:"To'lovni qayta ochish",cancel:"Bekor qilish",intent_fail:"To'lov o'tdi, lekin buyurtma rasmiylashmadi: {m} Pul balansda.",pay_off:"Onlayn to'lov vaqtincha ishlamayapti",pay_ok:"Balans {p} so'mga to'ldirildi",pay_cancelled:"To'lov bekor qilindi",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
+ topup_title:"To'ldirish",amount:"Summa",pay_method:"To'lov usuli",sms_tile:"Virtual raqamlar",sms_tile_p:"Telegram va boshqa servislarda ro'yxatdan o'tish uchun raqam",sms_title:"Virtual raqamlar",sms_sub:"Kodli SMS shu yerga keladi",sms_search:"Davlatni qidirish",sms_note:"Pul raqam berilganda yechiladi. 20 daqiqada SMS kelmasa — balansga avtomatik qaytaramiz.",sms_buy:"Raqamni {p} so'mga olish",sms_pick:"Davlatni tanlang",pcs:"dona",act_number:"Sizning raqamingiz",act_code:"SMS kodi",act_step1:"Bu raqamni ro'yxatdan o'tayotgan ilovaga kiriting va SMS kod so'rang.",act_waiting:"SMS kutilmoqda…",act_more:"Yana bitta SMS",act_cancel:"Bekor qilish va pulni qaytarish",act_refunded:"Bekor qilindi, {p} so'm balansga qaytdi",act_ended:"SMS kelmadi — {p} so'm balansga qaytdi. Boshqa davlatni sinab ko'ring.",act_done:"Raqam ishlatildi.",act_ok:"Tayyor",copied:"Nusxalandi",tab_profile:"Profil",pick_pack:"To'plamni tanlang",other_qty:"Boshqa miqdor",pk_stars:"{n} Stars",pay_how:"Qanday to'laysiz?",pay_need:"To'lov: {p} so'm",pay_bal_used:"To'lov: {p} so'm · {b} balansdan yechiladi",pm_card_p:"Uzcard / Humo kartasi yoki {n} ilovasi",pm_soon:"Vaqtincha mavjud emas",pm_balance:"Tayzo balansidan",pm_balance_p:"Balansda {b} so'm",pm_balance_low:"Balansda {b} so'm — yetarli emas",pm_payme_p:"Uzcard / Humo kartasi yoki Payme ilovasi",wait_h:"To'lov kutilmoqda",wait_p:"Ochilgan sahifada to'lang — buyurtma o'zi rasmiylashadi, qaytib hech narsa bosish shart emas.",open_pay:"To'lovni qayta ochish",cancel:"Bekor qilish",intent_fail:"To'lov o'tdi, lekin buyurtma rasmiylashmadi: {m} Pul balansda.",pay_off:"Onlayn to'lov vaqtincha ishlamayapti",pay_ok:"Balans {p} so'mga to'ldirildi",pay_cancelled:"To'lov bekor qilindi",topup_soon:"Onlayn to'lov ulanmoqda",topup_soon_p:"Hozircha balansni yordam orqali to'ldirish mumkin — yozing, bir necha daqiqada qo'lda qo'shamiz.",write_support:"Yordamga yozish",
  orders:"Buyurtmalar",payments:"To'lovlar",stars_bought:"yulduz olingan",spent:"sarflangan",language:"Til",ref_title:"Do'stlarni taklif qiling",ref_p:"Do'stingizning har bir to'ldirishidan foiz oling — bonus balansga avtomatik tushadi.",copy:"Nusxalash",share:"Yuborish",
  tab_home:"Asosiy",profile:"Profil",gate_h:"Kanalga obuna bo'ling",gate_p:"Tayzo'dan foydalanish uchun kanalimizga obuna bo'ling — u yerda aksiyalar va chegirmalar.",gate_check:"Obuna bo'ldim",
  per_star:"1 yulduz — {p} so'm · kamida {min}",from:"dan",months:"oy",m3:"3 oy",m6:"6 oy",m12:"12 oy",best:"Foydali",
@@ -658,7 +702,7 @@ uz:{balance:"Balans",uzs:"so'm",topup:"To'ldirish",history:"Tarix",stars:"Yulduz
  copied:"Nusxalandi",lang_saved:"Til saqlandi",err:"Xatolik yuz berdi, qayta urinib ko'ring",min_topup:"Kamida {p} so'm",share_text:"Telegram yulduzlari, Premium va sovg'alar so'mda — Tayzo",prem_title:"Premium {m} oy",stars_title:"{n} Stars",nothing:"Hozircha bo'sh"},
 en:{balance:"Balance",uzs:"UZS",topup:"Top up",history:"History",stars:"Stars",recent:"Recent orders",all:"All",no_orders:"No orders yet — time to buy your first stars",
  buy_stars:"Buy Stars",how_many:"How many stars",to_whom:"Recipient",to_me:"Me",to_other:"Someone else",total:"Total",prem_sub:"For yourself or as a gift — activates right after payment",
- topup_title:"Top up",amount:"Amount",pay_method:"Payment method",tab_profile:"Profile",pick_pack:"Pick a pack",other_qty:"Other amount",pk_stars:"{n} Stars",pay_how:"How would you like to pay?",pay_need:"To pay: {p} UZS",pay_bal_used:"To pay: {p} UZS · {b} taken from balance",pm_card_p:"Uzcard / Humo card or the {n} app",pm_soon:"Temporarily unavailable",pm_balance:"From Tayzo balance",pm_balance_p:"Balance: {b} UZS",pm_balance_low:"Balance: {b} UZS — not enough",pm_payme_p:"Uzcard / Humo card or the Payme app",wait_h:"Waiting for payment",wait_p:"Pay on the page that opened — the order places itself, no need to come back and tap anything.",open_pay:"Open payment again",cancel:"Cancel",intent_fail:"Payment received, but the order wasn't placed: {m} The money is on your balance.",pay_off:"Online payment is temporarily unavailable",pay_ok:"Balance topped up by {p} UZS",pay_cancelled:"Payment cancelled",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
+ topup_title:"Top up",amount:"Amount",pay_method:"Payment method",sms_tile:"Virtual numbers",sms_tile_p:"A number to sign up for Telegram and other services",sms_title:"Virtual numbers",sms_sub:"Get the SMS code right here",sms_search:"Search country",sms_note:"You are charged when the number is issued. If no SMS arrives within 20 minutes, the money returns to your balance automatically.",sms_buy:"Buy number for {p} UZS",sms_pick:"Pick a country",pcs:"pcs",act_number:"Your number",act_code:"SMS code",act_step1:"Enter this number in the app you are signing up for and request an SMS code.",act_waiting:"Waiting for SMS…",act_more:"One more SMS",act_cancel:"Cancel and refund",act_refunded:"Cancelled, {p} UZS returned to balance",act_ended:"No SMS arrived — {p} UZS returned to your balance. Try another country.",act_done:"Number used.",act_ok:"Done",copied:"Copied",tab_profile:"Profile",pick_pack:"Pick a pack",other_qty:"Other amount",pk_stars:"{n} Stars",pay_how:"How would you like to pay?",pay_need:"To pay: {p} UZS",pay_bal_used:"To pay: {p} UZS · {b} taken from balance",pm_card_p:"Uzcard / Humo card or the {n} app",pm_soon:"Temporarily unavailable",pm_balance:"From Tayzo balance",pm_balance_p:"Balance: {b} UZS",pm_balance_low:"Balance: {b} UZS — not enough",pm_payme_p:"Uzcard / Humo card or the Payme app",wait_h:"Waiting for payment",wait_p:"Pay on the page that opened — the order places itself, no need to come back and tap anything.",open_pay:"Open payment again",cancel:"Cancel",intent_fail:"Payment received, but the order wasn't placed: {m} The money is on your balance.",pay_off:"Online payment is temporarily unavailable",pay_ok:"Balance topped up by {p} UZS",pay_cancelled:"Payment cancelled",topup_soon:"Online payments coming soon",topup_soon_p:"For now you can top up via support — message us and we'll credit it manually within minutes.",write_support:"Message support",
  orders:"Orders",payments:"Payments",stars_bought:"stars bought",spent:"spent",language:"Language",ref_title:"Invite friends",ref_p:"Earn a percentage of every friend's top-up — the bonus lands on your balance automatically.",copy:"Copy",share:"Share",
  tab_home:"Home",profile:"Profile",gate_h:"Subscribe to the channel",gate_p:"To use Tayzo, subscribe to our channel — deals and discounts live there.",gate_check:"I subscribed",
  per_star:"{p} UZS per star · min {min}",from:"from",months:"mo",m3:"3 months",m6:"6 months",m12:"12 months",best:"Best value",
@@ -717,7 +761,7 @@ const STAR_PRESETS=[50,100,250,500,1000,2500], TOPUP_PRESETS=[10000,20000,50000,
 let cur='home', stack=[];
 const TAB_ORDER=['home','stars','premium','gifts','history'];const tabOf=n=>n==='nft'?'gifts':n;
 function go(name,push=true,backward=false){
-  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
+  if(cur===name&&$('#s-'+name).classList.contains('active')){({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,sms:renderSms,act:renderAct,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();return;}
   if(TAB_ORDER.includes(tabOf(name))&&TAB_ORDER.includes(tabOf(cur)))backward=TAB_ORDER.indexOf(tabOf(name))<TAB_ORDER.indexOf(tabOf(cur));
   if(push&&cur!==name)stack.push(cur);
   const prev=$('#s-'+cur), next=$('#s-'+name);
@@ -737,7 +781,7 @@ function go(name,push=true,backward=false){
   $('#cta').style.bottom=(name==='gate'||name==='result')?'calc(16px + var(--safe-b))':'';
   ctaWanted=false;
   if(BB){(TAB_ORDER.includes(tabOf(name))||name==='gate')?BB.hide():BB.show();}paintBal();
-  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
+  const r=({home:renderHome,stars:renderStars,premium:renderPrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:renderNftBuy,nftfilter:renderNftFilter,sms:renderSms,act:renderAct,topup:renderTopup,history:renderHistory,profile:renderProfile}[name]||(()=>{}))();
   Promise.resolve(r).then(()=>{if(!ctaWanted)hideMain();});
 }
 function back(){const p=stack.pop()||'home';go(p,false,true);}
@@ -765,7 +809,7 @@ const P=()=>S.me.prices;
 function countUp(el,to){const from=Number(String(el.textContent).replace(/\D/g,''))||0;if(from===to||matchMedia('(prefers-reduced-motion: reduce)').matches){el.textContent=fmt(to);return;}const t0=performance.now(),d=520;(function f(now){const k=Math.min(1,(now-t0)/d),e=1-Math.pow(1-k,3);el.textContent=fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f);})(t0);}
 function renderHome(){
   const u=S.me.user;
-  countUp($('#bal'),u.balance);$('#tile-nft').classList.toggle('hidden',!S.me.flags.nft);$('#soon-nft').classList.toggle('hidden',!!S.me.flags.nft);
+  countUp($('#bal'),u.balance);$('#tile-nft').classList.toggle('hidden',!S.me.flags.nft);$('#tile-sms').classList.toggle('hidden',!S.me.flags.sms);$('#soon-nft').classList.toggle('hidden',!!S.me.flags.nft);
   const ini=((u.name||u.username||'T').trim()[0]||'T').toUpperCase();$('#home-avatar').textContent=ini;
   $('#tile-stars-p').textContent=t('per_star_short',{p:fmt(P().star)});
   $('#tile-prem-p').textContent=`${t('from')} ${fmt(Math.min(...Object.values(P().premium)))} ${t('uzs')}`;
@@ -1045,6 +1089,62 @@ function buyNft(){
     ()=>{nft.item=null;nft.who=null;nft.rcp=null;nft.items=[];stack=stack.filter(x=>x!=='nftbuy');});
 }
 
+/* ---------- виртуальные номера ---------- */
+let sms={sv:'tg',services:null,offers:null,country:null,q:'',mine:[]},smsInit=false,act=null,actTimer=null;
+async function renderSms(){
+  if(!smsInit){smsInit=true;
+    $('#sms-sv').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;hap();sms.sv=c.dataset.c;sms.country=null;sms.offers=null;paintSv();loadOffers();});
+    $('#sms-q').addEventListener('input',()=>{sms.q=$('#sms-q').value.trim().toLowerCase();paintOffers();});
+    $('#sms-list').addEventListener('click',e=>{const c=e.target.closest('.cn');if(!c)return;hap();sms.country=Number(c.dataset.c);paintOffers();updateSms();});
+    $('#sms-mine').addEventListener('click',e=>{const c=e.target.closest('.mine');if(!c)return;hap();const a=sms.mine.find(x=>x.id===Number(c.dataset.id));if(a)openAct(a);});
+  }
+  $('#sms-q').placeholder=t('sms_search');
+  if(!sms.services){try{const r=await api('/sms/services');sms.services=r.services;}catch(e){sms.services=[];}}
+  paintSv();updateSms();loadMine();
+  if(!sms.offers)loadOffers();else paintOffers();
+}
+function paintSv(){$('#sms-sv').innerHTML=(sms.services||[]).map(x=>`<button class="chip" data-c="${x.code}" aria-pressed="${x.code===sms.sv}">${strip(x.name)}</button>`).join('');}
+async function loadMine(){try{const r=await api('/sms/list');sms.mine=r.items.filter(a=>a.status==='waiting'||a.status==='code');}catch(e){sms.mine=[];}
+  $('#sms-mine').innerHTML=sms.mine.map(a=>`<button class="mine" data-id="${a.id}"><div><b>+${a.phone}</b><span>${strip(a.service_name||'')}</span></div><em>${a.code?a.code:t('act_waiting')}</em></button>`).join('');}
+async function loadOffers(){
+  const box=$('#sms-list');box.innerHTML='<div class="skel" style="height:50px"></div><div class="skel" style="height:50px"></div><div class="skel" style="height:50px"></div><div class="skel" style="height:50px"></div>';
+  const sv=sms.sv;try{const r=await api('/sms/offers?service='+sv);if(sms.sv!==sv)return;sms.offers=r.offers;paintOffers();}catch(e){box.innerHTML=`<div class="empty">${strip(e.message)}</div>`;}
+  updateSms();
+}
+function paintOffers(){
+  if(!sms.offers)return;const q=sms.q;const list=sms.offers.filter(o=>!q||o.name.toLowerCase().includes(q)).slice(0,80);
+  $('#sms-list').innerHTML=list.map(o=>`<button class="cn" data-c="${o.country}" aria-pressed="${o.country===sms.country}"><b>${strip(o.name)}</b><span>${fmt(o.count)} ${t('pcs')}</span><em>${fmt(o.price)}<small>${t('uzs')}</small></em></button>`).join('')||`<div class="nft-empty">${t('nothing')}</div>`;
+}
+function smsOffer(){return (sms.offers||[]).find(o=>o.country===sms.country);}
+function updateSms(){if(cur!=='sms')return;const o=smsOffer();mainBtn(o?t('sms_buy',{p:fmt(o.price)}):t('sms_pick'),buySms,{disabled:!o});}
+function buySms(){const o=smsOffer();if(!o)return;placeOrder({_ep:'/sms/buy',service:sms.sv,country:o.country},o.price);}
+function openAct(a){act=a;stack=stack.filter(x=>x!=='act');go('act');}
+let actInit=false;
+function renderAct(){
+  if(!act){go('sms',false,true);return;}
+  if(!actInit){actInit=true;
+    const cp=(txt)=>{try{navigator.clipboard.writeText(txt);}catch(e){}hap('ok');toast(t('copied'));};
+    $('#act-phone').addEventListener('click',()=>cp('+'+act.phone));
+    $('#act-code').addEventListener('click',()=>cp(act.code||''));
+    $('#act-cancel').addEventListener('click',async()=>{hap();try{const r=await api('/sms/'+act.id+'/cancel',{});act=r.activation;S.me.user.balance=r.balance;paintBal();paintAct();toast(t('act_refunded',{p:fmt(act.price)}));}catch(e){toast(e.message,true);}});
+    $('#act-more').addEventListener('click',async()=>{hap();try{const r=await api('/sms/'+act.id+'/more',{});act=r.activation;paintAct();}catch(e){toast(e.message,true);}});
+  }
+  paintAct();clearInterval(actTimer);
+  actTimer=setInterval(async()=>{if(cur!=='act'||!act){clearInterval(actTimer);return;}tickTimer();
+    if((act.status==='waiting'||act.status==='code')&&Date.now()%4000<1000){try{const r=await api('/sms/'+act.id);const had=act.code;act=r.activation;S.me.user.balance=r.balance;paintBal();if(act.code&&act.code!==had)hap('ok');paintAct();}catch(e){}}},1000);
+}
+function tickTimer(){if(!act)return;const left=Math.max(0,Math.floor((new Date(act.expires_at)-Date.now())/1000));$('#act-timer').textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;}
+function paintAct(){
+  const a=act;$('#act-title').textContent=a.service_name||a.service;$('#act-sub').textContent=`${a.country_name||''} · ${fmt(a.price)} ${t('uzs')}`;
+  $('#act-phone b').textContent='+'+a.phone;
+  const waiting=a.status==='waiting',hasCode=!!a.code,ended=['cancelled','expired'].includes(a.status);
+  $('#act-wait').classList.toggle('hidden',!waiting);$('#act-code').classList.toggle('hidden',!hasCode);if(hasCode)$('#act-code b').textContent=a.code;
+  const end=$('#act-end');end.classList.toggle('hidden',!ended&&a.status!=='done');end.textContent=ended?t('act_ended',{p:fmt(a.price)}):a.status==='done'?t('act_done'):'';
+  $('#act-cancel').classList.toggle('hidden',!waiting);$('#act-more').classList.toggle('hidden',a.status!=='code');
+  tickTimer();
+  if(hasCode||ended||a.status==='done')mainBtn(t('act_ok'),async()=>{if(act&&act.status==='code'){try{await api('/sms/'+act.id+'/done',{});}catch(e){}}act=null;stack=[];go('home',false);});else hideMain();
+}
+
 /* ---------- оплата и покупка одним действием ---------- */
 let payCtx=null;
 function openPs(mode){$('#ps-pick').classList.toggle('hidden',mode!=='pick');$('#ps-wait').classList.toggle('hidden',mode!=='wait');$('#ps-bg').classList.add('show');$('#ps').classList.add('show');}
@@ -1064,10 +1164,12 @@ function placeOrder(payload,price,onDone){
 async function sendOrder(payload,onDone){
   mbLoading(true);
   try{
-    const r=await api('/orders',payload);
+    const ep=payload._ep||'/orders';const body={...payload};delete body._ep;
+    const r=await api(ep,body);
+    if(r.activation){closePs();S.me.user.balance=r.balance;hap('ok');openAct(r.activation);return;}
     if(r.pay){payCtx={url:r.pay.url,onDone,count:payload.count||1};openPs('wait');openPay(r.pay.url);watchPayment(r.pay.payment_id,r.pay.amount);}
     else{closePs();S.me.user.balance=r.balance;(r.orders||[r.order]).slice().reverse().forEach(o=>S.me.recent_orders.unshift(o));hap('ok');onDone&&onDone();showResult(r.order,r.count||1);}
-  }catch(e){hap('bad');closePs();if(e.code==='insufficient'){S.me.user.balance=e.data.have;rerender();}else if(e.code==='subscribe'){await refreshMe();}if(e.code==='sold')nft.items=[];toast(e.message,true);}
+  }catch(e){hap('bad');closePs();if(e.code==='insufficient'){S.me.user.balance=e.data.have;rerender();}else if(e.code==='subscribe'){await refreshMe();}if(e.code==='sold')nft.items=[];if(e.code==='no_numbers'){sms.offers=null;if(cur==='sms')loadOffers();}toast(e.message,true);}
   finally{mbLoading(false);}
 }
 $('#ps-list').addEventListener('click',e=>{const b=e.target.closest('.pm');if(!b||!payCtx)return;hap();const c=payCtx;if(b.disabled)return;if(b.dataset.m==='balance')sendOrder(c.payload,c.onDone);else sendOrder({...c.payload,pay_method:b.dataset.m},c.onDone);});
@@ -1158,13 +1260,14 @@ $('#gate-check').addEventListener('click',async()=>{hap();try{const r=await api(
 $('#gate-list').addEventListener('click',e=>{const a=e.target.closest('a');if(a&&tg){e.preventDefault();tg.openTelegramLink(a.href);}});
 
 /* ---------- boot ---------- */
-function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:updateNftBuy,nftfilter:renderNftFilter,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
+function rerender(){({home:renderHome,stars:updateStars,premium:updatePrem,gifts:renderGifts,giftcfg:renderGiftCfg,nft:renderNft,nftlist:renderNftList,nftbuy:updateNftBuy,nftfilter:renderNftFilter,sms:updateSms,topup:renderTopup,history:renderHistory,profile:renderProfile}[cur]||(()=>{}))();}
 function watchPayment(id,amount){
   stopWatch();const started=Date.now();let paidTicks=0;
   const tick=async()=>{try{const r=await api('/payments/'+id);
     if(r.status==='paid'){
-      if(r.has_intent&&!r.order&&!r.note&&paidTicks++<10)return; // заказ оформляется сразу после зачисления — ждём пару секунд
+      if(r.has_intent&&!r.order&&!r.activation_id&&!r.note&&paidTicks++<10)return; // заказ оформляется сразу после зачисления — ждём пару секунд
       stopWatch();S.me=await api('/me');hap('ok');paintBal();
+      if(r.activation_id){closePs();try{const a=await api('/sms/'+r.activation_id);openAct(a.activation);}catch(e){go('sms');}return;}
       if(r.order){const c=payCtx||{};closePs();c.onDone&&c.onDone();showResult(r.order,c.count||1);return;}
       closePs();
       if(r.has_intent){toast(t('intent_fail',{m:strip(r.note||'')}),true);rerender();return;}

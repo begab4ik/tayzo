@@ -80,9 +80,35 @@ class Payment(Base):
     raw: Mapped[dict | None] = mapped_column(JSONB)
     intent: Mapped[dict | None] = mapped_column(JSONB)  # «оплатил → сразу купилось»: что купить после зачисления
     order_id: Mapped[int | None] = mapped_column(BigInteger)  # заказ, созданный по intent
+    activation_id: Mapped[int | None] = mapped_column(BigInteger)  # номер, купленный по intent
     note: Mapped[str | None] = mapped_column(String(255))  # почему intent не выполнился (деньги остались на балансе)
     created_at: Mapped[datetime] = now_col(index=True)
     paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class Activation(Base):
+    """Виртуальный номер для приёма SMS (HeroSMS). Деньги списываются при выдаче номера,
+    возвращаются, если SMS так и не пришла (отмена или таймаут)."""
+
+    __tablename__ = "activations"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), index=True)
+    ext_id: Mapped[str] = mapped_column(String(32), index=True)  # id активации у HeroSMS
+    service: Mapped[str] = mapped_column(String(16))
+    service_name: Mapped[str | None] = mapped_column(String(64))
+    country: Mapped[int] = mapped_column(Integer)
+    country_name: Mapped[str | None] = mapped_column(String(64))
+    phone: Mapped[str] = mapped_column(String(32))
+    price: Mapped[int] = mapped_column(BigInteger)  # сколько списали, сум
+    cost_usd: Mapped[str | None] = mapped_column(String(16))
+    status: Mapped[str] = mapped_column(String(16), default="waiting", index=True)  # waiting / code / done / cancelled / expired
+    code: Mapped[str | None] = mapped_column(String(32))
+    sms_text: Mapped[str | None] = mapped_column(Text)
+    refunded: Mapped[bool] = mapped_column(Boolean, default=False)
+    notified_code: Mapped[str | None] = mapped_column(String(32))
+    created_at: Mapped[datetime] = now_col(index=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
 
 
 class Order(Base):

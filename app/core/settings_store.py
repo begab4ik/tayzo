@@ -38,6 +38,10 @@ DEFAULTS: dict[str, str] = {
     "gifts_enabled": "1",
     "gift_markup_percent": "0",      # наценка на подарки сверх цены звёзд
     "gift_stars_buffer": "0",        # докупать звёзд с запасом (шт.)
+    "sms_enabled": "1",
+    "sms_markup_percent": "50",      # наценка на номера сверх цены HeroSMS
+    "sms_min_price": "3000",         # минимальная цена номера, сум
+    "usd_rate_uzs": "12300",         # курс USD → UZS (обновляется воркером)
     "nft_enabled": "1",
     "nft_markup_percent": "0",       # наценка на NFT-подарки сверх цены звёзд (звёзды лота × 240)
     "nft_max_stars": "20000",        # лоты дороже не показываем (защита от случайной покупки на миллионы)
@@ -50,6 +54,10 @@ DESCRIPTIONS: dict[str, str] = {
     "gifts_enabled": "Подарки включены",
     "gift_markup_percent": "Наценка на подарки, %",
     "gift_stars_buffer": "Запас звёзд при докупке, шт.",
+    "sms_enabled": "Виртуальные номера включены",
+    "sms_markup_percent": "Наценка на номера, %",
+    "sms_min_price": "Мин. цена номера, сум",
+    "usd_rate_uzs": "Курс USD → сум",
     "nft_enabled": "NFT-подарки включены",
     "nft_markup_percent": "Наценка на NFT-подарки, %",
     "nft_max_stars": "Макс. цена лота, ⭐",
@@ -82,11 +90,12 @@ SECTIONS: list[tuple[str, str, list[str]]] = [
     ("cost", "📉 Курс и себестоимость", ["ton_rate_uzs", "star_price_ton", "premium_3_ton", "premium_6_ton", "premium_12_ton", "premium_probe_username", "low_ton_alert"]),
     ("limits", "📏 Лимиты", ["min_stars", "max_stars", "min_topup", "max_topup"]),
     ("refs", "👥 Рефералы", ["referral_percent"]),
-    ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "gifts_enabled", "nft_enabled", "maintenance"]),
+    ("toggles", "🔘 Переключатели", ["stars_enabled", "premium_enabled", "gifts_enabled", "nft_enabled", "sms_enabled", "maintenance"]),
     ("gifts", "🎁 Подарки", ["gift_markup_percent", "gift_stars_buffer"]),
+    ("sms", "📱 Виртуальные номера", ["sms_markup_percent", "sms_min_price", "usd_rate_uzs"]),
     ("nft", "💎 NFT-подарки", ["nft_markup_percent", "nft_max_stars", "nft_skip_cheapest"]),
 ]
-BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled", "gifts_enabled", "nft_enabled"}
+BOOL_KEYS = {"maintenance", "stars_enabled", "premium_enabled", "gifts_enabled", "nft_enabled", "sms_enabled"}
 
 # Подсказки при вводе значения
 HINTS: dict[str, str] = {

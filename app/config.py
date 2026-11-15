@@ -37,6 +37,8 @@ class Settings(BaseSettings):
     payme_merchant_id: str = ""
     payme_key: str = ""
     payme_test_key: str = ""
+    # HeroSMS — виртуальные номера для приёма SMS
+    herosms_api_key: str = ""
     webhook_host: str = "http://localhost:8080"
     api_host: str = "0.0.0.0"
     api_port: int = 8080

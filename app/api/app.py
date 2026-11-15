@@ -20,6 +20,9 @@ api = FastAPI(title="Tayzo API", docs_url=None, redoc_url=None)
 from app.api.miniapp import router as miniapp_router  # noqa: E402
 
 api.include_router(miniapp_router)
+from app.api.sms import router as sms_router  # noqa: E402
+
+api.include_router(sms_router)
 
 
 @api.get("/health")

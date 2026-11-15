@@ -166,6 +166,7 @@ async def me(c: C):
             "premium": await cfg.get_bool(s, "premium_enabled"),
             "gifts": await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
             "nft": await cfg.get_bool(s, "nft_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
+            "sms": bool(settings.herosms_api_key) and await cfg.get_bool(s, "sms_enabled"),
             "click": bool(settings.payment_methods),
             "payment_methods": settings.payment_methods,
             "manual": is_manual_mode(),
@@ -458,10 +459,25 @@ async def run_payment_intent(payment_id: int) -> bool:
 
     async with get_session() as s:
         p = await s.get(Payment, payment_id, with_for_update=True)
-        if not p or not p.intent or p.order_id or p.note:
+        if not p or not p.intent or p.order_id or p.activation_id or p.note:
             return False
         u = await s.get(User, p.user_id)
         it = dict(p.intent)
+        if it.get("product") == "sms":
+            from app.core import sms as sms_svc
+
+            try:
+                act = await sms_svc.buy(s, u, it["service"], int(it["country"]), it.get("lang") or "ru")
+                p.activation_id = act.id
+                await s.commit()
+                return True
+            except Exception as e:  # noqa: BLE001 — номера кончились / цена выросла: деньги остаются на балансе
+                await s.rollback()
+                p = await s.get(Payment, payment_id)
+                p.note = t(it.get("lang") or "ru", "sms_no_numbers")[:255]
+                await s.commit()
+                log.warning("payment %s sms intent failed: %s", payment_id, e)
+                return False
         lang = it.pop("lang", None) or (u.language if u else "ru")
         it.pop("total", None)
         try:
@@ -530,7 +546,7 @@ async def payment_status(c: C, payment_id: int):
         _err(404, "not_found", "payment not found")
     order = await c.session.get(Order, p.order_id) if p.order_id else None
     return {"id": p.id, "status": p.status, "amount": p.amount, "provider": p.provider, "has_intent": bool(p.intent),
-            "order": _order_json(order) if order else None, "note": p.note}
+            "order": _order_json(order) if order else None, "activation_id": p.activation_id, "note": p.note}
 
 
 @router.get("/ledger")

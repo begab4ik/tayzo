@@ -31,6 +31,7 @@ async def update_ton_rate() -> None:
         rate = (ton_usd * usd_uzs).quantize(Decimal("1"))
         async with get_session() as session:
             await cfg.set_value(session, "ton_rate_uzs", str(rate))
+            await cfg.set_value(session, "usd_rate_uzs", str(usd_uzs.quantize(Decimal("1"))))
         log.info("TON rate updated: %s UZS (ton=%s usd, usd=%s uzs)", rate, ton_usd, usd_uzs)
     except Exception as e:  # noqa: BLE001
         log.warning("update_ton_rate failed: %s", e)
@@ -137,6 +138,38 @@ async def warm_nft_catalog(only_if_cold: bool = False) -> None:
         log.warning("warm_nft_catalog failed: %s", e)
 
 
+async def check_activations() -> None:
+    """Раз в 15 секунд: пришли ли SMS на купленные номера; код — шлём в бот, таймаут без кода — возврат."""
+    from app.bot.i18n import t
+    from app.bot.notify import notify_user
+    from app.core import sms
+    from app.core.money import fmt_uzs
+    from app.db.models import Activation, User
+
+    try:
+        async with get_session() as session:
+            ids = [a.id for a in await sms.active_all(session)]
+        for aid in ids:
+            async with get_session() as session:
+                a = await session.get(Activation, aid, with_for_update=True)
+                if not a:
+                    continue
+                was_refunded = a.refunded
+                await sms.refresh(session, a)
+                user = await session.get(User, a.user_id)
+                lang = user.language if user else "ru"
+                msg = None
+                if a.code and a.notified_code != a.code:
+                    a.notified_code = a.code
+                    msg = t(lang, "sms_code_msg", service=a.service_name or a.service, phone=a.phone, code=a.code)
+                elif a.refunded and not was_refunded:
+                    msg = t(lang, "sms_refund_msg", phone=a.phone, amount=fmt_uzs(a.price))
+            if msg:
+                await notify_user(a.user_id, msg)
+    except Exception as e:  # noqa: BLE001
+        log.warning("check_activations failed: %s", e)
+
+
 def build_scheduler() -> AsyncIOScheduler:
     sch = AsyncIOScheduler(timezone=settings.timezone)
     # NB: next_run_time=None в APScheduler = «задача на паузе», поэтому его тут нет; первый запуск делает main.py
@@ -145,6 +178,7 @@ def build_scheduler() -> AsyncIOScheduler:
     sch.add_job(update_premium_cost, IntervalTrigger(hours=1), id="premium_cost")
     sch.add_job(update_gifts_catalog, IntervalTrigger(minutes=30), id="gifts_catalog")
     sch.add_job(warm_nft_catalog, IntervalTrigger(minutes=30), id="nft_warm", max_instances=1, coalesce=True)
+    sch.add_job(check_activations, IntervalTrigger(seconds=15), id="sms_check", max_instances=1, coalesce=True)
     sch.add_job(check_ton_balance, IntervalTrigger(minutes=30), id="ton_balance")
     sch.add_job(daily_report, CronTrigger(hour=9, minute=0), id="daily_report")
     return sch

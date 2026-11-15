@@ -45,5 +45,6 @@ async def init_db() -> None:
         await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS nft_slug VARCHAR(96)"))
         await conn.execute(text("ALTER TABLE payments ADD COLUMN IF NOT EXISTS intent JSONB"))
         await conn.execute(text("ALTER TABLE payments ADD COLUMN IF NOT EXISTS order_id BIGINT"))
+        await conn.execute(text("ALTER TABLE payments ADD COLUMN IF NOT EXISTS activation_id BIGINT"))
         await conn.execute(text("ALTER TABLE payments ADD COLUMN IF NOT EXISTS note VARCHAR(255)"))
         await conn.execute(text("ALTER TABLE orders ADD COLUMN IF NOT EXISTS gift_message VARCHAR(255)"))
