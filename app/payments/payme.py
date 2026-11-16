@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
 from app.core import referrals, wallet
-from app.core.enums import PaymentStatus
+from app.core.enums import LedgerType, PaymentStatus
 from app.db.models import Payment, User
 
 log = logging.getLogger(__name__)
@@ -175,8 +175,17 @@ async def handle(session: AsyncSession, method: str, params: dict) -> tuple[dict
         if not p:
             return _err(-31003, "Транзакция не найдена"), None
         if p.status == PaymentStatus.PAID:
-            # услуга уже оказана (баланс зачислен) — отмену не принимаем
-            return _err(-31007, "Невозможно отменить: платёж уже выполнен"), None
+            # Возврат уже проведённого платежа (его инициируют из кабинета Payme). Возможен, только если деньги
+            # ещё лежат на балансе: списываем их и отдаём state -2. Если клиент их уже потратил — услуга оказана, -31007.
+            user = await wallet.lock_user(session, p.user_id)
+            if user.balance < p.amount:
+                return _err(-31007, "Невозможно отменить: услуга уже оказана"), None
+            await wallet.apply(session, p.user_id, -p.amount, LedgerType.ADMIN_ADJUST, ref_type="payment", ref_id=p.id, comment="Возврат платежа Payme")
+            p.status = PaymentStatus.CANCELLED
+            _set_meta(p, state=STATE_CANCELLED_AFTER, cancel_time=int(time.time() * 1000), reason=params.get("reason"))
+            log.info("Payme payment %s refunded after perform", p.id)
+            m = _meta(p)
+            return {"result": {"transaction": str(p.id), "cancel_time": int(m.get("cancel_time", 0)), "state": STATE_CANCELLED_AFTER}}, None
         if p.status != PaymentStatus.CANCELLED:
             p.status = PaymentStatus.CANCELLED
             _set_meta(p, state=STATE_CANCELLED, cancel_time=int(time.time() * 1000), reason=params.get("reason"))
