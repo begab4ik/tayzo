@@ -164,8 +164,8 @@ async def me(c: C):
         "flags": {
             "stars": await cfg.get_bool(s, "stars_enabled"),
             "premium": await cfg.get_bool(s, "premium_enabled"),
-            "gifts": await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
-            "nft": await cfg.get_bool(s, "nft_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")),
+            "gifts": await cfg.get_bool(s, "gifts_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")) and await tg_account.alive(),
+            "nft": await cfg.get_bool(s, "nft_enabled") and tg_account.configured and bool(await cfg.get(s, "tg_session")) and await tg_account.alive(),
             "sms": bool(settings.herosms_api_key) and await cfg.get_bool(s, "sms_enabled"),
             "click": bool(settings.payment_methods),
             "payment_methods": settings.payment_methods,

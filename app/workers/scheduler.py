@@ -13,7 +13,6 @@ from app.bot.notify import alert_once, notify_admins
 from app.config import settings
 from app.core import settings_store as cfg
 from app.core import stats as stats_svc
-from app.core.exceptions import ProviderAuthError
 from app.core.money import fmt_uzs
 from app.db.base import get_session
 from app.providers.registry import fragment_client, is_manual_mode
@@ -93,9 +92,6 @@ async def update_gifts_catalog() -> None:
     try:
         gifts = await tg_account.fetch_gifts()
         log.info("gifts catalog updated: %s items", len(gifts))
-    except ProviderAuthError as e:
-        log.warning("update_gifts_catalog failed: %s", e)
-        await alert_once("tg_session", f"🔴 Подарки и NFT не работают: {e.message}\nАдминка → 🎁 Подарки → Войти.")
     except Exception as e:  # noqa: BLE001
         log.warning("update_gifts_catalog failed: %s", e)
 
@@ -140,9 +136,6 @@ async def warm_nft_catalog(only_if_cold: bool = False) -> None:
             return
         n = await tg_account.warm_nft()
         log.info("nft catalog warmed: %s collections", n)
-    except ProviderAuthError as e:
-        log.warning("warm_nft_catalog failed: %s", e)
-        await alert_once("tg_session", f"🔴 Подарки и NFT не работают: {e.message}\nАдминка → 🎁 Подарки → Войти.")
     except Exception as e:  # noqa: BLE001
         log.warning("warm_nft_catalog failed: %s", e)
 

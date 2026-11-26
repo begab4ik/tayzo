@@ -30,6 +30,8 @@ NFT_LIST_TTL = 10 * 60
 NFT_FLOORS_KEY = "tayzo:nft:floors"
 
 
+DEAD_KEY = "tg:session_dead"
+
 class TelegramAccount:
     def __init__(self) -> None:
         self._client = None
@@ -61,9 +63,21 @@ class TelegramAccount:
         await c.connect()
         if not await c.is_user_authorized():
             await c.disconnect()
+            await self._mark_dead()
             raise ProviderAuthError("Сессия Telegram-аккаунта слетела — войди заново в админке")
+        await redis.delete(DEAD_KEY)
         self._client = c
         return c
+
+    async def _mark_dead(self) -> None:
+        """Сессия отозвана: прячем подарки/NFT в приложении (чтобы клиент не видел ошибку) и зовём админа."""
+        await redis.set(DEAD_KEY, "1", ex=900)
+        from app.bot.notify import alert_once
+
+        await alert_once("tg_session", "🔴 Сессия Telegram-аккаунта слетела — подарки и NFT скрыты из приложения.\nАдминка → 🎁 Подарки → Войти (телефон → код).")
+
+    async def alive(self) -> bool:
+        return not await redis.exists(DEAD_KEY)
 
     async def me(self) -> dict:
         c = await self.client()
@@ -113,6 +127,7 @@ class TelegramAccount:
         async with get_session() as s:
             await cfg.set_value(s, "tg_session", c.session.save())
             await cfg.set_value(s, "tg_account_username", me.username or "")
+        await redis.delete(DEAD_KEY, "alert:tg_session")
         self._login_clients.pop(admin_id, None)
         if self._client is not None:
             try:
