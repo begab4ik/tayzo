@@ -24,3 +24,15 @@ async def notify_user(user_id: int, text: str, reply_markup: InlineKeyboardMarku
     except Exception as e:  # noqa: BLE001
         log.info("notify user %s failed: %s", user_id, e)
         return False
+
+
+async def alert_once(key: str, text: str, ttl: int = 6 * 3600) -> None:
+    """Сообщить админам о поломке, но не чаще раза в ttl секунд по одному и тому же поводу."""
+    from app.redis_client import redis
+
+    try:
+        if not await redis.set(f"alert:{key}", "1", ex=ttl, nx=True):
+            return
+    except Exception:  # noqa: BLE001 — без Redis лучше лишний раз написать, чем промолчать
+        pass
+    await notify_admins(text)

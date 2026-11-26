@@ -13,6 +13,7 @@ Fragment — сайт периодически меняет имена поле�
 """
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
 import re
@@ -54,6 +55,9 @@ class FragmentClient:
     def __init__(self) -> None:
         self._hash = settings.fragment_api_hash
         self._client = httpx.AsyncClient(base_url=BASE, headers=HEADERS, cookies=settings.fragment_cookies, timeout=30, follow_redirects=True)
+        self._auth_lock = asyncio.Lock()
+        self.last_ok = True
+        self.last_error = ""
 
     async def _ensure_hash(self) -> str:
         if self._hash:
@@ -72,7 +76,15 @@ class FragmentClient:
             last = f"{path}: HTTP {r.status_code}, {len(r.text)} байт"
         raise ProviderAuthError(f"Не удалось получить api hash Fragment — проверь cookies ({last})")
 
-    async def call(self, method: str, referer: str = "/stars/buy", **data) -> dict:
+    def _absorb_cookies(self, r: httpx.Response) -> None:
+        """Fragment обновляет cookies (stel_ton_token после привязки кошелька). Кладём их без домена поверх
+        исходных из tokens.env — иначе в jar окажутся два значения с одним именем."""
+        for name, value in r.cookies.items():
+            for c in [c for c in self._client.cookies.jar if c.name == name]:
+                self._client.cookies.jar.clear(c.domain, c.path, c.name)
+            self._client.cookies.set(name, value)
+
+    async def _post(self, method: str, referer: str, data: dict) -> dict:
         api_hash = await self._ensure_hash()
         payload = {"method": method, **{k: v for k, v in data.items() if v is not None}}
         try:
@@ -81,16 +93,56 @@ class FragmentClient:
             raise ProviderError(f"Fragment недоступен: {e}") from e
         if r.status_code in (401, 403):
             raise ProviderAuthError("Fragment вернул 401/403 — обнови cookies")
+        self._absorb_cookies(r)
         try:
             body = r.json()
         except ValueError:
             raise ProviderError(f"Fragment: не JSON ({r.status_code})")
-        if isinstance(body, dict) and body.get("error"):
+        return body if isinstance(body, dict) else {"result": body}
+
+    async def call(self, method: str, referer: str = "/stars/buy", **data) -> dict:
+        body = await self._post(method, referer, data)
+        if body.get("need_ton"):
+            # Fragment просит заново привязать TON-кошелёк к сессии (TonConnect + ton_proof) — делаем это сами и повторяем
+            await self.ton_auth()
+            body = await self._post(method, referer, data)
+            if body.get("need_ton"):
+                raise ProviderAuthError("Fragment не принял привязку TON-кошелька (need_ton) — обнови cookies Fragment")
+        if body.get("error"):
             err = str(body["error"])
             if "log in" in err.lower() or "unauthorized" in err.lower():
                 raise ProviderAuthError(f"Fragment: {err}")
             raise ProviderError(f"Fragment: {err}")
         return body
+
+    async def ton_auth(self) -> None:
+        """Привязать наш TON-кошелёк к сессии Fragment так же, как это делает TonConnect в браузере:
+        берём со страницы payload, подписываем ton_proof ключом кошелька, отдаём в checkTonProofAuth."""
+        async with self._auth_lock:
+            try:
+                r = await self._client.get("/stars/buy", headers={"Referer": BASE})
+            except httpx.HTTPError as e:
+                raise ProviderError(f"Fragment недоступен: {e}") from e
+            self._absorb_cookies(r)
+            m = re.search(r'\\?"ton_proof\\?"\s*:\s*\\?"([^"\\]+)', r.text)
+            if not m:
+                raise ProviderAuthError("Fragment: на странице нет ton_proof — похоже, слетел вход, обнови cookies")
+            m2 = re.search(r"api\?hash=([A-Za-z0-9_\-]+)", r.text)
+            if m2:
+                self._hash = m2.group(1)
+            account = ton_wallet.tonconnect_account()
+            proof = ton_wallet.ton_proof(m.group(1), "fragment.com")
+            args = {"account": json.dumps(account), "device": json.dumps(DEVICE), "proof": json.dumps(proof)}
+            res: dict = {}
+            for _ in range(8):
+                res = await self._post("checkTonProofAuth", "/stars/buy", args)
+                if res.get("verified"):
+                    log.info("Fragment: TON wallet re-linked to session")
+                    return
+                if not res.get("pending"):
+                    break
+                await asyncio.sleep(2)
+            raise ProviderAuthError(f"Fragment не подтвердил TON-кошелёк: {str(res.get('error') or res)[:150]}")
 
     async def close(self) -> None:
         await self._client.aclose()
@@ -216,8 +268,10 @@ async def fetch_star_price_ton(client: FragmentClient, probe_qty: int = 100, pro
             return None
         init = await client.call("initBuyStarsRequest", recipient=token, quantity=probe_qty, payment_method=PAYMENT_METHOD)
         amount = init.get("amount")
+        client.last_ok, client.last_error = bool(amount), "" if amount else f"нет цены в ответе {str(init)[:120]}"
         return Decimal(str(amount)) / probe_qty if amount else None
     except ProviderError as e:
+        client.last_ok, client.last_error = False, str(e)
         log.warning("fetch_star_price_ton failed: %s", e)
         return None
 

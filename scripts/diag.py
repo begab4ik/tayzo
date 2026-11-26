@@ -31,6 +31,12 @@ async def main() -> None:
     print("pays 7d:", " ".join(f"{a}/{b}={c}" for a, b, c in p) or "-")
     print("acc set:", bool(acc), "probe set:", bool(probe))
 
+    try:
+        await fc.ton_auth()
+        print("ton_auth: verified")
+    except Exception as e:  # noqa: BLE001
+        print("ton_auth ERR:", str(e)[:160])
+
     for name, q in (("acc", acc), ("probe", probe), ("durov", "durov")):
         if not q:
             continue

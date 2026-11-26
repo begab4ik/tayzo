@@ -34,6 +34,7 @@ class TonWallet:
         wallet, public_key, _priv, _mn = cls.from_mnemonic(client, settings.ton_mnemonic.split())
         self._wallet = wallet
         self._public_key = public_key
+        self._private_key = _priv
         self._connected = False
 
     async def _conn(self):
@@ -59,6 +60,30 @@ class TonWallet:
             "walletStateInit": state_init,
             "publicKey": self._public_key.as_hex,
         }
+
+    def ton_proof(self, payload: str, domain: str) -> dict:
+        """Подпись ton_proof (TonConnect v2) — доказывает сайту, что кошелёк наш. Денег не тратит."""
+        import hashlib
+        import time
+
+        from ton_core import sign_message
+
+        self._ensure()
+        ts = int(time.time())
+        addr = self._wallet.address
+        d = domain.encode()
+        msg = (
+            b"ton-proof-item-v2/"
+            + int(addr.wc).to_bytes(4, "big", signed=True)
+            + addr.hash_part
+            + len(d).to_bytes(4, "little")
+            + d
+            + ts.to_bytes(8, "little")
+            + payload.encode()
+        )
+        full = b"\xff\xff" + b"ton-connect" + hashlib.sha256(msg).digest()
+        sig = sign_message(hashlib.sha256(full).digest(), self._private_key.keypair.as_bytes)
+        return {"timestamp": ts, "domain": {"lengthBytes": len(d), "value": domain}, "signature": base64.b64encode(sig).decode(), "payload": payload}
 
     async def balance(self) -> Decimal:
         """Баланс в TON. Запрашиваем напрямую у клиента: wallet.refresh() глотает ошибки и отдаёт 0."""
