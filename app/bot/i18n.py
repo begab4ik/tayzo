@@ -29,6 +29,8 @@ T: dict[str, dict[str, str]] = {
     "ib_pay_payme": {"ru": "💳 Оплатить через Payme", "en": "💳 Pay via Payme", "uz": "💳 Payme orqali to'lash"},
     "ib_method_click": {"ru": "Click", "en": "Click", "uz": "Click"},
     "ib_method_payme": {"ru": "Payme", "en": "Payme", "uz": "Payme"},
+    "ib_method_soon": {"ru": "скоро", "en": "soon", "uz": "tez orada"},
+    "pay_method_off": {"ru": "Этот способ временно недоступен — выбери другой.", "en": "This method is temporarily unavailable — pick another one.", "uz": "Bu usul vaqtincha ishlamayapti — boshqasini tanlang."},
     "topup_choose_method": {
         "ru": "💳 К оплате: <b>{amount}</b>\n\nВыбери способ оплаты:",
         "en": "💳 To pay: <b>{amount}</b>\n\nChoose a payment method:",

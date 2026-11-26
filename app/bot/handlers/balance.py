@@ -97,11 +97,9 @@ async def _create_and_send(message: Message, session: AsyncSession, user: User, 
         await message.answer(t(lang, "topup_unavailable"))
         return
     if method not in methods:
-        if len(methods) > 1:
-            text, markup = texts.topup_choose_method(lang, amount), kb.pay_method_kb(lang, amount, methods)
-            await (message.edit_text(text, reply_markup=markup) if edit else message.answer(text, reply_markup=markup))
-            return
-        method = methods[0]
+        text, markup = texts.topup_choose_method(lang, amount), kb.pay_method_kb(lang, amount, methods)
+        await (message.edit_text(text, reply_markup=markup) if edit else message.answer(text, reply_markup=markup))
+        return
     payment = await pay.create(session, user.id, amount, method)
     await session.commit()
     url = pay.pay_url(payment, return_url=f"https://t.me/{(await message.bot.me()).username}", lang=lang)
@@ -111,6 +109,11 @@ async def _create_and_send(message: Message, session: AsyncSession, user: User, 
         await message.edit_text(text, reply_markup=markup)
     else:
         await message.answer(text, reply_markup=markup)
+
+
+@router.callback_query(F.data == "paymeth_off")
+async def pay_method_off(call: CallbackQuery, user: User):
+    await call.answer(t(user.language, "pay_method_off"), show_alert=True)
 
 
 @router.callback_query(F.data.startswith("paymeth:"))

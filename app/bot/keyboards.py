@@ -86,11 +86,18 @@ def pay_kb(lang: str, url: str, payment_id: int, method: str = "click") -> Inlin
     return b.as_markup()
 
 
+PAY_METHODS_ALL = [("click", "Click"), ("payme", "Payme"), ("uzum", "Uzum Bank"), ("paynet", "Paynet")]
+
+
 def pay_method_kb(lang: str, amount: int, methods: list[str]) -> InlineKeyboardMarkup:
+    """Все способы оплаты: рабочие — кнопкой, остальные видны, но помечены как временно недоступные."""
     b = InlineKeyboardBuilder()
-    for m in methods:
-        b.button(text=t(lang, f"ib_method_{m}"), callback_data=f"paymeth:{m}:{amount}")
-    b.adjust(len(methods))
+    for m, name in PAY_METHODS_ALL:
+        if m in methods:
+            b.button(text=name, callback_data=f"paymeth:{m}:{amount}")
+        else:
+            b.button(text=f"{name} · {t(lang, 'ib_method_soon')}", callback_data="paymeth_off")
+    b.adjust(1)
     return b.as_markup()
 
 
