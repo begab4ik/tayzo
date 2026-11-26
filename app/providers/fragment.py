@@ -84,7 +84,7 @@ class FragmentClient:
                 self._client.cookies.jar.clear(c.domain, c.path, c.name)
             self._client.cookies.set(name, value)
 
-    async def _post(self, method: str, referer: str, data: dict) -> dict:
+    async def _post(self, method: str, referer: str, data: dict, _retry: bool = True) -> dict:
         api_hash = await self._ensure_hash()
         payload = {"method": method, **{k: v for k, v in data.items() if v is not None}}
         try:
@@ -98,7 +98,12 @@ class FragmentClient:
             body = r.json()
         except ValueError:
             raise ProviderError(f"Fragment: не JSON ({r.status_code})")
-        return body if isinstance(body, dict) else {"result": body}
+        body = body if isinstance(body, dict) else {"result": body}
+        if _retry and str(body.get("error", "")).lower() == "bad request":
+            # api hash привязан к сессии и меняется вместе с cookies — берём свежий со страницы и повторяем
+            self._hash = ""
+            return await self._post(method, referer, data, _retry=False)
+        return body
 
     async def call(self, method: str, referer: str = "/stars/buy", **data) -> dict:
         body = await self._post(method, referer, data)
@@ -137,6 +142,7 @@ class FragmentClient:
             for _ in range(8):
                 res = await self._post("checkTonProofAuth", "/stars/buy", args)
                 if res.get("verified"):
+                    self._hash = ""  # после привязки сессия другая — hash перечитаем со страницы
                     log.info("Fragment: TON wallet re-linked to session")
                     return
                 if not res.get("pending"):
