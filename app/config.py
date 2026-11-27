@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     payme_merchant_id: str = ""
     payme_key: str = ""
     payme_test_key: str = ""
+    payme_enabled: bool = False  # показывать Payme клиентам; пока идут тесты в песочнице — False, вебхук при этом работает
     # HeroSMS — виртуальные номера для приёма SMS
     herosms_api_key: str = ""
     webhook_host: str = "http://localhost:8080"
@@ -99,7 +100,7 @@ class Settings(BaseSettings):
 
     @property
     def payment_methods(self) -> list[str]:
-        return [m for m, ok in (("click", self.click_configured), ("payme", self.payme_configured)) if ok]
+        return [m for m, ok in (("click", self.click_configured), ("payme", self.payme_configured and self.payme_enabled)) if ok]
 
     def is_admin(self, user_id: int) -> bool:
         return user_id in self.admin_ids
